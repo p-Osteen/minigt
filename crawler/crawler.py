@@ -307,6 +307,11 @@ class MINI_GTCrawler:
             logger.debug(f"Skipping D-prefix product: {clean_num}")
             return
 
+        # --- A-prefix filter: never save these ---
+        if clean_num.startswith("A"):
+            logger.debug(f"Skipping A-prefix product: {clean_num}")
+            return
+
         # --- MJ-suffix filter: never save these ---
         if clean_num.endswith("MJ"):
             logger.debug(f"Skipping MJ-suffix product: {clean_num}")
