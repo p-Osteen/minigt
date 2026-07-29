@@ -442,9 +442,25 @@ class MINI_GTCrawler:
         def _abs(src: str) -> str:
             return src if src.startswith("http") else f"https://minigt.tsm-models.com/{src.lstrip('/')}"
 
-        # Primary: divs with class 'product_hover product_box'
-        for div in soup.find_all("div", class_="product_box"):
-            img = div.find("img")
+        def _is_inside_related(node) -> bool:
+            curr = node
+            for _ in range(8):
+                curr = curr.parent
+                if not curr or curr.name in (None, "[document]"):
+                    break
+                cls = curr.get("class", [])
+                if isinstance(cls, str):
+                    cls = [cls]
+                if any(c in cls for c in ["related_pro", "product_o", "products_list"]):
+                    return True
+            return False
+
+        # Primary: any elements with class 'product_box' (e.g. 'a' or 'div')
+        # excluding images inside known related-products containers
+        for tag in soup.find_all(class_="product_box"):
+            if _is_inside_related(tag):
+                continue
+            img = tag if tag.name == "img" else tag.find("img")
             if img:
                 src = img.get("src") or img.get("data-src", "")
                 if _is_product_img(src):
@@ -457,25 +473,15 @@ class MINI_GTCrawler:
         # excluding images inside known related-products containers
         if not img_urls:
             for img in soup.find_all("img"):
+                if _is_inside_related(img):
+                    continue
                 src = img.get("src") or img.get("data-src", "")
                 if not _is_product_img(src):
                     continue
-                # Skip if inside a related-products section
-                is_related = False
-                node = img
-                for _ in range(8):  # walk up max 8 levels
-                    node = node.parent
-                    if not node or node.name in (None, "[document]"):
-                        break
-                    cls = node.get("class", [])
-                    if any(c in cls for c in ["product_o", "related_pro", "products_list"]):
-                        is_related = True
-                        break
-                if not is_related:
-                    url = _abs(src)
-                    if url not in seen_img:
-                        img_urls.append(url)
-                        seen_img.add(url)
+                url = _abs(src)
+                if url not in seen_img:
+                    img_urls.append(url)
+                    seen_img.add(url)
 
         self._save_or_merge_product(item_number, product_name, marque, scale, series, img_urls, source="official")
 
