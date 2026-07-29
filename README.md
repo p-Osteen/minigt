@@ -1,104 +1,115 @@
-# MINI GT 1:64 Scale Catalog System
+# MINI GT 1:64 Scale Catalog CLI Panel & Dashboard
 
-A senior-grade Python full-stack application designed to crawl, maintain, and display a local offline database of MINI GT 1:64 scale product releases from the official website. The system supports advanced searching, filtering, and printing custom, high-resolution catalogs (resembling the official MINI GT grid style) in both PDF and PNG formats.
+A professional-grade, concurrent Python-based cataloging system designed to crawl, maintain, deduplicate, and host a comprehensive catalog of MINI GT 1:64 scale product releases. The system compiles data from multiple sources (Official website, MyMiniGT, and Fandom Wiki) into a local SQLite database, resolves LHD/RHD duplicates by source priority, and automatically builds/deploys a premium, responsive static dashboard to GitHub Pages.
 
 ---
 
 ## Key Features
 
-1. **Robust, Resilient Web Crawler**:
-   - Discovers all brand listings under the MINI GT Products index.
-   - Crawls each brand page-by-page concurrently using `ThreadPoolExecutor`.
-   - Filters and saves **only** 1:64 scale models, ignoring duplicate Item Numbers.
-   - Respects robots.txt configurations and implements rate-limiting and retry logic.
-   - Features **session resumption**: state is saved in `cache/crawler_state.json` to safely resume if interrupted.
-   - Logs comprehensive crawler activity to `logs/crawler.log`.
+1. **High-Performance BeautifulSoup Crawler**:
+   * Scrapes concurrently from three sources: the Official site, MyMiniGT, and Fandom Wiki.
+   * Utilizes local raw HTML caching in `cache/html/` to enable near-instantaneous incremental scrapes.
+   * Saves only valid 1:64 scale diecast models.
+   * Excludes accessories, container boxes, and figurines (purging A-prefix item codes).
+   * Fully supports scrape resumption via state tracking in `cache/crawler_state.json`.
 
-2. **Local Offline Storage & Sync**:
-   - Store all data locally under a unified database layout.
-   - Uses **SQLite** (`database/products.db`) as the primary database managed with **SQLAlchemy**.
-   - Syncs all products automatically to `database/products.json` after successful crawl actions.
+2. **Automated Duplicate Resolution (LHD/RHD Merge)**:
+   * Strips trailing LHD/RHD suffix variations (e.g. standardizing `MGT00006` and `MGT00006R` under the same model).
+   * Automatically merges image galleries from duplicate sources so all images are preserved.
+   * Overwrites metadata (name, brand, series) prioritizing the highest-quality source:
+     1. `https://minigt.tsm-models.com/` (Official)
+     2. `https://myminigt.com/` (MyMiniGT)
+     3. `https://minigt.fandom.com/wiki/MINI_GT` (Fandom)
+   * Purges lower-priority duplicate records directly from the database so each model is listed exactly once.
 
-3. **Premium Web Application (FastAPI + Bootstrap 5 + HTMX)**:
-   - Responsive grid UI utilizing glassmorphism cards and smooth micro-animations.
-   - **Theme Manager**: Built-in toggle for sleek Dark Mode and Clean Light Mode.
-   - **Instant Search**: Type item numbers or names and view results instantly using HTMX.
-   - **Selection Checklist**: Select custom products using card checkboxes to generate personalized catalogs.
-   - **Real-Time Crawling Console**: Open the "Update DB" modal, select Incremental or Full mode, and watch live progress and terminal log output scroll in real-time.
+3. **Advanced Grouped Series Sorting**:
+   * Sorts the entire database systematically into continuous blocks by series prefix:
+     1. **`MGT` Series**: Standard releases sorted numerically (`MGT00000` to `MGT64044`).
+     2. **`KHMG`/`KH` Series**: Kaido House releases sorted numerically.
+     3. **`OEM` Series**: Normalized automatically to `OEM-YY-NN` for display/sorting and sorted numerically.
+     4. **Remaining Series**: Sorted alphabetically by prefix (e.g. `BL`, `S`, `XX`) and naturally by number.
+     5. **Malformed/Abnormal Items**: Excessively long concatenated strings (e.g. `EUNOSROADSTER...`) are pushed to the very bottom of the catalog, preserving their original names.
 
-4. **Printable Catalog Generator (Pillow)**:
-   - Export grids matching the official MINI GT catalog aesthetics (white background, thin light-grey border around cards, centered vehicle images, metadata positioned nicely, and automatic wrapping for long model names).
-   - Dynamically loads and caches the modern typography font **Inter** from Google Fonts.
-   - Fetches and caches remote images on-the-fly to accelerate rendering.
-   - Supports 2, 3, 4, 5, or 6 column grid layouts.
-   - Outputs multi-page high-resolution **PDF** books or a packaged **ZIP** of high-res PNG pages.
+4. **Sleek Static Catalog Dashboard (`index.html`)**:
+   * Hosted for free on GitHub Pages.
+   * Displays a responsive, premium grid layout (up to 6 columns).
+   * Features virtual infinite scrolling for seamless loading of 1,900+ models.
+   * Includes instant token-matching search and dynamic brand filters.
+   * Toggleable sleek Dark/Light themes.
+   * Integrated print dialog supporting custom page generation (by brand/all models) in a clean grid layout.
+
+5. **Automated Git Deployment Pipeline (`deploy.py`)**:
+   * Packages the deduplicated data into `database/products.json`.
+   * Stages, commits, and pushes updates to your GitHub repository, automatically triggering GitHub Pages builds.
 
 ---
 
 ## Project Structure
 
 ```
-MINIGT/
-│
-├── api/
-│   └── routes.py             # FastAPI routing and controller logic
+TSM/
 │
 ├── cache/
-│   ├── image_cache/          # Cached remote product images for catalog generation
-│   └── Inter-Regular.ttf     # Cached TrueType typography font
+│   ├── html/                 # Cached raw product HTML pages
+│   └── crawler_state.json    # Saved crawler queue for pausing/resuming
 │
 ├── crawler/
-│   └── crawler.py            # Concurrent BeautifulSoup crawler logic
+│   └── crawler.py            # Beautiful Soup concurrent parser and sync rules
 │
 ├── database/
-│   ├── db_manager.py         # SQLite connection session & JSON sync script
-│   ├── models.py             # SQLAlchemy schema for Product releases
-│   ├── products.db           # SQLite database file (gitignored)
-│   └── products.json         # JSON copy of database
+│   ├── db_manager.py         # SQLite connection manager, custom sorting & deduplication
+│   ├── models.py             # SQLAlchemy schema defining the Product table
+│   ├── products.db           # Local SQLite database (gitignored)
+│   └── products.json         # Synchronized sorted JSON catalog
 │
-├── exports/                  # Generated PDF/PNG catalogs (gitignored)
-├── logs/                     # Application logs (app.log & crawler.log)
+├── logs/
+│   └── crawler.log           # Crawling activity and deduplication logging
+│
 ├── static/
-│   └── styles.css            # Responsive styles and dark/light themes
+│   └── styles.css            # Dashboard themes, fonts, and grid layout styles
 │
-├── templates/
-│   ├── base.html             # Main skeleton layout
-│   ├── index.html            # Search filters and product grid dashboard
-│   ├── product_detail.html   # Model spec sheet detail page
-│   └── product_grid_items.html # HTMX infinite-scroller rows
-│
-├── tests/
-│   └── test_system.py        # Pytest unit tests for parsing and schemas
-│
-├── app.py                    # Server startup script
+├── app.py                    # Interactive CLI Control Panel
+├── deploy.py                 # Automated git synchronization script
+├── index.html                # Premium static dashboard frontend
+├── catalog_print.html        # Print-preview template grid
 ├── requirements.txt          # Python package requirements
 └── README.md                 # Project documentation
 ```
 
 ---
 
-## Setup & Running the Application
+## Getting Started
 
-### 1. Prerequisites
-Make sure Python 3.13+ is installed.
-
-### 2. Install Dependencies
-Run the command below in your shell to install required dependencies:
-```powershell
+### 1. Install Dependencies
+Ensure you have Python 3.11+ installed. Run:
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run Pytest Suite
-Run unit tests to verify HTML parsers and models:
-```powershell
-py -m pytest
+### 2. Configure Environment
+Create a `.env` file in the root folder and add your GitHub Access Token for automated deploys:
+```env
+GITHUB_TOKEN=your_github_personal_access_token_here
 ```
 
-### 4. Start the Application
-Boot the FastAPI application:
-```powershell
+### 3. Run the CLI Control Panel
+Start the control panel:
+```bash
 python app.py
 ```
-- The server initializes SQLite schema tables.
-- It will automatically launch your default web browser to: `http://127.0.0.1:8000`
-- Click the **Update DB** button in the navbar to start your first crawler session and populate your catalog!
+This launches the interactive menu:
+```
+======================================
+   MINI GT 1:64 Scale Catalog Panel   
+======================================
+  1. Scrape / Update Catalog
+  2. Resume Interrupted Scrape
+  3. Deploy to GitHub Pages
+  4. Start Preview Server
+  5. Clear All Data
+  6. Exit
+======================================
+```
+* **Option 1**: Performs a fresh crawl, deduplicates the database, compiles the JSON, and deploys it to GitHub Pages.
+* **Option 4**: Boots a local HTTP preview server at `http://127.0.0.1:8000` to test the website locally.
+* **Option 5**: Safely wipes the SQLite database, JSON, and logs.
