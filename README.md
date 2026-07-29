@@ -14,13 +14,13 @@ A professional-grade, concurrent Python-based cataloging system designed to craw
    * Fully supports scrape resumption via state tracking in `cache/crawler_state.json`.
 
 2. **Automated Duplicate Resolution (Cross-Source Merge)**:
-   * Identifies duplicates strictly based on exact-match item numbers across data sources.
-   * Suffix variations (e.g. standardizing LHD `MGT00006` and RHD `MGT00006R`) are recognized as distinct models and remain unchanged.
-   * Keeps exactly one record from the highest-priority source:
+   * Strips trailing LHD/RHD suffix variations (e.g. standardizing `MGT00011R` and `MGT00022L` to their base numbers) to identify duplicate models.
+   * Resolves duplicate entries across crawler sources, keeping exactly one record based on source priority:
      1. `https://minigt.tsm-models.com/` (Official)
      2. `https://myminigt.com/` (MyMiniGT)
      3. `https://minigt.fandom.com/wiki/MINI_GT` (Fandom)
-   * Uses the winner's images and metadata exactly as-is, discarding all lower-priority duplicates without merging galleries or combining files.
+   * If priorities are identical (e.g., LHD and RHD versions are both from the Official source), the standard suffix-free item number is preferred.
+   * Retains the winner's data exactly as-is, discarding remaining duplicate records without merging image galleries or combining metadata.
 
 3. **Advanced Grouped Series Sorting**:
    * Sorts the entire database systematically into continuous blocks by series prefix:
