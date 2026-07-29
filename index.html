@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINI GT 1:64 Catalog</title>
+  <meta name="description" content="Complete MINI GT 1:64 scale diecast model catalog — browse, filter, and print.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<header class="site-header">
+  <div class="header-brand">
+    <span class="brand-logo">MINI GT</span>
+    <span class="brand-scale">1:64</span>
+    <span class="catalog-count" id="catalogCount">Loading…</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" id="btnPrint" onclick="openPrintModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Print Catalog
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════════════ FILTER BAR ════════════════════════ -->
+<div class="filter-bar" id="filterBar">
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input
+      type="text"
+      id="searchInput"
+      class="search-input"
+      placeholder="Search by name, item number…"
+      oninput="handleSearch()"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button class="clear-btn" id="clearSearch" onclick="clearSearch()" title="Clear search">×</button>
+  </div>
+
+  <select id="brandSelect" class="filter-select" onchange="applyFilters()">
+    <option value="">All Brands</option>
+  </select>
+
+  <button class="btn-reset" onclick="resetFilters()">Reset</button>
+  <span class="filter-result-count" id="resultCount"></span>
+</div>
+
+<!-- ════════════════════════════ MAIN GRID ═══════════════════════ -->
+<main class="catalog-main">
+  <div class="product-grid" id="productGrid"></div>
+  <div id="loadSentinel"></div>
+</main>
+
+<!-- ═══════════════════════ SELECTION BAR ════════════════════════ -->
+<div class="selection-bar" id="selectionBar">
+  <span class="sel-count" id="selCount">0 selected</span>
+  <div class="sel-sep"></div>
+  <button class="btn-sel" onclick="clearSelection()">Clear</button>
+  <button class="btn-sel primary" onclick="printSelected()">Print Selected</button>
+</div>
+
+<!-- ════════════════════════ PRINT MODAL ═════════════════════════ -->
+<div class="modal-overlay" id="printModal" onclick="handleModalClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Export Catalog</h3>
+      <button class="modal-close" onclick="closePrintModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Columns -->
+      <div class="form-group">
+        <label>Columns per row</label>
+        <div class="seg-ctrl" id="colSel">
+          <button class="seg-btn" data-val="2" onclick="selCol(this)">2</button>
+          <button class="seg-btn" data-val="3" onclick="selCol(this)">3</button>
+          <button class="seg-btn active" data-val="4" onclick="selCol(this)">4</button>
+          <button class="seg-btn" data-val="5" onclick="selCol(this)">5</button>
+          <button class="seg-btn" data-val="6" onclick="selCol(this)">6</button>
+        </div>
+      </div>
+
+      <!-- Scope -->
+      <div class="form-group">
+        <label>Print scope</label>
+        <div class="seg-ctrl" id="scopeSel">
+          <button class="seg-btn active" data-val="all" onclick="selScope(this)">All</button>
+          <button class="seg-btn" data-val="filtered" onclick="selScope(this)">Current Filter</button>
+          <button class="seg-btn" data-val="selected" onclick="selScope(this)">Selected</button>
+        </div>
+      </div>
+
+      <!-- Brand sub-filter (shown when scope=all) -->
+      <div class="form-group" id="modalBrandWrap">
+        <label>Brand (optional)</label>
+        <select id="modalBrandSel" class="filter-select" style="max-width:100%;width:100%;" onchange="updatePreviewCount()">
+          <option value="">All Brands</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <span class="preview-count" id="previewCount"></span>
+      <button class="btn-accent" id="btnExport" onclick="exportCatalog()">Open Print Preview</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCRIPT ══════════════════════════ -->
+<script>
+'use strict';
+
+// ── Data Store ──────────────────────────────────────────────────
+let ALL_PRODUCTS = [];      // full dataset
+let FILTERED = [];          // after search/brand filter
+let SELECTED = new Set();   // selected item_numbers
+let renderIndex = 0;        // how many cards rendered so far
+const PAGE_SIZE = 60;       // cards per infinite-scroll batch
+
+// ── Per-card carousel state ──────────────────────────────────────
+const carouselState = {};   // { itemNumber: { idx: 0, count: N } }
+
+// ── Print modal state ────────────────────────────────────────────
+let printCols  = 4;
+let printScope = 'all';
+
+// ══════════════════════════════════════════════════════════════════
+//  Boot
+// ══════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadProducts();
+  initIntersectionObserver();
+});
+
+async function loadProducts() {
+  try {
+    const res = await fetch('database/products.json?v=' + Date.now());
+    if (!res.ok) throw new Error(res.statusText);
+    ALL_PRODUCTS = await res.json();
+  } catch (e) {
+    showEmpty('Could not load catalog', 'Make sure products.json exists. Run a scrape first.');
+    return;
+  }
+  populateBrandDropdown();
+  applyFilters();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Filtering — Token Search
+// ══════════════════════════════════════════════════════════════════
+/**
+ * Token search: splits query by whitespace, every token must appear
+ * somewhere in the combined search fields (case-insensitive).
+ *
+ * Example: "Bentley GT3" → ["bentley","gt3"]
+ *   matches "Bentley Continental GT3 Test Car" ✓
+ *   does NOT match "Bentley Bentayga" ✗
+ */
+function tokenMatch(query, fields) {
+  if (!query) return true;
+  const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const haystack = fields.join(' ').toLowerCase();
+  return tokens.every(t => haystack.includes(t));
+}
+
+function handleSearch() {
+  // Show/hide clear button
+  const q = document.getElementById('searchInput').value;
+  document.getElementById('clearSearch').style.display = q ? 'block' : 'none';
+  applyFilters();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('clearSearch').style.display = 'none';
+  applyFilters();
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('clearSearch').style.display = 'none';
+  document.getElementById('brandSelect').value = '';
+  applyFilters();
+}
+
+function applyFilters() {
+  const query = document.getElementById('searchInput').value.trim();
+  const brand  = document.getElementById('brandSelect').value;
+
+  FILTERED = ALL_PRODUCTS.filter(p => {
+    const matchSearch = tokenMatch(query, [p.product_name || '', p.item_number || '']);
+    const matchBrand  = !brand || (p.brand || '').toLowerCase() === brand.toLowerCase();
+    return matchSearch && matchBrand;
+  });
+
+  // Update count display
+  const total = ALL_PRODUCTS.length;
+  const shown = FILTERED.length;
+  document.getElementById('catalogCount').textContent =
+    shown === total ? `${total.toLocaleString()} models` : `${shown.toLocaleString()} / ${total.toLocaleString()} models`;
+  document.getElementById('resultCount').textContent =
+    (query || brand) ? `${shown.toLocaleString()} result${shown !== 1 ? 's' : ''}` : '';
+
+  renderIndex = 0;
+  document.getElementById('productGrid').innerHTML = '';
+  renderBatch();
+  updatePreviewCount();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Rendering — Virtual Infinite Scroll
+// ══════════════════════════════════════════════════════════════════
+function renderBatch() {
+  if (renderIndex >= FILTERED.length) {
+    if (FILTERED.length === 0) showEmpty('No results', 'Try a different search or reset the filters.');
+    return;
+  }
+
+  const grid = document.getElementById('productGrid');
+  const slice = FILTERED.slice(renderIndex, renderIndex + PAGE_SIZE);
+
+  slice.forEach(p => {
+    const card = buildCard(p);
+    grid.appendChild(card);
+  });
+
+  renderIndex += slice.length;
+}
+
+function buildCard(p) {
+  const num    = p.item_number || '';
+  const name   = p.product_name || 'Unknown Model';
+  const imgs   = Array.isArray(p.images) ? p.images : [];
+  const hasMulti = imgs.length > 1;
+
+  // Init carousel state
+  carouselState[num] = { idx: 0, count: imgs.length };
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.item = num;
+
+  // Build slides HTML
+  let slidesHTML = imgs.length
+    ? imgs.map(url =>
+        `<div class="cr-slide"><img src="${escHtml(url)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.visibility='hidden'"></div>`
+      ).join('')
+    : `<div class="cr-slide" style="display:flex;align-items:center;justify-content:center;height:100%;background:#f5f5f5;">
+         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9l4-4 4 4 4-6 4 6"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>
+       </div>`;
+
+  let dotsHTML = '';
+  if (hasMulti) {
+    dotsHTML = '<div class="cr-dots">' +
+      imgs.map((_, i) => `<span class="cr-dot${i === 0 ? ' active' : ''}" onclick="crJump('${escHtml(num)}',${i},event)"></span>`).join('') +
+      '</div>';
+  }
+
+  const arrowsHTML = hasMulti
+    ? `<button class="cr-btn cr-prev" onclick="crSlide('${escHtml(num)}',-1,event)">&#8249;</button>
+       <button class="cr-btn cr-next" onclick="crSlide('${escHtml(num)}',1,event)">&#8250;</button>`
+    : '';
+
+  card.innerHTML = `
+    <div class="card-media">
+      <div class="cr-track-wrap">
+        <div class="cr-track" id="crt-${escHtml(num)}">${slidesHTML}</div>
+      </div>
+      ${arrowsHTML}
+      ${dotsHTML}
+      <label class="card-chk" title="Select for printing">
+        <input type="checkbox" id="chk-${escHtml(num)}"
+          ${SELECTED.has(num) ? 'checked' : ''}
+          onchange="toggleSelect('${escHtml(num)}', this)"
+          onclick="event.stopPropagation()">
+      </label>
+    </div>
+    <div class="card-info">
+      <div class="card-num">${escHtml(num)}</div>
+      <div class="card-name">${escHtml(name)}</div>
+    </div>
+  `;
+
+  return card;
+}
+
+function showEmpty(title, body) {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = `
+    <div class="state-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <h4>${escHtml(title)}</h4>
+      <p>${escHtml(body)}</p>
+    </div>`;
+}
+
+// ── Intersection Observer for infinite scroll ────────────────────
+function initIntersectionObserver() {
+  const sentinel = document.getElementById('loadSentinel');
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) renderBatch();
+  }, { rootMargin: '400px' });
+  observer.observe(sentinel);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Carousel
+// ══════════════════════════════════════════════════════════════════
+function crSlide(num, dir, event) {
+  event && event.stopPropagation();
+  const state = carouselState[num];
+  if (!state || state.count < 2) return;
+  state.idx = (state.idx + dir + state.count) % state.count;
+  _crApply(num);
+}
+
+function crJump(num, idx, event) {
+  event && event.stopPropagation();
+  const state = carouselState[num];
+  if (!state) return;
+  state.idx = idx;
+  _crApply(num);
+}
+
+function _crApply(num) {
+  const state = carouselState[num];
+  const track = document.getElementById('crt-' + num);
+  if (track) track.style.transform = `translateX(-${state.idx * 100}%)`;
+
+  // Update dots
+  const card = document.querySelector(`.card[data-item="${CSS.escape(num)}"]`);
+  if (!card) return;
+  card.querySelectorAll('.cr-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === state.idx);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Selection
+// ══════════════════════════════════════════════════════════════════
+function toggleSelect(num, checkbox) {
+  if (checkbox.checked) {
+    SELECTED.add(num);
+  } else {
+    SELECTED.delete(num);
+  }
+  updateSelectionBar();
+}
+
+function clearSelection() {
+  SELECTED.clear();
+  document.querySelectorAll('.card-chk input[type="checkbox"]').forEach(cb => cb.checked = false);
+  updateSelectionBar();
+}
+
+function updateSelectionBar() {
+  const bar = document.getElementById('selectionBar');
+  const n = SELECTED.size;
+  document.getElementById('selCount').textContent = `${n} selected`;
+  bar.classList.toggle('visible', n > 0);
+  updatePreviewCount();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Brand Dropdown
+// ══════════════════════════════════════════════════════════════════
+function populateBrandDropdown() {
+  const brands = [...new Set(ALL_PRODUCTS.map(p => p.brand).filter(Boolean))].sort();
+  const select  = document.getElementById('brandSelect');
+  const mSelect = document.getElementById('modalBrandSel');
+  const frag = document.createDocumentFragment();
+  const mFrag = document.createDocumentFragment();
+  brands.forEach(b => {
+    const o  = document.createElement('option'); o.value = b; o.textContent = b; frag.appendChild(o);
+    const o2 = document.createElement('option'); o2.value = b; o2.textContent = b; mFrag.appendChild(o2);
+  });
+  select.appendChild(frag);
+  mSelect.appendChild(mFrag);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Print Modal
+// ══════════════════════════════════════════════════════════════════
+function openPrintModal() {
+  document.getElementById('printModal').classList.add('open');
+  updatePreviewCount();
+}
+
+function closePrintModal() {
+  document.getElementById('printModal').classList.remove('open');
+}
+
+function handleModalClick(event) {
+  if (event.target === event.currentTarget) closePrintModal();
+}
+
+function selCol(btn) {
+  document.querySelectorAll('#colSel .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  printCols = parseInt(btn.dataset.val);
+}
+
+function selScope(btn) {
+  document.querySelectorAll('#scopeSel .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  printScope = btn.dataset.val;
+
+  // Show brand filter only when scope = "all"
+  const brandWrap = document.getElementById('modalBrandWrap');
+  brandWrap.style.display = printScope === 'all' ? 'block' : 'none';
+
+  updatePreviewCount();
+}
+
+function updatePreviewCount() {
+  const ps = _getPrintSet();
+  document.getElementById('previewCount').textContent =
+    `${ps.length.toLocaleString()} model${ps.length !== 1 ? 's' : ''}`;
+}
+
+function _getPrintSet() {
+  if (printScope === 'selected') {
+    return ALL_PRODUCTS.filter(p => SELECTED.has(p.item_number));
+  }
+  if (printScope === 'filtered') {
+    return FILTERED;
+  }
+  // All — optionally filtered by modal brand
+  const mBrand = document.getElementById('modalBrandSel').value;
+  return mBrand
+    ? ALL_PRODUCTS.filter(p => p.brand === mBrand)
+    : ALL_PRODUCTS;
+}
+
+function printSelected() {
+  printScope = 'selected';
+  // Update modal UI to reflect "selected" scope
+  document.querySelectorAll('#scopeSel .seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === 'selected');
+  });
+  document.getElementById('modalBrandWrap').style.display = 'none';
+  exportCatalog();
+}
+
+function exportCatalog() {
+  const products = _getPrintSet();
+  if (!products.length) {
+    alert('No models match the current print scope.');
+    return;
+  }
+  closePrintModal();
+
+  // Build print page URL with data encoded as a compact param
+  const params = new URLSearchParams({
+    cols: printCols,
+    data: JSON.stringify(products.map(p => ({
+      n: p.item_number,
+      t: p.product_name,
+      b: p.brand,
+      i: Array.isArray(p.images) && p.images.length ? p.images[0] : ''
+    })))
+  });
+
+  // Open print preview in new tab
+  const printUrl = `catalog_print.html?${params.toString()}`;
+  window.open(printUrl, '_blank');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Utilities
+// ══════════════════════════════════════════════════════════════════
+const _escDiv = document.createElement('div');
+function escHtml(str) {
+  _escDiv.textContent = str;
+  return _escDiv.innerHTML;
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+    e.preventDefault();
+    openPrintModal();
+  }
+  if (e.key === 'Escape') closePrintModal();
+  // Focus search with /
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+</script>
+</body>
+</html>
