@@ -157,6 +157,7 @@ class MINI_GTCrawler:
 
             # Write to cache
             try:
+                os.makedirs(os.path.dirname(cache_file), exist_ok=True)
                 with open(cache_file, "w", encoding="utf-8") as f:
                     f.write(content)
             except Exception as e:
