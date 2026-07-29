@@ -17,6 +17,7 @@ class Product(Base):
     scale = Column(String, nullable=False, default="1:64", index=True)
     series = Column(String, nullable=True, index=True)
     images = Column(Text, nullable=True)  # JSON-encoded array of local paths, e.g., ["images/Brand/MGT00123_0.jpg"]
+    source = Column(String, nullable=True, index=True)
 
     # Explicit indexes for combined queries and fast searches
     __table_args__ = (
@@ -34,7 +35,8 @@ class Product(Base):
             "brand": self.brand,
             "scale": self.scale,
             "series": self.series or "Regular",
-            "images": self.image_list
+            "images": self.image_list,
+            "source": self.source
         }
 
     @property

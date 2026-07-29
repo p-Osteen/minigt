@@ -286,6 +286,7 @@ class MINI_GTCrawler:
         scale: str,
         series: str,
         img_urls: List[str],
+        source: str = "",
     ) -> None:
         """
         Saves product to DB, merging if already exists.
@@ -343,20 +344,26 @@ class MINI_GTCrawler:
                 )
 
                 if existing:
-                    # Merge: prefer longer name, better brand/series
-                    if len(product_name) > len(existing.product_name):
+                    # Determine source priorities (lower is higher priority)
+                    prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
+                    incoming_prio = prio_map.get(source, 9)
+                    existing_prio = prio_map.get(existing.source, 9)
+
+                    # Overwrite metadata and images if incoming has higher priority
+                    if incoming_prio < existing_prio:
                         existing.product_name = product_name
-                    if existing.brand == "MINI GT" and brand != "MINI GT":
                         existing.brand = brand
-                    if existing.series == "Regular" and series != "Regular":
                         existing.series = series
-                    # Merge image URLs (no duplicates)
-                    existing_urls = existing.image_list
-                    for u in clean_img_urls:
-                        if u not in existing_urls:
-                            existing_urls.append(u)
-                    existing.set_images(existing_urls)
-                    logger.debug(f"Merged product {clean_num}")
+                        existing.scale = scale
+                        existing.source = source
+                        existing.set_images(clean_img_urls)
+                        logger.debug(f"Overwrote product {clean_num} with higher-priority source data")
+                    elif incoming_prio == existing_prio:
+                        # Tie-breaker: keep the longer product name, do not merge images
+                        if len(product_name) > len(existing.product_name):
+                            existing.product_name = product_name
+                    else:
+                        logger.debug(f"Ignored lower-priority source data for product {clean_num}")
                 else:
                     new_prod = Product(
                         item_number=clean_num,
@@ -364,11 +371,12 @@ class MINI_GTCrawler:
                         brand=brand,
                         scale=scale,
                         series=series,
+                        source=source,
                     )
                     new_prod.set_images(clean_img_urls)
                     session.add(new_prod)
                     logger.info(
-                        f"Added product {clean_num} ({product_name}) from marque {brand}"
+                        f"Added product {clean_num} ({product_name}) from marque {brand} (Source: {source})"
                     )
 
     # ------------------------------------------------------------------ #
@@ -469,7 +477,7 @@ class MINI_GTCrawler:
                         img_urls.append(url)
                         seen_img.add(url)
 
-        self._save_or_merge_product(item_number, product_name, marque, scale, series, img_urls)
+        self._save_or_merge_product(item_number, product_name, marque, scale, series, img_urls, source="official")
 
     def _parse_official_list(
         self, html: str, brand_name: str, b_id: str, page: int
@@ -581,7 +589,7 @@ class MINI_GTCrawler:
                 elif page_name in {"Bentley_Shop_Exclusives", "Cancelled_Models", "Accessories"}:
                     series = page_name.replace("_", " ")
 
-                self._save_or_merge_product(item_number, product_name, brand, "1:64", series, img_urls)
+                self._save_or_merge_product(item_number, product_name, brand, "1:64", series, img_urls, source="fandom")
 
     def _parse_myminigt_detail(self, html: str, detail_url: str) -> None:
         """Parses a model detail page from myminigt.com via JSON-LD schema."""
@@ -634,7 +642,7 @@ class MINI_GTCrawler:
             img_url = product_node.get("image", "")
             img_urls = [img_url] if img_url else []
 
-            self._save_or_merge_product(item_number, product_name, brand, "1:64", series, img_urls)
+            self._save_or_merge_product(item_number, product_name, brand, "1:64", series, img_urls, source="myminigt")
         except Exception as e:
             logger.error(f"MyMiniGT JSON-LD parsing failed for {detail_url}: {e}")
 

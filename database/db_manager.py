@@ -62,12 +62,126 @@ def get_db_session() -> Generator[Session, None, None]:
         session.close()
 
 
-def sync_to_json() -> None:
-    """Dumps all SQLite records to database/products.json."""
+def deduplicate_database() -> None:
+    """
+    Identifies duplicate models based strictly on the exact item number.
+    Retains only the record from the highest-priority source:
+    1. official
+    2. myminigt
+    3. fandom
+    Deletes lower-priority duplicates from the SQLite database as-is, without merging images or metadata.
+    """
+    logger.info("Starting database deduplication process...")
     try:
         with get_db_session() as session:
-            products = session.query(Product).order_by(Product.item_number).all()
-            data = [p.to_dict() for p in products]
+            products = session.query(Product).all()
+            if not products:
+                return
+
+            # Group products by exact normalized item number
+            groups = {}
+            for p in products:
+                key = (p.item_number or "").strip().upper()
+                groups.setdefault(key, []).append(p)
+
+            prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
+
+            for key, group_list in groups.items():
+                if len(group_list) <= 1:
+                    continue
+
+                # Sort by source priority (official first, then myminigt, then fandom)
+                group_list.sort(key=lambda p: prio_map.get((p.source or "").lower(), 9))
+                
+                winner = group_list[0]
+                losers = group_list[1:]
+
+                logger.info(
+                    f"Deduplicating {key}: Keeping {winner.item_number} (Source: {winner.source}), "
+                    f"discarding {len(losers)} lower-priority duplicates."
+                )
+
+                # Delete duplicate records without merging images or metadata
+                for loser in losers:
+                    session.delete(loser)
+
+            session.commit()
+        logger.info("Database deduplication complete.")
+    except Exception as e:
+        logger.error(f"Error during database deduplication: {e}")
+
+
+def sync_to_json() -> None:
+    """Dumps SQLite records to products.json with specialized OEM normalization and sorted by custom groups."""
+    try:
+        deduplicate_database()
+        with get_db_session() as session:
+            products = session.query(Product).all()
+
+            def is_abnormal(item: str) -> bool:
+                if not item:
+                    return True
+                if "OEM" in item.upper():
+                    return False
+                if not any(c.isdigit() for c in item):
+                    return True
+                if len(item) > 15:
+                    return True
+                return False
+
+            def normalize_oem(item: str) -> str:
+                # Extracts year prefix and item number suffix around "OEM"
+                match = re.match(r"^(\d+)?OEM([A-Z0-9]+)?$", item, re.IGNORECASE)
+                if not match:
+                    return item.upper()
+                yy, nn = match.groups()
+                yy_str = yy if yy else "00"
+                nn_str = nn if nn else ""
+                return f"OEM-{yy_str}-{nn_str}"
+
+            def sort_key(p):
+                item = (p.item_number or "").strip()
+                
+                # Group 5: Malformed or outlier entries (at the very bottom)
+                if is_abnormal(item):
+                    return (5, item, 0, "")
+                    
+                # Group 3: OEM models (normalized and sorted numerically)
+                if "OEM" in item.upper():
+                    norm = normalize_oem(item)
+                    parts = norm.split("-")
+                    yy = int(parts[1]) if parts[1].isdigit() else 0
+                    nn_str = parts[2]
+                    nn_num = int(nn_str) if nn_str.isdigit() else 999999
+                    return (3, yy, nn_num, nn_str)
+                    
+                # Group 1 & 2: Standard MGT and KHMG models
+                match = re.match(r"^([a-zA-Z]+)(\d+)", item)
+                if not match:
+                    # Group 4: Remaining non-standard normal items without standard prefix+digits
+                    return (4, item, 0, "")
+                    
+                prefix, num_str = match.groups()
+                num = int(num_str)
+                prefix_upper = prefix.upper()
+                
+                if prefix_upper == "MGT":
+                    return (1, num, 0, "")
+                if prefix_upper == "KHMG":
+                    return (2, num, 0, "")
+                    
+                # Group 4: Remaining normal models (sorted naturally by prefix, then number)
+                return (4, prefix_upper, num, "")
+
+            products.sort(key=sort_key)
+            
+            # Export data, normalizing ONLY OEM item numbers for display and sorting
+            data = []
+            for p in products:
+                d = p.to_dict()
+                if "OEM" in d["item_number"].upper():
+                    d["item_number"] = normalize_oem(d["item_number"])
+                data.append(d)
 
         with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
