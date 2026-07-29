@@ -293,8 +293,11 @@ class MINI_GTCrawler:
         - Stores image URLs directly (no downloading).
         """
         # --- Scale filter ---
-        if not scale or "1:64" not in scale:
-            return
+        # Bypassed for Kaido House items (always 1:64)
+        is_kaido = "kaido" in series.lower() or "kaido" in brand.lower() or "kaido" in product_name.lower()
+        if not is_kaido:
+            if not scale or "1:64" not in scale:
+                return
 
         # --- Normalise item number ---
         clean_num = re.sub(r"[^a-zA-Z0-9]", "", item_number).upper()
@@ -302,6 +305,11 @@ class MINI_GTCrawler:
         # --- D-prefix filter: never save these ---
         if D_PREFIX_RE.match(clean_num):
             logger.debug(f"Skipping D-prefix product: {clean_num}")
+            return
+
+        # --- MJ-suffix filter: never save these ---
+        if clean_num.endswith("MJ"):
+            logger.debug(f"Skipping MJ-suffix product: {clean_num}")
             return
 
         if not clean_num:
@@ -592,13 +600,25 @@ class MINI_GTCrawler:
             if not product_node:
                 return
 
-            product_name = product_node.get("name", "")
-            sku = product_node.get("sku", "")
+            product_name = product_node.get("name", "").strip()
+            sku = product_node.get("sku", "").strip()
 
             if not sku:
                 return
 
-            item_number = f"MGT{sku.zfill(5)}" if sku.isdigit() else sku
+            # Check if name starts with a model code (e.g. KHMG195 or KH195 or MGT00195)
+            code_match = re.match(r"^([A-Z0-9_-]+)\b", product_name, re.IGNORECASE)
+            item_number = ""
+            if code_match:
+                matched_code = code_match.group(1).upper()
+                if any(matched_code.startswith(pfx) for pfx in ["KHMG", "KH", "MGT", "DM", "DBW", "BL", "S", "XX"]):
+                    item_number = matched_code
+                    # Strip the item number from the beginning of the name for cleaner storage
+                    product_name = product_name[code_match.end():].strip().lstrip("-").strip()
+
+            if not item_number:
+                # Fall back to SKU formatting
+                item_number = f"MGT{sku.zfill(5)}" if sku.isdigit() else sku
 
             brand = "MINI GT"
             brand_node = product_node.get("brand")
