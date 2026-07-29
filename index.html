@@ -117,6 +117,18 @@
   </div>
 </div>
 
+<!-- ════════════════════════ LIGHTBOX MODAL ══════════════════════ -->
+<div class="lightbox-overlay" id="lightboxModal" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">×</button>
+  <div class="lightbox-container" onclick="event.stopPropagation()">
+    <button class="lightbox-nav btn-prev" id="lightboxPrev" onclick="lightboxSlide(-1, event)">&#8249;</button>
+    <div class="lightbox-card">
+      <img id="lightboxImg" src="" alt="Zoomed view" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ccc%22 stroke-width=%221.5%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M3 9l4-4 4 4 4-6 4 6%22/><circle cx=%228.5%22 cy=%228.5%22 r=%221.5%22/></svg>'">
+    </div>
+    <button class="lightbox-nav btn-next" id="lightboxNext" onclick="lightboxSlide(1, event)">&#8250;</button>
+  </div>
+</div>
+
 <!-- ════════════════════════════ SCRIPT ══════════════════════════ -->
 <script>
 'use strict';
@@ -274,7 +286,7 @@ function buildCard(p) {
 
   card.innerHTML = `
     <div class="card-media">
-      <div class="cr-track-wrap">
+      <div class="cr-track-wrap" onclick="openLightbox('${escHtml(num)}', event)" style="cursor: zoom-in;">
         <div class="cr-track" id="crt-${escHtml(num)}">${slidesHTML}</div>
       </div>
       ${arrowsHTML}
@@ -488,8 +500,70 @@ function escHtml(str) {
   return _escDiv.innerHTML;
 }
 
+// ── Lightbox JS Logic ───────────────────────────────────────────
+let lightboxImages = [];
+let lightboxIndex = 0;
+
+function openLightbox(num, event) {
+  event && event.stopPropagation();
+  const p = ALL_PRODUCTS.find(x => x.item_number === num);
+  if (!p) return;
+
+  lightboxImages = Array.isArray(p.images) ? p.images : [];
+  if (!lightboxImages.length) return;
+
+  // Sync index with the card's active carousel slide
+  const state = carouselState[num];
+  lightboxIndex = state ? Math.min(state.idx, lightboxImages.length - 1) : 0;
+
+  _updateLightbox();
+  document.getElementById('lightboxModal').classList.add('open');
+}
+
+function closeLightbox(event) {
+  if (event && event.target !== event.currentTarget && !event.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightboxModal').classList.remove('open');
+}
+
+function lightboxSlide(dir, event) {
+  event && event.stopPropagation();
+  if (!lightboxImages.length) return;
+  lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+  _updateLightbox();
+}
+
+function _updateLightbox() {
+  const img = document.getElementById('lightboxImg');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
+
+  img.src = lightboxImages[lightboxIndex];
+  
+  const showNav = lightboxImages.length > 1;
+  prevBtn.style.display = showNav ? 'flex' : 'none';
+  nextBtn.style.display = showNav ? 'flex' : 'none';
+}
+
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
+  const isLightboxOpen = document.getElementById('lightboxModal').classList.contains('open');
+  
+  if (isLightboxOpen) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeLightbox();
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      lightboxSlide(-1);
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      lightboxSlide(1);
+    }
+    return;
+  }
+
   if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
     e.preventDefault();
     openPrintModal();
