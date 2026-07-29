@@ -78,27 +78,37 @@ def deduplicate_database() -> None:
             if not products:
                 return
 
-            # Group products by exact normalized item number
+            def get_base_code(item_num: str) -> str:
+                clean = item_num.strip().upper()
+                match = re.match(r"^([A-Z0-9]+?)[\s-]*([RL])$", clean)
+                if match:
+                    base = match.group(1)
+                    if base and base[-1].isdigit():
+                        return base
+                return clean
+
+            # Group products by duplicate base code
             groups = {}
             for p in products:
-                key = (p.item_number or "").strip().upper()
-                groups.setdefault(key, []).append(p)
+                base = get_base_code(p.item_number)
+                groups.setdefault(base, []).append(p)
 
             prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
 
-            for key, group_list in groups.items():
+            for base, group_list in groups.items():
                 if len(group_list) <= 1:
                     continue
 
                 # Sort by source priority (official first, then myminigt, then fandom)
-                group_list.sort(key=lambda p: prio_map.get((p.source or "").lower(), 9))
+                # If priority is equal, prefer standard suffix-free item number (shorter length)
+                group_list.sort(key=lambda p: (prio_map.get((p.source or "").lower(), 9), len(p.item_number)))
                 
                 winner = group_list[0]
                 losers = group_list[1:]
 
                 logger.info(
-                    f"Deduplicating {key}: Keeping {winner.item_number} (Source: {winner.source}), "
-                    f"discarding {len(losers)} lower-priority duplicates."
+                    f"Deduplicating {base}: Keeping {winner.item_number} (Source: {winner.source}), "
+                    f"discarding {len(losers)} duplicate records."
                 )
 
                 # Delete duplicate records without merging images or metadata
