@@ -100,10 +100,14 @@ def deploy(log=print) -> bool:
     log("\n[3/6] Staging files...")
     files_to_add = [
         "database/products.json",
+        "database/db_manager.py",
+        "database/models.py",
+        "crawler/",
         "index.html",
         "catalog_print.html",
         "static/",
         "README.md",
+        "deploy.py",
         ".env.example",
     ]
     for f in files_to_add:

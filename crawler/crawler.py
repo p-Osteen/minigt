@@ -451,7 +451,7 @@ class MINI_GTCrawler:
                 cls = curr.get("class", [])
                 if isinstance(cls, str):
                     cls = [cls]
-                if any(c in cls for c in ["related_pro", "product_o", "products_list"]):
+                if any(c in cls for c in ["related_pro"]):
                     return True
             return False
 
