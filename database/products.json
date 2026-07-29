@@ -93,17 +93,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00006",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.2, Low Wing version \r\nZero Fighter Special",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/de09b526-4ce6-4ba9-ae86-d6191af8c4d9"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00006R",
     "product_name": "LB★WORKS Nissan GT-R (R35) Zero Fighter Special",
     "brand": "LB Works",
@@ -119,17 +108,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/05/20250508184510430.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00007",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.1, High Wing version\r\nZero Fighter Special",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/9818dfca-5108-47cb-b2bc-a2899c8d86e6"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00007R",
@@ -191,17 +169,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/04/20250409064753278.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00011",
-    "product_name": "Honda Civic Type R (FK8)\r\nCrystal Black \r\nModulo Edition",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/68dc7405-0003-41a8-a7eb-8c6083467371"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00011R",
@@ -386,17 +353,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00022",
-    "product_name": "Honda Civic Type R (FK8) \r\nADAC TCR Germany Safety Car",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/81ac15c2-3a42-486f-b754-d9ae190d7592"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00022L",
     "product_name": "Honda Civic Type R (FK8) ADAC TCR Germany  Safety Car",
     "brand": "Honda",
@@ -412,17 +368,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/11/20241128012120843.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00023",
-    "product_name": "Honda Civic Type R (FK8) \r\n\"Customer Racing Study\"",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/f009ab81-5cd3-4ae4-874e-db0d9742ebe0"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00023L",
@@ -441,17 +386,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00024",
-    "product_name": "Honda Civic Type R (FK8) \r\n\"Time Attack 2018\"",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7a237c50-a97b-4211-ad5d-4d6c63a178a7"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00024L",
     "product_name": "Honda Civic Type R (FK8)",
     "brand": "Honda",
@@ -468,17 +402,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00025",
-    "product_name": "Honda NSX GT3 \r\nPresentation",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/2867e783-1715-4654-b8f7-28527b115ad0"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00025L",
     "product_name": "Honda NSX GT3 Presentation",
     "brand": "Honda",
@@ -493,17 +416,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/04/20250419193503106.jpg"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00026",
-    "product_name": "Acura NSX GT3 \r\nLos Angeles Auto Show 2017",
-    "brand": "Acura",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/0b54f24a-47b0-4cf0-8149-bc0d8612a804"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00026L",
@@ -523,17 +435,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00027",
-    "product_name": "Honda NSX GT3",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "LIMITED EDITION",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/9cfd1e7e-d58d-4a28-9e20-35ddf29becf6"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00027L",
     "product_name": "NSX GT3 2019 MINI GT Gift Car",
     "brand": "Honda",
@@ -551,17 +452,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00028",
-    "product_name": "Honda Civic Type R (FK8) \r\nSlate Grey w/ TE37 Wheel",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/c05232f8-9de6-4c85-8b3b-b507a15fa069"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00028L",
     "product_name": "Honda Civic Type R (FK8)  Slate Grey w/ TE37 Wheel",
     "brand": "Honda",
@@ -577,17 +467,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/07/20240725013905498.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00029",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.1, High Wing version\r\nAEON",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/512c5ac7-3604-490e-ba8f-347c8de91fea"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00029R",
@@ -633,17 +512,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00032",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.2, Low Wing version\r\nMagic Bronze",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/fbedfc96-2912-4fe7-917a-75c9050e3dd1"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00032R",
     "product_name": "LB★WORKS Nissan GT-R (R35) Magic Bronze",
     "brand": "LB Works",
@@ -659,17 +527,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/05/20250509000922832.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00033",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.1, High Wing version\r\nMagic Bronze",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/996c9557-5741-4165-b10a-f809dbcfc38a"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00033R",
@@ -695,17 +552,6 @@
     "series": "REGULAR EXCLUSIVE PRODUCT",
     "images": [
       "https://backend-static-ms.zmoif7.easypanel.host/api/images/491639f2-6e54-484f-8610-cc1321d68961"
-    ],
-    "source": "myminigt"
-  },
-  {
-    "item_number": "MGT00035",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.2, Low Wing version\r\nMagic Grey",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/c0b4c77f-2218-4ccf-b218-588713f83db6"
     ],
     "source": "myminigt"
   },
@@ -778,17 +624,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00039",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.2, Low Wing version\r\nMagic Purple",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/fa9947f8-dfe9-4b6a-b05d-fcbdf4d91cef"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00039R",
     "product_name": "LB★WORKS Nissan GT-R (R35) Magic Purple",
     "brand": "LB Works",
@@ -803,17 +638,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/05/20250508200501781.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00040",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.2, Low Wing version \r\nSatin Gold w/ Carbon",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "EXPO 1",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/6fe0d3ab-1503-46c4-b423-0c3c83809123"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00040R",
@@ -1026,17 +850,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00054",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.1 \"WearItPink\" \r\nBreast Cancer Awareness High Wing version",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e23ed6c3-3212-4aa1-ba2c-20a03d798eff"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00054R",
     "product_name": "LB★WORKS Nissan GT-R (R35)",
     "brand": "LB Works",
@@ -1049,17 +862,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/09/20240930094855085.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00055",
-    "product_name": "BMW M3 (E30) \r\n#6 Watson's Team Schnitzer \r\n1991 Guia Race of Macau Winner",
-    "brand": "BMW",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/204cc513-546f-415d-8778-28e99f658701"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00055L",
@@ -1684,17 +1486,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00096",
-    "product_name": "Pandem Nissan GT-R (R35) GT Wing  \r\nMetallic Blue",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/624ecc66-bffb-49aa-84df-269e8e31b426"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00096R",
     "product_name": "Pandem Nissan GT-R (R35) Metallic Blue",
     "brand": "Pandem",
@@ -1726,17 +1517,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00098",
-    "product_name": "Pandem Nissan GT-R (R35) GT Wing  \r\nROCAF Malataw Fighter",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/d808b87c-19a5-4b74-bb51-b854a48ea4df"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00098L",
     "product_name": "Pandem Nissan GT-R (R35)  GT Wing   ROCAF Malataw Fighter",
     "brand": "Pandem",
@@ -1749,17 +1529,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/07/20240725014524026.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00099",
-    "product_name": "Pandem Nissan GT-R (R35) Duck Tail  \r\nROCAF Malataw Fighter",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/59dd2545-1685-43b2-9f00-b859a7efabe8"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00099L",
@@ -1821,17 +1590,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00103",
-    "product_name": "Nissan Skyline GT-R (R32) Gr. A \r\n#87 HKS \r\n1993 Japan Touringcar Championship",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/123299a8-ad04-4134-95fc-e5d95cd20e6b"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00103R",
     "product_name": "Nissan  Skyline GT-R (R32) Gr. A #87 HKS",
     "brand": "Nissan",
@@ -1864,17 +1622,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/05/20250508171431853.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00105",
-    "product_name": "Nissan Skyline GT-R (R32) Gr. A \r\n#55 Kyoseki \r\n1993 Japan Touringcar Championship",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/ed3272da-a490-4efe-b5bd-b1171f99e4b6"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00105R",
@@ -1969,17 +1716,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/12/20251208181113740.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00110",
-    "product_name": "Land Rover Defender 110\r\nRed Bull LUKA",
-    "brand": "Land Rover",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7578ff09-aafa-4716-b0ca-e2e94fae13e3"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00110L",
@@ -2553,17 +2289,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00147",
-    "product_name": "LB★WORKS Nissan GT-R (R35) Type 1, \r\nRear Wing ver.1\r\nLB★WORKS Police",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR GIFT BOX",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/d90ff297-2ae9-4665-a1f9-eba35c6d8ef9"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00147R",
     "product_name": "LB★WORKS Nissan GT-R (R35)  LB★WORKS Police",
     "brand": "LB Works",
@@ -2738,17 +2463,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00158",
-    "product_name": "Land Rover Defender 110\r\nBadan Intelijen Negara Indonesia",
-    "brand": "Land Rover",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/c518daff-21a4-4662-9d40-56c4ef344a97"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00158R",
     "product_name": "Land Rover Defender 110    Badan Intelijen Negara Indonesia",
     "brand": "Land Rover",
@@ -2855,17 +2569,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/08/20250826060619677.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00165",
-    "product_name": "Nissan Skyline GT-R (R32) Gr. A \r\n#12 Calsonic \r\n1990 Japan Touringcar Championship",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e5565fb2-4628-4914-bbeb-368bf3c080d9"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00165R",
@@ -3154,17 +2857,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2025/05/20250508173700338.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00183",
-    "product_name": "Mercedes-Benz Actros Container Lorry \r\nSF Express China Edition",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/1698e40e-5fa8-40e7-b087-fa1d738fd1ce"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00183L",
@@ -4100,17 +3792,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00237",
-    "product_name": "Land Rover Defender 110 \r\nMilitary Camouflage",
-    "brand": "Land Rover",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/edce666b-fe01-4a25-b8ea-86f6ac53d9f4"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00237R",
     "product_name": "Land Rover Defender 110  Military Camouflage",
     "brand": "Land Rover",
@@ -4162,17 +3843,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00240",
-    "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II \r\n#8 \"Berlin\" \r\n1992 Guia Race of Macau",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/32292f61-0bdd-4170-a9f5-9fc5913fdc59"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00240L",
     "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II #8",
     "brand": "Mercedes-Benz",
@@ -4188,17 +3858,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/06/20240606081929011.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00241",
-    "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II \r\n#9 \"Berlin\" \r\n1992 Guia Race of Macau",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/6f16653d-48e3-460f-aae6-248bc70d18c3"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00241L",
@@ -4218,17 +3877,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00242",
-    "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II \r\n#10 \"Berlin\" \r\n1992 Guia Race of Macau",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/3ae8e561-c691-4cba-9617-f17e2fc0158b"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00242L",
     "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II #10 \"Berlin\"  1992 Guia Race of Macau",
     "brand": "Mercedes-Benz",
@@ -4245,17 +3893,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2023/09/20230911125309963.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00243",
-    "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II \r\n#11 \"Berlin\" \r\n1992 Guia Race of Macau",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/91db5794-5d7f-4438-a571-ea2dee475557"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00243L",
@@ -4457,17 +4094,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00255",
-    "product_name": "Audi RS 6 Avant \r\nSilver Digital Camouflage",
-    "brand": "Audi",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/8e75ae08-0a02-48a3-8b2b-59ef2fd387f9"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00255L",
     "product_name": "Audi RS 6 Avant Silver Digital Camouflage",
     "brand": "Audi",
@@ -4483,17 +4109,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/09/20240930102811606.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00256",
-    "product_name": "Audi RS 6 Avant \r\nSilver Digital Camouflage \r\nw/ Roof Box",
-    "brand": "Audi",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/9a40de89-7b3e-42b4-8b27-d7d28e6a4c23"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00256L",
@@ -4745,17 +4360,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00271",
-    "product_name": "Ford Mustang Shelby GT500 \r\nGrabber Lime",
-    "brand": "Ford",
-    "scale": "1:64",
-    "series": "REGULAR GIFT BOX",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/1e5e3b85-c717-4666-825a-553b57f6c1e1"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00271L",
     "product_name": "Ford Mustang Shelby GT500 Grabber Lime",
     "brand": "Regional Exclusive Items",
@@ -4771,17 +4375,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/07/20240724075652566.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00272",
-    "product_name": "McLaren Senna \r\nCerulean Blue",
-    "brand": "McLaren",
-    "scale": "1:64",
-    "series": "REGULAR GIFT BOX",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/1601fb46-44e5-401c-af65-112443fa0f0f"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00272R",
@@ -4917,34 +4510,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/08/20240808060801703.JPG",
       "https://minigt.tsm-models.com/upload/picfile/2025/05/20250508175059838.JPG",
       "https://minigt.tsm-models.com/upload/picfile/2025/12/20251212045731351.JPG"
-    ],
-    "source": "official"
-  },
-  {
-    "item_number": "MGT00282",
-    "product_name": "Honda S2000 CR / Type S \r\nRio Yellow Pearl / New Indy Yellow Pearl",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7687b79b-24da-46c9-8cfb-b6c4702b3106"
-    ],
-    "source": "myminigt"
-  },
-  {
-    "item_number": "MGT00282R",
-    "product_name": "Honda S2000 Type S New Indy Yellow Pearl",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994117_574623.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994129_574444.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994139_574915.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994147_574227.JPG",
-      "https://minigt.tsm-models.com/upload/picfile/2024/09/20240908182708527.JPG",
-      "https://minigt.tsm-models.com/upload/picfile/2024/11/20241128005714292.JPG",
-      "https://minigt.tsm-models.com/upload/picfile/2024/07/20240725074901387.JPG"
     ],
     "source": "official"
   },
@@ -5745,17 +5310,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00330",
-    "product_name": "Land Rover Defender 90 Pickup 2022 Chinese New Year Edition Celebrating the Year of Tiger",
-    "brand": "Land Rover",
-    "scale": "1:64",
-    "series": "REGULAR GIFT BOX",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/b2c8d66a-d244-4627-9fb6-b63b61f96a45"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00330R",
     "product_name": "Land Rover Defender 90 Pickup - 2022 Chinese New Year Edition",
     "brand": "Land Rover",
@@ -5768,34 +5322,6 @@
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1637744236_382123.JPG",
       "https://minigt.tsm-models.com/upload/picfile/2025/12/20251208181113740.JPG",
       "https://minigt.tsm-models.com/upload/picfile/2026/06/20260601001842737.JPG"
-    ],
-    "source": "official"
-  },
-  {
-    "item_number": "MGT00331",
-    "product_name": "Mazda Miata MX-5 (NA) Mariner Blue Headlight Up",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e05c0dd3-4a15-469d-be07-2136f7ab9008"
-    ],
-    "source": "myminigt"
-  },
-  {
-    "item_number": "MGT00331L",
-    "product_name": "Mazda Miata MX-5 (NA) Mariner Blue     Headlight Up  LHD",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1649481565_366782.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635186004_366398.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635186010_366762.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635186050_366433.JPG",
-      "https://minigt.tsm-models.com/upload/picfile/2025/08/20250823033115567.jpg",
-      "https://minigt.tsm-models.com/upload/picfile/2026/05/20260531213421328.JPG",
-      "https://minigt.tsm-models.com/upload/picfile/2024/09/20240930091443597.JPG"
     ],
     "source": "official"
   },
@@ -6232,17 +5758,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/09/20240908185206543.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00357",
-    "product_name": "Nissan GT-R NISMO GT3 \r\n2018 PRESENTATION \r\nMatte Black",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "EXPO 1",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/ba7c9b1e-74ee-4b11-9535-2aac9eba68d1"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00357L",
@@ -6698,17 +6213,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00384",
-    "product_name": "LB-Silhouette WORKS GT Nissan 35GT-RR ver.1\r\nWonderful Indonesia",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/97fa1882-c4eb-4b05-9cf8-7c997f96f203"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00384R",
     "product_name": "LB-Silhouette WORKS GT NISSAN 35GT-RR Ver.1 Wonderful Indonesia",
     "brand": "LB Works",
@@ -6962,17 +6466,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00399",
-    "product_name": "Porsche Taycan Turbo S \r\nNaRaYa",
-    "brand": "Porsche",
-    "scale": "1:64",
-    "series": "REGULAR GIFT BOX",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/b3fa8460-4ea4-494b-a5e6-60847a6af3f1"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00399R",
     "product_name": "Porsche Taycan Turbo S NaRaYa",
     "brand": "Porsche",
@@ -6988,17 +6481,6 @@
       "https://minigt.tsm-models.com/upload/picfile/2023/09/20230913001445073.JPG"
     ],
     "source": "official"
-  },
-  {
-    "item_number": "MGT00400",
-    "product_name": "Western Star 49X \r\nw/ 40 Ft Container\r\n\"Dia De Los Muertos\"",
-    "brand": "Western Star",
-    "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/f05b6503-96ff-488e-8716-91a3639876f9"
-    ],
-    "source": "myminigt"
   },
   {
     "item_number": "MGT00400L",
@@ -7748,17 +7230,6 @@
     "source": "official"
   },
   {
-    "item_number": "MGT00446",
-    "product_name": "Nissan Skyline GT-R (R34) V-Spec II \r\nMINI GT Digital Camouflage Purple",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "LIMITED EDITION",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/460d62ed-deaf-4b44-becd-dfafed160f36"
-    ],
-    "source": "myminigt"
-  },
-  {
     "item_number": "MGT00446R",
     "product_name": "Nissan Skyline GT-R (R34) V-Spec II  MINI GT Digital Camouflage Purple",
     "brand": "Nissan",
@@ -8390,7 +7861,7 @@
     "product_name": "Honda NSX GT3 EVO22 #55 ARTA 2022 Super GT Series",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "images": [
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1684561714_539312.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1667423565_539133.JPG",
@@ -9291,7 +8762,7 @@
     "product_name": "Honda NSX GT3 EVO22 #18 TEAM UPGARAGE 2022 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/9f69bf07495e7e8ae772e63e25337ff320241127181928472.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1680629801_617987.JPG",
@@ -11684,7 +11155,7 @@
     "product_name": "Honda NSX GT3 EVO22 #18 \"UPGARAGE NSX GT3\" TEAM UPGARAGE 2023 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/f82a10924c247e63568b8446e937a09420241127181719542.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/f0262be3030c0de36d4f1845ab74d0ef20240429195018394.JPG",
@@ -12988,7 +12459,7 @@
     "product_name": "Lamborghini Huracán GT3 EVO2 #83 Iron Dames  2023 IMSA  Daytona 24 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/356cfa6dbee6ac7e3ba564bc79d1c09e20240908040847467.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/9ee3620e069207019cbafb468de10bf920240514175628826.JPG",
@@ -13669,7 +13140,7 @@
     "product_name": "Lamborghini Huracán GT3 EVO2 #63 Iron Lynx  IMSA 2023  Daytona 24 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/ebd601ff7f46bc971fce65f5d43d81bc20240908042743262.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/9ebfd993f87d199d9d505ce2bcea123920240724070402189.JPG",
@@ -13720,7 +13191,7 @@
     "product_name": "Lamborghini SC63 #63 Iron Lynx 2024 IMSA Sebring 12 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/912478ef92417ae073c0913d50ca12f220250427215316029.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/f1582b75e392b741dc12b690fb966ddf20240806002503769.JPG",
@@ -14242,7 +13713,7 @@
     "product_name": "Honda NSX-GT \"TYPE S\" GT500 #16 \"Red Bull MOTUL MUGEN NSX-GT \"  TEAM Red Bull MUGEN  2022 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/a0ad886259c7d37cb0fc4f8c07b04ec320250419193319011.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/1c332a8a2eb6522f2713f037cb0daf0a20241021202411265.JPG",
@@ -15069,7 +14540,7 @@
     "product_name": "Aston Martin DB5  “Goldfinger”",
     "brand": "Aston Martin",
     "scale": "1:64",
-    "series": "007 Movie Car",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/3d05be36c55d7e98f8875552e18aa06f20240810083252827.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/0ef0e4d735f22f07a9bf61394f12acdc20240810083252829.JPG",
@@ -15089,7 +14560,7 @@
     "product_name": "Aston Martin DB5 “Thunderball”",
     "brand": "Aston Martin",
     "scale": "1:64",
-    "series": "007 Movie Car",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/6c20075d0621e23260e44da050129df020240810082851687.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/a26143c67bb9471ef4baae179de6c23820240810082851690.JPG",
@@ -17443,7 +16914,7 @@
     "product_name": "Lamborghini Huracán GT3 EVO2 #78 Forte Racing 2024 IMSA Daytona 24 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/cd233f802390d13a813f816bb743026c20251212050142907.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/8e8e7006704a40e6b49f2a301e2ecea320250605084655108.JPG",
@@ -18474,7 +17945,7 @@
     "product_name": "Lamborghini Huracán GT3 EVO2 #45 No. 45 DEX Imaging  2024 IMSA Daytona 24 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/9bb8510e44ac36716751b4e32722c7af20260519182712085.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/90b2fea8215963d4a15ad90f557a7fc220251203054959639.JPG",
@@ -19112,7 +18583,7 @@
     "product_name": "Acura ARX-06 GTP #93 Acura Meyer Shank Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "Acura",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/36fc062f5e053feb686b157bb091924a20260420175223766.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/a9edb98a51ee9fa69d7804a4e844669d20260420175223769.JPG",
@@ -20169,7 +19640,7 @@
     "product_name": "BMW M4 GT3 EVO #1 Paul Miller Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "BMW",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/89a874bc4397bd4c2b2a9faa6e13770b20260513062136801.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/bf4dc47e56476e13456604c6f068919120260513062136805.JPG",
@@ -20265,22 +19736,6 @@
     "source": "myminigt"
   },
   {
-    "item_number": "MGT01251BL",
-    "product_name": "Mazda RX-7 VeilSide Fortune   \"The Fast and the Furious: Tokyo Drift\"  Han Seoul-Oh",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/picfile_list/115ef85ff9c6b235777531493292918c20260531214704918.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/8c35425b80f3faa7e3b359c0cfe1ed2b20260531214704921.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/a09c265fbb938e2e7d3d65557999a1e620260531214704923.jpg",
-      "https://minigt.tsm-models.com/upload/picfile/2025/05/20250513021901474.JPG",
-      "https://minigt.tsm-models.com/upload/picfile/2025/05/20250510210351792.jpg",
-      "https://minigt.tsm-models.com/upload/picfile/2024/09/20240908041839652.jpg"
-    ],
-    "source": "official"
-  },
-  {
     "item_number": "MGT01251BL2",
     "product_name": "Mazda RX-7 VeilSide Fortune   \"The Fast and the Furious: Tokyo Drift\"  Han Seoul-Oh",
     "brand": "Mazda",
@@ -20294,6 +19749,22 @@
       "https://minigt.tsm-models.com/upload/picfile/2024/09/20240908041839652.jpg",
       "https://minigt.tsm-models.com/upload/picfile/2026/01/20260119011806045.JPG",
       "https://minigt.tsm-models.com/upload/picfile/2025/11/20251122084755217.JPG"
+    ],
+    "source": "official"
+  },
+  {
+    "item_number": "MGT01251BL",
+    "product_name": "Mazda RX-7 VeilSide Fortune   \"The Fast and the Furious: Tokyo Drift\"  Han Seoul-Oh",
+    "brand": "Mazda",
+    "scale": "1:64",
+    "series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/115ef85ff9c6b235777531493292918c20260531214704918.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/8c35425b80f3faa7e3b359c0cfe1ed2b20260531214704921.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/a09c265fbb938e2e7d3d65557999a1e620260531214704923.jpg",
+      "https://minigt.tsm-models.com/upload/picfile/2025/05/20250513021901474.JPG",
+      "https://minigt.tsm-models.com/upload/picfile/2025/05/20250510210351792.jpg",
+      "https://minigt.tsm-models.com/upload/picfile/2024/09/20240908041839652.jpg"
     ],
     "source": "official"
   },
@@ -21184,7 +20655,7 @@
     "product_name": "BMW M Hybrid V8 GTP #24 BMW M Team RLL 2024 IMSA Daytona 24 Hrs",
     "brand": "BMW",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/d860cc3241f440973e668d0c48fcd1b120260630041445639.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/0a4fe7f8af4dbda51d68ad946b45da8920260630041445642.JPG",
@@ -21200,7 +20671,7 @@
     "product_name": "Lamborghini Huracan GT3 EVO2 #9 Pfaff Motorsports 2025 IMSA WeatherTech GTD Pro",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/e2b9fef42441bd3fc48dc1814a332abb20260630041707662.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/f6950785c43ea7b038a7db60c2c8f48220260630041707665.JPG",
@@ -21291,7 +20762,7 @@
     "product_name": "Aston Martin Vantage GT3 Evo #44 Magnus Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "Aston Martin",
     "scale": "1:64",
-    "series": "IMSA",
+    "series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/4b6893235dc390e993a47f5f27836fa520260703235021304.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/eda7853809e9c4838ab58e87cd51886220260703235021306.JPG",
@@ -28542,9 +28013,9 @@
   {
     "item_number": "EUNOSROADSTERMARINERBLUEHEADLIGHTUP",
     "product_name": "RHD",
-    "brand": "Mazda",
+    "brand": "MINI GT",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "2022 Models",
     "images": [],
     "source": "fandom"
   },
