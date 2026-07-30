@@ -49,38 +49,17 @@
       <button class="clear-btn" id="clearSearch" onclick="clearSearch()" title="Clear search">×</button>
     </div>
 
-    <button class="btn-reset" onclick="resetFilters()">Reset</button>
-    
-    <label class="toggle-cancelled" title="Show cancelled or unlisted models">
-      <input type="checkbox" id="showCancelledToggle" onchange="applyFilters()">
-      <span>Show Cancelled</span>
-    </label>
-    
-    <span class="filter-result-count" id="resultCount"></span>
-  </div>
-
-  <div class="filter-facets-grid">
     <select id="manufacturerSelect" class="filter-select" onchange="applyFilters()">
       <option value="">All Manufacturers</option>
     </select>
-    <select id="categorySelect" class="filter-select" onchange="applyFilters()">
-      <option value="">All Categories</option>
-    </select>
-    <select id="collaborationSelect" class="filter-select" onchange="applyFilters()">
-      <option value="">All Collaborations</option>
-    </select>
-    <select id="themeSelect" class="filter-select" onchange="applyFilters()">
-      <option value="">All Themes</option>
-    </select>
-    <select id="bodyStyleSelect" class="filter-select" onchange="applyFilters()">
-      <option value="">All Body Styles</option>
-    </select>
-    <select id="regionSelect" class="filter-select" onchange="applyFilters()">
-      <option value="">All Regions</option>
-    </select>
+    
     <select id="yearSelect" class="filter-select" onchange="applyFilters()">
       <option value="">All Years</option>
     </select>
+
+    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    
+    <span class="filter-result-count" id="resultCount"></span>
   </div>
 </div>
 
@@ -226,26 +205,14 @@ function resetFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('clearSearch').style.display = 'none';
   document.getElementById('manufacturerSelect').value = '';
-  document.getElementById('categorySelect').value = '';
-  document.getElementById('collaborationSelect').value = '';
-  document.getElementById('themeSelect').value = '';
-  document.getElementById('bodyStyleSelect').value = '';
-  document.getElementById('regionSelect').value = '';
   document.getElementById('yearSelect').value = '';
-  document.getElementById('showCancelledToggle').checked = false;
   applyFilters();
 }
 
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim();
   const manufacturer = document.getElementById('manufacturerSelect').value;
-  const category = document.getElementById('categorySelect').value;
-  const collaboration = document.getElementById('collaborationSelect').value;
-  const theme = document.getElementById('themeSelect').value;
-  const bodyStyle = document.getElementById('bodyStyleSelect').value;
-  const region = document.getElementById('regionSelect').value;
   const year = document.getElementById('yearSelect').value;
-  const showCancelled = document.getElementById('showCancelledToggle').checked;
 
   FILTERED = ALL_PRODUCTS.filter(p => {
     const matchSearch = tokenMatch(query, [p.product_name || '', p.item_number || '']);
@@ -259,17 +226,9 @@ function applyFilters() {
       }
     }
 
-    const matchCategory = !category || (p.category || '') === category;
-    const matchCollab = !collaboration || (p.collaboration || '') === collaboration;
-    const matchTheme = !theme || (p.theme || '') === theme;
-    const matchBodyStyle = !bodyStyle || (p.body_style || '') === bodyStyle;
-    const matchRegion = !region || (p.region || '') === region;
     const matchYear = !year || (p.year || '') === year;
 
-    const isCancelled = p.is_cancelled || p.category === 'Unlisted/Cancelled';
-    const matchCancelled = showCancelled || !isCancelled;
-
-    return matchSearch && matchManufacturer && matchCategory && matchCollab && matchTheme && matchBodyStyle && matchRegion && matchYear && matchCancelled;
+    return matchSearch && matchManufacturer && matchYear;
   });
 
   // Update count display
@@ -278,9 +237,7 @@ function applyFilters() {
   document.getElementById('catalogCount').textContent =
     shown === total ? `${total.toLocaleString()} models` : `${shown.toLocaleString()} / ${total.toLocaleString()} models`;
   
-  const hasActiveFilter = query || manufacturer || category || collaboration || theme || bodyStyle || region || year || !showCancelled;
-  document.getElementById('resultCount').textContent =
-    hasActiveFilter ? `${shown.toLocaleString()} result${shown !== 1 ? 's' : ''}` : '';
+  document.getElementById('resultCount').textContent = `${shown.toLocaleString()} result${shown !== 1 ? 's' : ''}`;
 
   renderIndex = 0;
   document.getElementById('productGrid').innerHTML = '';
@@ -452,11 +409,6 @@ function updateSelectionBar() {
 // ══════════════════════════════════════════════════════════════════
 function populateFilterFacets() {
   const manufacturers = [...new Set(ALL_PRODUCTS.flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
-  const categories = [...new Set(ALL_PRODUCTS.map(p => p.category).filter(Boolean))].sort();
-  const collaborations = [...new Set(ALL_PRODUCTS.map(p => p.collaboration).filter(Boolean))].sort();
-  const themes = [...new Set(ALL_PRODUCTS.map(p => p.theme).filter(Boolean))].sort();
-  const bodyStyles = [...new Set(ALL_PRODUCTS.map(p => p.body_style).filter(Boolean))].sort();
-  const regions = [...new Set(ALL_PRODUCTS.map(p => p.region).filter(Boolean))].sort();
   const years = [...new Set(ALL_PRODUCTS.map(p => p.year).filter(Boolean))].sort((a, b) => b - a);
 
   function fillSelect(id, list, placeholder) {
@@ -472,11 +424,6 @@ function populateFilterFacets() {
   }
 
   fillSelect('manufacturerSelect', manufacturers, 'All Manufacturers');
-  fillSelect('categorySelect', categories, 'All Categories');
-  fillSelect('collaborationSelect', collaborations, 'All Collaborations');
-  fillSelect('themeSelect', themes, 'All Themes');
-  fillSelect('bodyStyleSelect', bodyStyles, 'All Body Styles');
-  fillSelect('regionSelect', regions, 'All Regions');
   fillSelect('yearSelect', years, 'All Years');
 
   const mSelect = document.getElementById('modalBrandSel');

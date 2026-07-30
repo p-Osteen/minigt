@@ -242,20 +242,12 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 
                 # Apply deterministic classification rules
-                from database.classify import (
-                    get_manufacturers, get_category, get_collaboration,
-                    get_theme, get_body_style, get_region
-                )
+                from database.classify import get_manufacturers
                 
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 
                 d["manufacturer"] = m_primary
                 d["set_manufacturers"] = m_list
-                d["category"] = get_category(p.item_number, p.brand, p.product_name, p.series or "Regular", bool(p.is_cancelled))
-                d["collaboration"] = get_collaboration(p.product_name, p.brand, p.series or "Regular", d["category"])
-                d["theme"] = get_theme(p.product_name, p.brand, p.series or "Regular")
-                d["region"] = get_region(p.item_number, p.product_name, p.brand, p.series or "Regular")
-                d["body_style"] = get_body_style(p.product_name, d["category"])
                 d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
                 
                 data.append(d)
