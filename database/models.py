@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Index
+from sqlalchemy import Column, String, Text, Index, Integer, Boolean
 from sqlalchemy.orm import declarative_base
 import json
 from typing import List
@@ -18,6 +18,11 @@ class Product(Base):
     series = Column(String, nullable=True, index=True)
     images = Column(Text, nullable=True)  # JSON-encoded array of local paths, e.g., ["images/Brand/MGT00123_0.jpg"]
     source = Column(String, nullable=True, index=True)
+    
+    release_year = Column(Integer, nullable=True, index=True)
+    release_year_confidence = Column(String, nullable=True)
+    status = Column(String, nullable=True)
+    is_cancelled = Column(Boolean, default=False, index=True)
 
     # Explicit indexes for combined queries and fast searches
     __table_args__ = (
@@ -36,7 +41,11 @@ class Product(Base):
             "scale": self.scale,
             "series": self.series or "Regular",
             "images": self.image_list,
-            "source": self.source
+            "source": self.source,
+            "release_year": self.release_year,
+            "release_year_confidence": self.release_year_confidence,
+            "status": self.status or "Released",
+            "is_cancelled": bool(self.is_cancelled)
         }
 
     @property

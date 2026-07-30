@@ -6,7 +6,7 @@ import logging
 import sys
 from contextlib import contextmanager
 from typing import Generator
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker, Session
 from database.models import Base, Product
 
@@ -38,8 +38,23 @@ logger = logging.getLogger("db_manager")
 
 
 def init_db() -> None:
-    """Creates database tables and indexes if they do not exist."""
+    """Creates database tables and indexes if they do not exist, migrating columns if needed."""
     try:
+        inspector = inspect(engine)
+        if "products" in inspector.get_table_names():
+            existing_cols = [c["name"] for c in inspector.get_columns("products")]
+            cols_to_add = {
+                "release_year": "INTEGER",
+                "release_year_confidence": "VARCHAR",
+                "status": "VARCHAR",
+                "is_cancelled": "BOOLEAN DEFAULT 0"
+            }
+            for col_name, col_type in cols_to_add.items():
+                if col_name not in existing_cols:
+                    logger.info(f"Migrating products table: adding {col_name} column...")
+                    with engine.begin() as conn:
+                        conn.execute(text(f"ALTER TABLE products ADD COLUMN {col_name} {col_type}"))
+
         Base.metadata.create_all(bind=engine)
         logger.info("SQLite database tables and indexes initialized.")
     except Exception as e:
@@ -70,9 +85,15 @@ def deduplicate_database() -> None:
     2. myminigt
     3. fandom
     Deletes lower-priority duplicates from the SQLite database as-is, without merging images or metadata.
+    For cancelled/discontinued models:
+      - Do NOT use images from the official MINI GT website.
+      - Prefer images from myminigt.com, and fallback to fandom.
+      - If none available, clear images.
     """
     logger.info("Starting database deduplication process...")
     try:
+        from database.classify import is_cancelled_product
+
         with get_db_session() as session:
             products = session.query(Product).all()
             if not products:
@@ -96,24 +117,61 @@ def deduplicate_database() -> None:
             prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
 
             for base, group_list in groups.items():
-                if len(group_list) <= 1:
-                    continue
+                # Determine if any record in the group indicates the product is cancelled
+                has_cancelled = any(is_cancelled_product(p.product_name, p.series, p.status) for p in group_list)
 
-                # Sort by source priority (official first, then myminigt, then fandom)
-                # If priority is equal, prefer standard suffix-free item number (shorter length)
+                # Sort by source priority
                 group_list.sort(key=lambda p: (prio_map.get((p.source or "").lower(), 9), len(p.item_number)))
                 
                 winner = group_list[0]
                 losers = group_list[1:]
 
-                logger.info(
-                    f"Deduplicating {base}: Keeping {winner.item_number} (Source: {winner.source}), "
-                    f"discarding {len(losers)} duplicate records."
-                )
+                # Copy release year and confidence if winner has none
+                if winner.release_year is None:
+                    year_record = next((p for p in group_list if p.release_year is not None), None)
+                    if year_record:
+                        winner.release_year = year_record.release_year
+                        winner.release_year_confidence = year_record.release_year_confidence
 
-                # Delete duplicate records without merging images or metadata
-                for loser in losers:
-                    session.delete(loser)
+                # Copy status if winner has generic but duplicate has specific
+                specific_status = next((p.status for p in group_list if p.status and p.status.lower() not in ("released", "none")), None)
+                if specific_status and (not winner.status or winner.status.lower() == "released"):
+                    winner.status = specific_status
+
+                # Update winner is_cancelled flag if anyone in the group was cancelled
+                if has_cancelled:
+                    winner.is_cancelled = True
+                    if not winner.status or winner.status.lower() == "released":
+                        winner.status = "Cancelled"
+
+                # Apply special cancelled model image rules
+                if winner.is_cancelled:
+                    new_images = []
+                    img_src = None
+                    
+                    # 1. Prefer myminigt
+                    myminigt_p = next((p for p in group_list if (p.source or "").lower() == "myminigt"), None)
+                    if myminigt_p and myminigt_p.image_list:
+                        new_images = myminigt_p.image_list
+                        img_src = "myminigt"
+                    else:
+                        # 2. Fall back to fandom
+                        fandom_p = next((p for p in group_list if (p.source or "").lower() == "fandom"), None)
+                        if fandom_p and fandom_p.image_list:
+                            new_images = fandom_p.image_list
+                            img_src = "fandom"
+                            
+                    winner.set_images(new_images)
+                    logger.info(f"Set cancelled/discontinued model {winner.item_number} images from {img_src or 'None'} (Official images ignored)")
+
+                if len(group_list) > 1:
+                    logger.info(
+                        f"Deduplicating {base}: Keeping {winner.item_number} (Source: {winner.source}), "
+                        f"discarding {len(losers)} duplicate records."
+                    )
+                    # Delete duplicate records without merging images or metadata
+                    for loser in losers:
+                        session.delete(loser)
 
             session.commit()
         logger.info("Database deduplication complete.")
@@ -122,7 +180,7 @@ def deduplicate_database() -> None:
 
 
 def sync_to_json() -> None:
-    """Dumps SQLite records to products.json with specialized OEM normalization and sorted by custom groups."""
+    """Dumps SQLite records to products.json with preserved OEM item numbers and sorted by custom groups."""
     try:
         deduplicate_database()
         with get_db_session() as session:
@@ -139,16 +197,6 @@ def sync_to_json() -> None:
                     return True
                 return False
 
-            def normalize_oem(item: str) -> str:
-                # Extracts year prefix and item number suffix around "OEM"
-                match = re.match(r"^(\d+)?OEM([A-Z0-9]+)?$", item, re.IGNORECASE)
-                if not match:
-                    return item.upper()
-                yy, nn = match.groups()
-                yy_str = yy if yy else "00"
-                nn_str = nn if nn else ""
-                return f"OEM-{yy_str}-{nn_str}"
-
             def sort_key(p):
                 item = (p.item_number or "").strip()
                 
@@ -156,14 +204,17 @@ def sync_to_json() -> None:
                 if is_abnormal(item):
                     return (5, item, 0, "")
                     
-                # Group 3: OEM models (normalized and sorted numerically)
+                # Group 3: OEM models (sorted numerically on the fly, keeping original text)
                 if "OEM" in item.upper():
-                    norm = normalize_oem(item)
-                    parts = norm.split("-")
-                    yy = int(parts[1]) if parts[1].isdigit() else 0
-                    nn_str = parts[2]
-                    nn_num = int(nn_str) if nn_str.isdigit() else 999999
-                    return (3, yy, nn_num, nn_str)
+                    match = re.match(r"^(\d+)?OEM([A-Z0-9]+)?$", item, re.IGNORECASE)
+                    if match:
+                        yy, nn = match.groups()
+                        yy_num = int(yy) if yy and yy.isdigit() else 0
+                        nn_str = nn if nn else ""
+                        nn_num = int(nn_str) if nn_str and nn_str.isdigit() else 999999
+                        return (3, yy_num, nn_num, nn_str)
+                    else:
+                        return (3, 0, 999999, item)
                     
                 # Group 1 & 2: Standard MGT and KHMG models
                 match = re.match(r"^([a-zA-Z]+)(\d+)", item)
@@ -185,12 +236,28 @@ def sync_to_json() -> None:
 
             products.sort(key=sort_key)
             
-            # Export data, normalizing ONLY OEM item numbers for display and sorting
+            # Export data, classifying and preserving OEM numbers
             data = []
             for p in products:
                 d = p.to_dict()
-                if "OEM" in d["item_number"].upper():
-                    d["item_number"] = normalize_oem(d["item_number"])
+                
+                # Apply deterministic classification rules
+                from database.classify import (
+                    get_manufacturers, get_category, get_collaboration,
+                    get_theme, get_body_style, get_region
+                )
+                
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                
+                d["manufacturer"] = m_primary
+                d["set_manufacturers"] = m_list
+                d["category"] = get_category(p.item_number, p.brand, p.product_name, p.series or "Regular", bool(p.is_cancelled))
+                d["collaboration"] = get_collaboration(p.product_name, p.brand, p.series or "Regular", d["category"])
+                d["theme"] = get_theme(p.product_name, p.brand, p.series or "Regular")
+                d["region"] = get_region(p.item_number, p.product_name, p.brand, p.series or "Regular")
+                d["body_style"] = get_body_style(p.product_name, d["category"])
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                
                 data.append(d)
 
         with open(JSON_PATH, "w", encoding="utf-8") as f:

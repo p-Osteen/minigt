@@ -137,7 +137,9 @@ class MINI_GTCrawler:
     def fetch_url(self, url: str, use_cache: bool = True) -> Optional[str]:
         """Fetches page content, reading from local HTML cache when available."""
         url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
-        cache_file = os.path.join("cache", "html", f"{url_hash}.html")
+        # Ensure cache path is absolute to the project directory to avoid Cwd shifting issues
+        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cache_file = os.path.join(root_dir, "cache", "html", f"{url_hash}.html")
 
         # Serve from cache — NO rate-limit delay needed
         if use_cache and os.path.exists(cache_file):
@@ -288,6 +290,9 @@ class MINI_GTCrawler:
         series: str,
         img_urls: List[str],
         source: str = "",
+        release_year: Optional[int] = None,
+        release_year_confidence: Optional[str] = None,
+        status: Optional[str] = None
     ) -> None:
         """
         Saves product to DB, merging if already exists.
@@ -358,12 +363,29 @@ class MINI_GTCrawler:
                         existing.scale = scale
                         existing.source = source
                         existing.set_images(clean_img_urls)
+                        
+                        if release_year is not None:
+                            existing.release_year = release_year
+                            existing.release_year_confidence = release_year_confidence
+                        if status is not None:
+                            existing.status = status
                         logger.debug(f"Overwrote product {clean_num} with higher-priority source data")
                     elif incoming_prio == existing_prio:
                         # Tie-breaker: keep the longer product name, do not merge images
                         if len(product_name) > len(existing.product_name):
                             existing.product_name = product_name
+                        
+                        if existing.release_year is None:
+                            existing.release_year = release_year
+                            existing.release_year_confidence = release_year_confidence
+                        if existing.status is None:
+                            existing.status = status
                     else:
+                        if existing.release_year is None and release_year is not None:
+                            existing.release_year = release_year
+                            existing.release_year_confidence = release_year_confidence
+                        if (not existing.status or existing.status.lower() == "released") and status and status.lower() not in ("released", "none"):
+                            existing.status = status
                         logger.debug(f"Ignored lower-priority source data for product {clean_num}")
                 else:
                     new_prod = Product(
@@ -373,6 +395,9 @@ class MINI_GTCrawler:
                         scale=scale,
                         series=series,
                         source=source,
+                        release_year=release_year,
+                        release_year_confidence=release_year_confidence,
+                        status=status,
                     )
                     new_prod.set_images(clean_img_urls)
                     session.add(new_prod)
@@ -396,7 +421,7 @@ class MINI_GTCrawler:
         item_number = ""
         scale = "1:64"
         marque = brand_page_name
-
+        status = "Released"
         info_div = soup.find(class_=re.compile(r"info[-_]list", re.I))
         if info_div:
             for li in info_div.find_all("li"):
@@ -408,6 +433,8 @@ class MINI_GTCrawler:
                     scale = txt.replace("Scale", "").replace("scale", "").strip()
                 elif "marque" in tl:
                     marque = txt.replace("Marque", "").replace("marque", "").strip()
+                elif "status" in tl:
+                    status = txt.replace("Status", "").replace("status", "").strip()
 
         if not item_number:
             return
@@ -420,6 +447,14 @@ class MINI_GTCrawler:
         }
         if brand_page_name in special_brands and brand_page_name != marque:
             series = brand_page_name
+
+        # Parse inferred year from product name
+        release_year = None
+        release_year_confidence = None
+        ym = re.search(r"\b(20\d{2})\b", product_name)
+        if ym:
+            release_year = int(ym.group(1))
+            release_year_confidence = "inferred"
 
         # Image URLs — collect all product image src attributes
         # Real URL patterns observed on live site:
@@ -484,7 +519,11 @@ class MINI_GTCrawler:
                     img_urls.append(url)
                     seen_img.add(url)
 
-        self._save_or_merge_product(item_number, product_name, marque, scale, series, img_urls, source="official")
+        self._save_or_merge_product(
+            item_number, product_name, marque, scale, series, img_urls,
+            source="official", release_year=release_year,
+            release_year_confidence=release_year_confidence, status=status
+        )
 
     def _parse_official_list(
         self, html: str, brand_name: str, b_id: str, page: int
@@ -530,7 +569,7 @@ class MINI_GTCrawler:
         return new_tasks
 
     def _parse_fandom_page(self, json_str: str, page_name: str) -> None:
-        """Parses product tables from a Fandom Wiki article."""
+        """Parses product tables and plain lists from a Fandom Wiki article."""
         try:
             res_data = json.loads(json_str)
             if "parse" not in res_data or "text" not in res_data["parse"]:
@@ -541,6 +580,16 @@ class MINI_GTCrawler:
             logger.error(f"Fandom JSON parse error for {page_name}: {e}")
             return
 
+        parsed_codes = set()
+        status = "Cancelled" if page_name == "Cancelled_Models" else None
+        release_year = None
+        release_year_confidence = None
+        ym = re.search(r"\b(20\d{2})\b", page_name)
+        if ym:
+            release_year = int(ym.group(1))
+            release_year_confidence = "confirmed"
+
+        # 1. Parse tables
         for table in soup.find_all("table"):
             headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
             code_idx = name_idx = brand_idx = photo_idx = -1
@@ -588,15 +637,57 @@ class MINI_GTCrawler:
                                 img_url = img_url.split("/revision/latest")[0]
                             img_urls.append(img_url)
 
-                series = "Regular"
-                if "model" in page_name.lower():
-                    series = page_name.replace("_", " ")
-                elif "house" in page_name.lower():
-                    series = "Kaido House"
-                elif page_name in {"Bentley_Shop_Exclusives", "Cancelled_Models", "Accessories"}:
-                    series = page_name.replace("_", " ")
+                clean_num = re.sub(r"[^a-zA-Z0-9]", "", item_number).upper()
+                parsed_codes.add(clean_num)
 
-                self._save_or_merge_product(item_number, product_name, brand, "1:64", series, img_urls, source="fandom")
+                self._save_or_merge_product(
+                    item_number, product_name, brand, "1:64", "Regular", img_urls,
+                    source="fandom", release_year=release_year,
+                    release_year_confidence=release_year_confidence, status=status
+                )
+
+        # 2. Parse plain list items <li> and paragraphs <p>
+        item_pattern = re.compile(
+            r"\b(MGT[0-9]{5}[A-Z]*|MGTAC[0-9]+|MGTS[0-9]+|KHMG[0-9]{3}|K[0-9]+|[0-9]{2}OEM[0-9]{2}|AC[0-9]+)\b",
+            re.I
+        )
+        for tag in soup.find_all(["li", "p"]):
+            txt = tag.get_text(" ", strip=True)
+            parts = re.split(r"[-–—:]", txt, maxsplit=1)
+            if len(parts) == 2:
+                code_candidate = parts[0].strip()
+                name_candidate = parts[1].strip()
+                if item_pattern.match(code_candidate) and len(name_candidate) > 3:
+                    clean_num = re.sub(r"[^a-zA-Z0-9]", "", code_candidate).upper()
+                    if clean_num not in parsed_codes:
+                        parsed_codes.add(clean_num)
+                        
+                        # Try to find an adjacent image
+                        img_urls = []
+                        img_tag = tag.find("img")
+                        if not img_tag:
+                            nxt = tag.next_sibling
+                            if nxt and nxt.name in ("p", "div", "span"):
+                                img_tag = nxt.find("img")
+                        if img_tag:
+                            img_url = img_tag.get("data-src") or img_tag.get("src", "")
+                            if img_url and "data:image" not in img_url:
+                                if "/revision/latest" in img_url:
+                                    img_url = img_url.split("/revision/latest")[0]
+                                img_urls.append(img_url)
+                        
+                        brand = "MINI GT"
+                        if page_name not in {
+                            "2018_Models", "2019_Models", "2020_Models",
+                            "2021_Models", "2022_Models", "2023_Models", "Full_Collection",
+                        }:
+                            brand = page_name.replace("_", " ")
+
+                        self._save_or_merge_product(
+                            code_candidate, name_candidate, brand, "1:64", "Regular", img_urls,
+                            source="fandom", release_year=release_year,
+                            release_year_confidence=release_year_confidence, status=status
+                        )
 
     def _parse_myminigt_detail(self, html: str, detail_url: str) -> None:
         """Parses a model detail page from myminigt.com via JSON-LD schema."""
@@ -649,7 +740,29 @@ class MINI_GTCrawler:
             img_url = product_node.get("image", "")
             img_urls = [img_url] if img_url else []
 
-            self._save_or_merge_product(item_number, product_name, brand, "1:64", series, img_urls, source="myminigt")
+            release_year = None
+            release_year_confidence = None
+            release_date = product_node.get("releaseDate")
+            if release_date:
+                ym = re.match(r"^(\d{4})", str(release_date))
+                if ym:
+                    release_year = int(ym.group(1))
+                    release_year_confidence = "confirmed"
+
+            # Parse status from description when available
+            description = product_node.get("description", "").lower()
+            if "pre order" in description or "pre-order" in description:
+                status = "Pre-Order"
+            elif "cancelled" in description or "discontinued" in description:
+                status = "Cancelled"
+            else:
+                status = "Released"
+
+            self._save_or_merge_product(
+                item_number, product_name, brand, "1:64", series, img_urls,
+                source="myminigt", release_year=release_year,
+                release_year_confidence=release_year_confidence, status=status
+            )
         except Exception as e:
             logger.error(f"MyMiniGT JSON-LD parsing failed for {detail_url}: {e}")
 

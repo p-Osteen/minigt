@@ -31,29 +31,57 @@
 </header>
 
 <!-- ══════════════════════════ FILTER BAR ════════════════════════ -->
-<div class="filter-bar" id="filterBar">
-  <div class="search-wrap">
-    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input
-      type="text"
-      id="searchInput"
-      class="search-input"
-      placeholder="Search by name, item number…"
-      oninput="handleSearch()"
-      autocomplete="off"
-      spellcheck="false"
-    >
-    <button class="clear-btn" id="clearSearch" onclick="clearSearch()" title="Clear search">×</button>
+<div class="filter-bar-container">
+  <div class="filter-bar" id="filterBar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        id="searchInput"
+        class="search-input"
+        placeholder="Search by name, item number…"
+        oninput="handleSearch()"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button class="clear-btn" id="clearSearch" onclick="clearSearch()" title="Clear search">×</button>
+    </div>
+
+    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    
+    <label class="toggle-cancelled" title="Show cancelled or unlisted models">
+      <input type="checkbox" id="showCancelledToggle" onchange="applyFilters()">
+      <span>Show Cancelled</span>
+    </label>
+    
+    <span class="filter-result-count" id="resultCount"></span>
   </div>
 
-  <select id="brandSelect" class="filter-select" onchange="applyFilters()">
-    <option value="">All Brands</option>
-  </select>
-
-  <button class="btn-reset" onclick="resetFilters()">Reset</button>
-  <span class="filter-result-count" id="resultCount"></span>
+  <div class="filter-facets-grid">
+    <select id="manufacturerSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Manufacturers</option>
+    </select>
+    <select id="categorySelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Categories</option>
+    </select>
+    <select id="collaborationSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Collaborations</option>
+    </select>
+    <select id="themeSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Themes</option>
+    </select>
+    <select id="bodyStyleSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Body Styles</option>
+    </select>
+    <select id="regionSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Regions</option>
+    </select>
+    <select id="yearSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Years</option>
+    </select>
+  </div>
 </div>
 
 <!-- ════════════════════════════ MAIN GRID ═══════════════════════ -->
@@ -164,7 +192,7 @@ async function loadProducts() {
     showEmpty('Could not load catalog', 'Make sure products.json exists. Run a scrape first.');
     return;
   }
-  populateBrandDropdown();
+  populateFilterFacets();
   applyFilters();
 }
 
@@ -174,10 +202,6 @@ async function loadProducts() {
 /**
  * Token search: splits query by whitespace, every token must appear
  * somewhere in the combined search fields (case-insensitive).
- *
- * Example: "Bentley GT3" → ["bentley","gt3"]
- *   matches "Bentley Continental GT3 Test Car" ✓
- *   does NOT match "Bentley Bentayga" ✗
  */
 function tokenMatch(query, fields) {
   if (!query) return true;
@@ -187,7 +211,6 @@ function tokenMatch(query, fields) {
 }
 
 function handleSearch() {
-  // Show/hide clear button
   const q = document.getElementById('searchInput').value;
   document.getElementById('clearSearch').style.display = q ? 'block' : 'none';
   applyFilters();
@@ -202,18 +225,51 @@ function clearSearch() {
 function resetFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('clearSearch').style.display = 'none';
-  document.getElementById('brandSelect').value = '';
+  document.getElementById('manufacturerSelect').value = '';
+  document.getElementById('categorySelect').value = '';
+  document.getElementById('collaborationSelect').value = '';
+  document.getElementById('themeSelect').value = '';
+  document.getElementById('bodyStyleSelect').value = '';
+  document.getElementById('regionSelect').value = '';
+  document.getElementById('yearSelect').value = '';
+  document.getElementById('showCancelledToggle').checked = false;
   applyFilters();
 }
 
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim();
-  const brand  = document.getElementById('brandSelect').value;
+  const manufacturer = document.getElementById('manufacturerSelect').value;
+  const category = document.getElementById('categorySelect').value;
+  const collaboration = document.getElementById('collaborationSelect').value;
+  const theme = document.getElementById('themeSelect').value;
+  const bodyStyle = document.getElementById('bodyStyleSelect').value;
+  const region = document.getElementById('regionSelect').value;
+  const year = document.getElementById('yearSelect').value;
+  const showCancelled = document.getElementById('showCancelledToggle').checked;
 
   FILTERED = ALL_PRODUCTS.filter(p => {
     const matchSearch = tokenMatch(query, [p.product_name || '', p.item_number || '']);
-    const matchBrand  = !brand || (p.brand || '').toLowerCase() === brand.toLowerCase();
-    return matchSearch && matchBrand;
+    
+    let matchManufacturer = true;
+    if (manufacturer) {
+      if (Array.isArray(p.set_manufacturers)) {
+        matchManufacturer = p.set_manufacturers.includes(manufacturer);
+      } else {
+        matchManufacturer = (p.manufacturer || '') === manufacturer;
+      }
+    }
+
+    const matchCategory = !category || (p.category || '') === category;
+    const matchCollab = !collaboration || (p.collaboration || '') === collaboration;
+    const matchTheme = !theme || (p.theme || '') === theme;
+    const matchBodyStyle = !bodyStyle || (p.body_style || '') === bodyStyle;
+    const matchRegion = !region || (p.region || '') === region;
+    const matchYear = !year || (p.year || '') === year;
+
+    const isCancelled = p.is_cancelled || p.category === 'Unlisted/Cancelled';
+    const matchCancelled = showCancelled || !isCancelled;
+
+    return matchSearch && matchManufacturer && matchCategory && matchCollab && matchTheme && matchBodyStyle && matchRegion && matchYear && matchCancelled;
   });
 
   // Update count display
@@ -221,8 +277,10 @@ function applyFilters() {
   const shown = FILTERED.length;
   document.getElementById('catalogCount').textContent =
     shown === total ? `${total.toLocaleString()} models` : `${shown.toLocaleString()} / ${total.toLocaleString()} models`;
+  
+  const hasActiveFilter = query || manufacturer || category || collaboration || theme || bodyStyle || region || year || !showCancelled;
   document.getElementById('resultCount').textContent =
-    (query || brand) ? `${shown.toLocaleString()} result${shown !== 1 ? 's' : ''}` : '';
+    hasActiveFilter ? `${shown.toLocaleString()} result${shown !== 1 ? 's' : ''}` : '';
 
   renderIndex = 0;
   document.getElementById('productGrid').innerHTML = '';
@@ -284,6 +342,8 @@ function buildCard(p) {
        <button class="cr-btn cr-next" onclick="crSlide('${escHtml(num)}',1,event)">&#8250;</button>`
     : '';
 
+  const yearChipHTML = p.year ? `<span class="card-year-chip">${escHtml(p.year)}</span>` : '';
+
   card.innerHTML = `
     <div class="card-media">
       <div class="cr-track-wrap" onclick="openLightbox('${escHtml(num)}', event)" style="cursor: zoom-in;">
@@ -291,6 +351,7 @@ function buildCard(p) {
       </div>
       ${arrowsHTML}
       ${dotsHTML}
+      ${yearChipHTML}
       <label class="card-chk" title="Select for printing">
         <input type="checkbox" id="chk-${escHtml(num)}"
           ${SELECTED.has(num) ? 'checked' : ''}
@@ -387,20 +448,47 @@ function updateSelectionBar() {
 }
 
 // ══════════════════════════════════════════════════════════════════
-//  Brand Dropdown
+//  Filter Facets Dropdowns
 // ══════════════════════════════════════════════════════════════════
-function populateBrandDropdown() {
-  const brands = [...new Set(ALL_PRODUCTS.map(p => p.brand).filter(Boolean))].sort();
-  const select  = document.getElementById('brandSelect');
+function populateFilterFacets() {
+  const manufacturers = [...new Set(ALL_PRODUCTS.flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
+  const categories = [...new Set(ALL_PRODUCTS.map(p => p.category).filter(Boolean))].sort();
+  const collaborations = [...new Set(ALL_PRODUCTS.map(p => p.collaboration).filter(Boolean))].sort();
+  const themes = [...new Set(ALL_PRODUCTS.map(p => p.theme).filter(Boolean))].sort();
+  const bodyStyles = [...new Set(ALL_PRODUCTS.map(p => p.body_style).filter(Boolean))].sort();
+  const regions = [...new Set(ALL_PRODUCTS.map(p => p.region).filter(Boolean))].sort();
+  const years = [...new Set(ALL_PRODUCTS.map(p => p.year).filter(Boolean))].sort((a, b) => b - a);
+
+  function fillSelect(id, list, placeholder) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = `<option value="">${placeholder}</option>`;
+    list.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      el.appendChild(opt);
+    });
+  }
+
+  fillSelect('manufacturerSelect', manufacturers, 'All Manufacturers');
+  fillSelect('categorySelect', categories, 'All Categories');
+  fillSelect('collaborationSelect', collaborations, 'All Collaborations');
+  fillSelect('themeSelect', themes, 'All Themes');
+  fillSelect('bodyStyleSelect', bodyStyles, 'All Body Styles');
+  fillSelect('regionSelect', regions, 'All Regions');
+  fillSelect('yearSelect', years, 'All Years');
+
   const mSelect = document.getElementById('modalBrandSel');
-  const frag = document.createDocumentFragment();
-  const mFrag = document.createDocumentFragment();
-  brands.forEach(b => {
-    const o  = document.createElement('option'); o.value = b; o.textContent = b; frag.appendChild(o);
-    const o2 = document.createElement('option'); o2.value = b; o2.textContent = b; mFrag.appendChild(o2);
-  });
-  select.appendChild(frag);
-  mSelect.appendChild(mFrag);
+  if (mSelect) {
+    mSelect.innerHTML = '<option value="">All Manufacturers</option>';
+    manufacturers.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      mSelect.appendChild(opt);
+    });
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -450,10 +538,15 @@ function _getPrintSet() {
   if (printScope === 'filtered') {
     return FILTERED;
   }
-  // All — optionally filtered by modal brand
+  // All — optionally filtered by modal manufacturer selection
   const mBrand = document.getElementById('modalBrandSel').value;
   return mBrand
-    ? ALL_PRODUCTS.filter(p => p.brand === mBrand)
+    ? ALL_PRODUCTS.filter(p => {
+        if (Array.isArray(p.set_manufacturers)) {
+          return p.set_manufacturers.includes(mBrand);
+        }
+        return p.manufacturer === mBrand;
+      })
     : ALL_PRODUCTS;
 }
 
