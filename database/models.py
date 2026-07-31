@@ -11,6 +11,7 @@ class Product(Base):
     """
     __tablename__ = "products"
 
+    toy_brand = Column(String, primary_key=True, index=True, default="MINI GT")
     item_number = Column(String, primary_key=True, index=True)
     product_name = Column(String, nullable=False, index=True)
     brand = Column(String, index=True, nullable=False)
@@ -35,6 +36,7 @@ class Product(Base):
         Converts Product instance to a dictionary for JSON output.
         """
         return {
+            "toy_brand": self.toy_brand,
             "item_number": self.item_number,
             "product_name": self.product_name,
             "brand": self.brand,

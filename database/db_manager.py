@@ -40,6 +40,10 @@ logger = logging.getLogger("db_manager")
 def init_db() -> None:
     """Creates database tables and indexes if they do not exist, migrating columns if needed."""
     try:
+        # Run composite key schema migration
+        from database.migration import run_migration
+        run_migration()
+
         inspector = inspect(engine)
         if "products" in inspector.get_table_names():
             existing_cols = [c["name"] for c in inspector.get_columns("products")]
@@ -95,7 +99,7 @@ def deduplicate_database() -> None:
         from database.classify import is_cancelled_product
 
         with get_db_session() as session:
-            products = session.query(Product).all()
+            products = session.query(Product).filter(Product.toy_brand == "MINI GT").all()
             if not products:
                 return
 
@@ -180,12 +184,38 @@ def deduplicate_database() -> None:
 
 
 def sync_to_json() -> None:
-    """Dumps SQLite records to products.json with preserved OEM item numbers and sorted by custom groups."""
+    """Dumps SQLite records to brand-specific products JSON files."""
     try:
         deduplicate_database()
+        
+        minigt_data = []
+        hotwheels_data = []
+        poprace_data = []
+        
         with get_db_session() as session:
             products = session.query(Product).all()
-
+            
+            # 1. Classification
+            from database.classify import get_manufacturers
+            
+            for p in products:
+                d = p.to_dict()
+                
+                # Apply classification rules
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                d["manufacturer"] = m_primary
+                d["set_manufacturers"] = m_list
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                
+                if p.toy_brand == "Hot Wheels":
+                    hotwheels_data.append(d)
+                elif p.toy_brand == "Pop Race":
+                    poprace_data.append(d)
+                else:
+                    minigt_data.append(d)
+            
+            # 2. Sorting
+            # MINI GT sorting (existing custom sort_key logic)
             def is_abnormal(item: str) -> bool:
                 if not item:
                     return True
@@ -197,14 +227,10 @@ def sync_to_json() -> None:
                     return True
                 return False
 
-            def sort_key(p):
-                item = (p.item_number or "").strip()
-                
-                # Group 5: Malformed or outlier entries (at the very bottom)
+            def minigt_sort_key(p_dict):
+                item = (p_dict["item_number"] or "").strip()
                 if is_abnormal(item):
                     return (5, item, 0, "")
-                    
-                # Group 3: OEM models (sorted numerically on the fly, keeping original text)
                 if "OEM" in item.upper():
                     match = re.match(r"^(\d+)?OEM([A-Z0-9]+)?$", item, re.IGNORECASE)
                     if match:
@@ -215,47 +241,54 @@ def sync_to_json() -> None:
                         return (3, yy_num, nn_num, nn_str)
                     else:
                         return (3, 0, 999999, item)
-                    
-                # Group 1 & 2: Standard MGT and KHMG models
                 match = re.match(r"^([a-zA-Z]+)(\d+)", item)
                 if not match:
-                    # Group 4: Remaining non-standard normal items without standard prefix+digits
                     return (4, item, 0, "")
-                    
                 prefix, num_str = match.groups()
                 num = int(num_str)
                 prefix_upper = prefix.upper()
-                
                 if prefix_upper == "MGT":
                     return (1, num, 0, "")
                 if prefix_upper == "KHMG":
                     return (2, num, 0, "")
-                    
-                # Group 4: Remaining normal models (sorted naturally by prefix, then number)
                 return (4, prefix_upper, num, "")
 
-            products.sort(key=sort_key)
+            minigt_data.sort(key=minigt_sort_key)
             
-            # Export data, classifying and preserving OEM numbers
-            data = []
-            for p in products:
-                d = p.to_dict()
+            # Hot Wheels sorting: release_year desc (nulls last), then series, then item_number
+            def hotwheels_sort_key(p_dict):
+                year_val = p_dict.get("release_year")
+                # Python doesn't support comparing None to int. We map None to 0 for desc sort.
+                year_num = year_val if year_val is not None else 0
+                return (-year_num, p_dict.get("series", "") or "", p_dict.get("item_number", "") or "")
                 
-                # Apply deterministic classification rules
-                from database.classify import get_manufacturers
+            hotwheels_data.sort(key=hotwheels_sort_key)
+            
+            # Pop Race sorting: release_year desc (nulls last), then item_number
+            def poprace_sort_key(p_dict):
+                year_val = p_dict.get("release_year")
+                year_num = year_val if year_val is not None else 0
+                return (-year_num, p_dict.get("item_number", "") or "")
                 
-                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
-                
-                d["manufacturer"] = m_primary
-                d["set_manufacturers"] = m_list
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
-                
-                data.append(d)
-
+            poprace_data.sort(key=poprace_sort_key)
+            
+        # Write files
+        minigt_path = os.path.join(DB_DIR, "products_minigt.json")
+        hotwheels_path = os.path.join(DB_DIR, "products_hotwheels.json")
+        poprace_path = os.path.join(DB_DIR, "products_poprace.json")
+        
+        with open(minigt_path, "w", encoding="utf-8") as f:
+            json.dump(minigt_data, f, indent=2, ensure_ascii=False)
+        with open(hotwheels_path, "w", encoding="utf-8") as f:
+            json.dump(hotwheels_data, f, indent=2, ensure_ascii=False)
+        with open(poprace_path, "w", encoding="utf-8") as f:
+            json.dump(poprace_data, f, indent=2, ensure_ascii=False)
+            
+        # Compatibility backup
         with open(JSON_PATH, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-
-        logger.info(f"Synchronized {len(data)} products to {JSON_PATH}")
+            json.dump(minigt_data, f, indent=2, ensure_ascii=False)
+            
+        logger.info(f"Synchronized brand JSONs: MINI GT ({len(minigt_data)}), Hot Wheels ({len(hotwheels_data)}), Pop Race ({len(poprace_data)})")
     except Exception as e:
         logger.error(f"Failed to synchronize database to JSON: {e}")
 
