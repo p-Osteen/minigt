@@ -33,3 +33,5 @@ reports/
 scratch_*
 raw_*
 test_image.jpg
+
+/reference_htmls/

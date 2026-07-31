@@ -104,10 +104,56 @@ def get_manufacturers(name: str, brand: str, series: str) -> Tuple[Optional[str]
     if not unique_found:
         if any(x in nb for x in ["container", "figurine", "pit box", "accessory", "accessories", "trailer"]):
             return "Accessories", ["Accessories"]
+        if "hot wheels" in brand.lower() or "hotwheels" in brand.lower():
+            return "Hot Wheels", ["Hot Wheels"]
+        if "pop race" in brand.lower() or "poprace" in brand.lower():
+            return "Pop Race", ["Pop Race"]
         return None, []
         
     primary = unique_found[0]
     return primary, unique_found
+
+
+def classify_product(d: dict, toy_brand: str) -> dict:
+    """Apply brand-specific taxonomy and categorization to product dictionary."""
+    name = (d.get("product_name") or "").lower()
+    series = (d.get("series") or "").lower()
+    
+    if toy_brand == "Hot Wheels":
+        series_lower = (d.get("series") or "").lower()
+        sub_series_lower = (d.get("sub_series") or "").lower()
+        if any(x in series_lower or x in sub_series_lower for x in ["boulevard", "car culture", "team transport"]):
+            d["series_line"] = "Premium"
+        else:
+            d["series_line"] = "Mainline"
+            
+        if "zamac" in name:
+            d["finish"] = "Zamac"
+        elif "super treasure hunt" in name or "super treasure hunt" in series_lower or "super treasure hunt" in sub_series_lower:
+            d["finish"] = "Super Treasure Hunt"
+        elif "treasure hunt" in name or "treasure hunt" in series_lower or "treasure hunt" in sub_series_lower:
+            d["finish"] = "Treasure Hunt"
+        else:
+            d["finish"] = "Standard"
+            
+    elif toy_brand == "Pop Race":
+        sub_series = "Regular"
+        if "singer" in name or "singer" in series:
+            sub_series = "Singer"
+        elif "rwb" in name or "rwb" in series:
+            sub_series = "RWB"
+        elif "bape" in name or "bape" in series:
+            sub_series = "BAPE"
+        elif "eva" in name or "evangelion" in name:
+            sub_series = "Evangelion Racing"
+        d["sub_series"] = sub_series
+        
+        if "chrome" in name or "chrome" in series:
+            d["finish"] = "Chrome"
+        else:
+            d["finish"] = "Standard"
+            
+    return d
 
 
 

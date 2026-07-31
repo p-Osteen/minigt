@@ -57,6 +57,83 @@ D_PREFIX_RE = re.compile(r"^D", re.IGNORECASE)
 BATCH_SIZE = 50
 
 
+def clean_fandom_image_url(url: str) -> str:
+    if not url:
+        return ""
+    try:
+        parsed = urllib.parse.urlparse(url)
+        query = parsed.query
+        path = parsed.path
+        if "/revision/latest" in path:
+            parts = path.split("/revision/latest")
+            new_path = parts[0] + "/revision/latest"
+        else:
+            new_path = path
+        new_parsed = parsed._replace(path=new_path, query=query)
+        return urllib.parse.urlunparse(new_parsed)
+    except Exception:
+        return url
+
+
+def clean_diecastsociety_image_url(url: str) -> str:
+    if not url:
+        return ""
+    # Remove WordPress dimension suffix, e.g. -75x50 or -650x320
+    cleaned_url = re.sub(r"-\d+x\d+(\.[a-zA-Z0-9]+)$", r"\1", url)
+    return cleaned_url
+
+
+def get_row_product_images(tr) -> List[str]:
+    img_urls = []
+    seen = set()
+    for img in tr.find_all("img"):
+        parent_a = img.find_parent("a")
+        is_product = False
+        if parent_a:
+            cls = parent_a.get("class", [])
+            if any("image" in c for c in cls):
+                is_product = True
+        if img.find_parent("figure"):
+            is_product = True
+        if "thumbimage" in img.get("class", []):
+            is_product = True
+            
+        if is_product:
+            url = img.get("data-src") or img.get("src", "")
+            if url and "data:image" not in url:
+                url = clean_fandom_image_url(url)
+                if url not in seen:
+                    img_urls.append(url)
+                    seen.add(url)
+    return img_urls
+
+
+def get_links_from_filters_json(filepath: str) -> List[str]:
+    if not os.path.exists(filepath):
+        logger.warning(f"Filters JSON file not found: {filepath}")
+        return []
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        links = []
+        def walk(node):
+            if isinstance(node, dict):
+                if "link" in node and node["link"]:
+                    links.append(node["link"])
+                for v in node.values():
+                    walk(v)
+            elif isinstance(node, list):
+                for x in node:
+                    walk(x)
+        
+        walk(data.get("filters", {}))
+        return list(set(links))
+    except Exception as e:
+        logger.error(f"Error loading links from {filepath}: {e}")
+        return []
+
+
 class MINI_GTCrawler:
     def __init__(self, max_workers: int = 20, rate_limit_delay: float = 0.2):
         self.max_workers = max_workers
@@ -566,15 +643,15 @@ class MINI_GTCrawler:
                 }:
                     brand = page_name.replace("_", " ")
 
-                img_urls: List[str] = []
-                if photo_idx != -1 and photo_idx < len(cells):
+                # Extract images using robust finder and fallback
+                img_urls = get_row_product_images(row)
+                if not img_urls and photo_idx != -1 and photo_idx < len(cells):
                     img_tag = cells[photo_idx].find("img")
                     if img_tag:
                         img_url = img_tag.get("data-src") or img_tag.get("src", "")
                         if img_url and "data:image" not in img_url:
-                            if "/revision/latest" in img_url:
-                                img_url = img_url.split("/revision/latest")[0]
-                            img_urls.append(img_url)
+                            img_url = clean_fandom_image_url(img_url)
+                            img_urls = [img_url]
 
                 clean_num = re.sub(r"[^a-zA-Z0-9]", "", item_number).upper()
                 parsed_codes.add(clean_num)
@@ -611,8 +688,7 @@ class MINI_GTCrawler:
                         if img_tag:
                             img_url = img_tag.get("data-src") or img_tag.get("src", "")
                             if img_url and "data:image" not in img_url:
-                                if "/revision/latest" in img_url:
-                                    img_url = img_url.split("/revision/latest")[0]
+                                img_url = clean_fandom_image_url(img_url)
                                 img_urls.append(img_url)
                         
                         brand = "MINI GT"
@@ -919,38 +995,35 @@ class HotWheelsBrandHandler:
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        years = list(range(2020, 2027))
-        for y in years:
-            page = f"List_of_{y}_Hot_Wheels"
+        links = get_links_from_filters_json("reference_htmls/hot_wheels_filters.json")
+        for url in links:
+            parsed = urllib.parse.urlparse(url)
+            page = parsed.path.split("/wiki/")[-1]
+            page = urllib.parse.unquote(page)
+            if not page:
+                continue
             api_url = (
                 f"https://hotwheels.fandom.com/api.php"
                 f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
             )
-            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page, "year": y, "series_group": "By Year"}})
-
-        for y in years:
-            page = f"{y}_Hot_Wheels_Boulevard"
-            api_url = (
-                f"https://hotwheels.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
-            )
-            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page, "year": y, "series_group": "Modern Special Series", "sub_series": "Boulevard"}})
-
-        for y in years:
-            page = f"{y}_Car_Culture"
-            api_url = (
-                f"https://hotwheels.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
-            )
-            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page, "year": y, "series_group": "Modern Special Series", "sub_series": "Car Culture"}})
-
-            page_tt = f"{y}_Car_Culture:_Team_Transport"
-            api_url = (
-                f"https://hotwheels.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(page_tt)}&format=json&prop=text"
-            )
-            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page_tt, "year": y, "series_group": "Modern Special Series", "sub_series": "Team Transport"}})
-
+            # Infer release year from page title
+            year = None
+            ym = re.search(r"\b(20\d{2})\b", page)
+            if not ym:
+                ym = re.search(r"\b(19\d{2})\b", page)
+            if ym:
+                year = int(ym.group(1))
+                
+            pending.append({
+                "source": "fandom_list",
+                "url": api_url,
+                "meta": {
+                    "page_name": page,
+                    "year": year,
+                    "series_group": "By Year" if "List_of_" in page else "Category Member",
+                    "sub_series": "Regular"
+                }
+            })
         return pending
 
     def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
@@ -965,6 +1038,39 @@ class HotWheelsBrandHandler:
             return None
 
         meta = task["meta"]
+        page_name = meta.get("page_name", "")
+        
+        # Check if it is a category page
+        if page_name.startswith("Category:"):
+            new_tasks = []
+            seen_links = set()
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                href_decoded = urllib.parse.unquote(href)
+                if "/wiki/" in href_decoded:
+                    parts = href_decoded.split("/wiki/")
+                    member_page = parts[-1]
+                    if any(x in member_page for x in [":", "Main_Page", "Special:", "File:", "Category:", "Help:", "Template:"]):
+                        continue
+                    if member_page not in seen_links:
+                        seen_links.add(member_page)
+                        api_url = (
+                            f"https://hotwheels.fandom.com/api.php"
+                            f"?action=parse&page={urllib.parse.quote(member_page)}&format=json&prop=text"
+                        )
+                        new_tasks.append({
+                            "source": "fandom_list",
+                            "url": api_url,
+                            "meta": {
+                                "page_name": member_page,
+                                "year": meta.get("year"),
+                                "series_group": "Category Member",
+                                "sub_series": "Regular"
+                            }
+                        })
+            return new_tasks
+
+        # Otherwise, parse product tables
         page_year = meta.get("year")
         series_group = meta.get("series_group", "By Year")
         default_sub_series = meta.get("sub_series", "Regular")
@@ -1009,15 +1115,15 @@ class HotWheelsBrandHandler:
                     if series_cleaned and default_sub_series == "Regular":
                         sub_series = series_cleaned
 
-                img_urls = []
-                if photo_idx != -1 and photo_idx < len(cells):
+                # Extract images using robust finder and fallback
+                img_urls = get_row_product_images(row)
+                if not img_urls and photo_idx != -1 and photo_idx < len(cells):
                     img_tag = cells[photo_idx].find("img")
                     if img_tag:
                         img_url = img_tag.get("data-src") or img_tag.get("src", "")
                         if img_url and "data:image" not in img_url:
-                            if "/revision/latest" in img_url:
-                                img_url = img_url.split("/revision/latest")[0]
-                            img_urls.append(img_url)
+                            img_url = clean_fandom_image_url(img_url)
+                            img_urls = [img_url]
 
                 self.crawler._save_or_merge_product(
                     item_number=item_number,
@@ -1042,22 +1148,27 @@ class PopRaceBrandHandler:
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        pages = [
-            "Regular_Collection",
-            "Blind_Box_Series",
-            "Dark_Chrome_Series",
-            "Event_Exclusives",
-            "Enigma",
-            "TS_Exclusives",
-            "Xcartoys_China"
-        ]
-        for p in pages:
+        links = get_links_from_filters_json("reference_htmls/pop_race_filters.json")
+        for url in links:
+            parsed = urllib.parse.urlparse(url)
+            page = parsed.path.split("/wiki/")[-1]
+            page = urllib.parse.unquote(page)
+            if not page:
+                continue
+            
             api_url = (
                 f"https://pop-race.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(p)}&format=json&prop=text"
+                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
             )
-            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": p, "series": p.replace("_", " ")}})
-
+            pending.append({
+                "source": "fandom_list",
+                "url": api_url,
+                "meta": {
+                    "page_name": page,
+                    "series": page.replace("_", " ")
+                }
+            })
+            
         for p_idx in range(1, 4):
             url = f"https://diecastsociety.com/page/{p_idx}/?s=Pop+Race"
             pending.append({"source": "diecastsociety_search", "url": url, "meta": {"page": p_idx}})
@@ -1087,6 +1198,36 @@ class PopRaceBrandHandler:
             logger.error(f"Pop Race JSON parse error for {meta['page_name']}: {e}")
             return None
 
+        page_name = meta.get("page_name", "")
+        # Check if it is a category page
+        if page_name.startswith("Category:"):
+            new_tasks = []
+            seen_links = set()
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                href_decoded = urllib.parse.unquote(href)
+                if "/wiki/" in href_decoded:
+                    parts = href_decoded.split("/wiki/")
+                    member_page = parts[-1]
+                    if any(x in member_page for x in [":", "Main_Page", "Special:", "File:", "Category:", "Help:", "Template:"]):
+                        continue
+                    if member_page not in seen_links:
+                        seen_links.add(member_page)
+                        api_url = (
+                            f"https://pop-race.fandom.com/api.php"
+                            f"?action=parse&page={urllib.parse.quote(member_page)}&format=json&prop=text"
+                        )
+                        new_tasks.append({
+                            "source": "fandom_list",
+                            "url": api_url,
+                            "meta": {
+                                "page_name": member_page,
+                                "series": meta.get("series", "Regular Collection")
+                            }
+                        })
+            return new_tasks
+
+        # Otherwise, parse product tables
         default_series = meta.get("series", "Regular Collection")
 
         for table in soup.find_all("table"):
@@ -1138,15 +1279,15 @@ class PopRaceBrandHandler:
                         release_year = int(ym.group(1))
                         release_year_confidence = "confirmed"
 
-                img_urls = []
-                if photo_idx != -1 and photo_idx < len(cells):
+                # Extract images using robust finder and fallback
+                img_urls = get_row_product_images(row)
+                if not img_urls and photo_idx != -1 and photo_idx < len(cells):
                     img_tag = cells[photo_idx].find("img")
                     if img_tag:
                         img_url = img_tag.get("data-src") or img_tag.get("src", "")
                         if img_url and "data:image" not in img_url:
-                            if "/revision/latest" in img_url:
-                                img_url = img_url.split("/revision/latest")[0]
-                            img_urls.append(img_url)
+                            img_url = clean_fandom_image_url(img_url)
+                            img_urls = [img_url]
 
                 self.crawler._save_or_merge_product(
                     item_number=item_number,
@@ -1194,8 +1335,10 @@ class PopRaceBrandHandler:
         for img in all_imgs:
             src = img.get("src") or img.get("data-src", "")
             if src and "data:image" not in src:
-                filename = os.path.basename(src).lower().split(".")[0]
-                img_dict[filename] = src
+                src_cleaned = clean_diecastsociety_image_url(src)
+                filename = os.path.basename(src_cleaned).lower().split(".")[0]
+                filename = re.sub(r"-\d+x\d+$", "", filename)
+                img_dict[filename] = src_cleaned
 
         code_pattern = re.compile(r"\b(PR64\d{3,4}|PRDC\d{2,3}|PR64-[A-Z0-9-]+)\b", re.I)
         

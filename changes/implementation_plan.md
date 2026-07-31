@@ -1,95 +1,59 @@
-# Implementation Plan — Add Hot Wheels & Pop Race to the Catalog System
+# Implementation Plan - Scraping Everything & High-Quality Images
 
-We will extend the catalog system to crawl, classify, and display **Hot Wheels** and **Pop Race** models alongside **MINI GT**.
-
----
+This plan details the technical changes needed to ensure `crawler/crawler.py` scrapes all products from the Hot Wheels and Pop Race wikis using the filter structures in `reference_htmls`, while also resolving issues with missing and low-quality images.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Data Size Measurement and Lazy-Loading Decision**:
-> - Current MINI GT JSON: **1,969 items** (~1.44 MB).
-> - Hot Wheels (Mainline + Premium): Estimated **10,000 to 25,000 items** (~7.5 MB to 19 MB).
-> - Pop Race: Estimated **480 items** (~370 KB).
-> - **Decision**: We will split the JSON exports by brand into separate static files: `products_minigt.json`, `products_hotwheels.json`, and `products_poprace.json`. The frontend will dynamically load these files lazily in the browser when a brand is selected, ensuring optimal performance on desktop and mobile.
-
-> [!WARNING]
-> **Database Schema Migration**:
-> - `Product.item_number` is currently a single primary key, which risks cross-brand conflicts.
-> - We will add a `toy_brand` column to partition the namespaces and change the primary key to a composite key `(toy_brand, item_number)`.
-> - A migration script will be written to automatically restructure the database without losing any existing MINI GT records.
-
----
+> The scraping scope will increase significantly since we are moving from hardcoded subsets (e.g. Hot Wheels years 2020-2026 only) to crawling all filter URLs defined in the `reference_htmls/` JSON files (170 URLs for Hot Wheels and 110 URLs for Pop Race).
 
 ## Proposed Changes
 
-### Database Layer
+### Crawler Module
 
-#### [MODIFY] [models.py](file:///c:/Users/Paul/Desktop/Mods/TSM/database/models.py)
-* Update `Product` to define a composite primary key:
-  ```python
-  toy_brand = Column(String, primary_key=True, index=True, default="MINI GT")
-  item_number = Column(String, primary_key=True, index=True)
-  ```
-* Update `to_dict()` to include the brand namespace.
+#### [MODIFY] [crawler.py](file:///c:/Users/paulp/Desktop/minigt/crawler/crawler.py)
 
-#### [NEW] [migration.py](file:///c:/Users/Paul/Desktop/Mods/TSM/database/migration.py)
-* Add a schema migration script to:
-  1. Inspect the `products` table columns.
-  2. If `toy_brand` is missing, rename `products` to `products_old`.
-  3. Create the new `products` table with the composite primary key `(toy_brand, item_number)`.
-  4. Recreate the search indexes (`idx_brand_series`, `idx_brand_scale`, etc.).
-  5. Copy data from `products_old` to `products` setting `toy_brand = 'MINI GT'` for all existing rows.
-  6. Verify and drop `products_old`.
+We will introduce URL and image cleaning helpers, implement dynamic category membership discovery, and replace fragile column-based image parsing.
 
-#### [MODIFY] [db_manager.py](file:///c:/Users/Paul/Desktop/Mods/TSM/database/db_manager.py)
-* **Deduplication**: Scope `deduplicate_database()` by `toy_brand` (so MINI GT's specific RHD/LHD deduplication rules are run only on MINI GT rows).
-* **Export Split**: Update `sync_to_json()` to export products grouped by `toy_brand` to their respective JSON files: `products_minigt.json`, `products_hotwheels.json`, and `products_poprace.json`.
+##### 1. Add Image & Filter Helper Functions
+Add functions after imports to clean image paths and load filters:
+- **`clean_fandom_image_url(url)`**: Strips sizing suffixes (`/scale-to-width-down/X`) from Fandom CDN paths while preserving `/revision/latest` and any query parameters (like cache busters `?cb=...`).
+- **`clean_diecastsociety_image_url(url)`**: Strips WordPress dimension suffixes (e.g. `-75x50` or `-650x320`) from image filenames to point to original high-res uploads.
+- **`get_row_product_images(tr)`**: Scans all columns in a table row to identify product images based on class wrappers (`class="image"`, `class="mw-file-description image"`, `class="thumbimage"`, or inside `<figure>`). Extracts `data-src` (resolving lazy loading) or fallback `src`, cleans them, and returns unique URLs.
+- **`get_links_from_filters_json(filepath)`**: Recursively traverses the `"filters"` structure of a local JSON file and extracts all target links to seed the crawler.
 
-#### [MODIFY] [classify.py](file:///c:/Users/Paul/Desktop/Mods/TSM/database/classify.py)
-* Separate brand classification rules:
-  * For **MINI GT**: Keep existing tuned rules.
-  * For **Hot Wheels**: Add a dedicated parser that extracts the car maker from `product_name`, maps the series/line (Mainline, Premium/Car Culture, Boulevard, etc.), and identifies case/assortment when available.
-  * For **Pop Race**: Extract the car maker and sub-series (like Singer, RWB, BAPE collaborations, chrome editions).
+##### 2. Refactor Hot Wheels Brand Handler
+- **`discover_sources`**:
+  - Load and extract all seed URLs from `reference_htmls/hot_wheels_filters.json`.
+  - Convert them to Fandom API parse URLs (e.g. page name inside `action=parse&page=...`).
+- **`parse_task`**:
+  - Check if the task is a category page (`Category:...`). If yes, parse all member page links in the category and enqueue them as new tasks.
+  - If it is a list page/casting page, parse tables using `get_row_product_images` for columns containing product images.
 
----
+##### 3. Refactor Pop Race Brand Handler
+- **`discover_sources`**:
+  - Load and extract all seed URLs from `reference_htmls/pop_race_filters.json` (excluding manufacturer links naturally by using the structure defined in the `"filters"` key).
+  - Convert them to Fandom API parse URLs and enqueue.
+  - Keep `diecastsociety.com` search pages.
+- **`parse_task`**:
+  - Handle `Category:` links (if any) by enqueuing category member pages.
+  - Parse product tables using robust row-based image finding (`get_row_product_images`).
+- **`_parse_diecastsociety_post`**:
+  - Clean extracted image URLs using `clean_diecastsociety_image_url` and correctly associate clean filenames with product codes.
 
-### Crawler Layer
-
-#### [MODIFY] [crawler/crawler.py](file:///c:/Users/Paul/Desktop/Mods/TSM/crawler/crawler.py)
-* Refactor `crawler.py` to separate the crawl manager from brand-specific scraping logic:
-  * Define a common scraper handler interface.
-  * Keep the generic multi-threaded scheduler, `fetch_url` HTML caching, retry setup, and task state tracking in a base `DiecastCrawler` class.
-  * Implement three handlers:
-    1. `MiniGTCrawlerHandler` (crawls official site, fandom wiki category pages, and MyMiniGT sitemaps).
-    2. `HotWheelsCrawlerHandler` (crawls yearly lists on `hotwheels.fandom.com`, e.g. `List_of_2024_Hot_Wheels`, `List_of_2023_Hot_Wheels`, and premium series pages like `2024_Car_Culture` or `2024_Car_Culture:_Team_Transport`).
-    3. `PopRaceCrawlerHandler` (crawls the community-wide `Regular_Collection` page on `pop-race.fandom.com` and new announcement pages on `diecastsociety.com`).
-* Update `_save_or_merge_product` to query and merge records scoped by `(toy_brand, item_number)`. Make the source priority rankings brand-specific.
-
----
-
-### Frontend Layer
-
-#### [MODIFY] [index.html](file:///c:/Users/Paul/Desktop/Mods/TSM/index.html)
-* **Brand Tabs**: Replace the static `"MINI GT"` header logo text with a segmented tab selector (`MINI GT`, `Hot Wheels`, `Pop Race`).
-* **Lazy Loading**: Change JS to lazily load the specific brand's JSON (`products_minigt.json`, `products_hotwheels.json`, or `products_poprace.json`) into `ALL_PRODUCTS` when the tab is clicked, caching it in memory.
-* **Facet Filters**: Dynamically populate the select options based on the active brand's actual data.
-* **Model Rendering**: Render model cards using brand-appropriate tags (e.g. showing "Toy #" on Hot Wheels, "Model #" on Pop Race, "Item #" on MINI GT).
-
-#### [MODIFY] [static/styles.css](file:///c:/Users/Paul/Desktop/Mods/TSM/static/styles.css)
-* Add styling for `.brand-tabs` and `.brand-tab` with a modern dark theme design.
-* Adjust responsive layouts for header wrapping.
+##### 4. Refactor General Fandom Parsing in Crawler class
+- Update `_parse_fandom_page` to use `clean_fandom_image_url` for list items `<li>` and paragraphs `<p>`.
 
 ---
 
 ## Verification Plan
 
-### Automated Verification
-* Run the migration script and verify database integrity.
-* Run the verification scripts (`verify_sync.py`) to confirm no primary key collisions occur.
+### Automated Tests
+We will execute python code validation to ensure syntax is correct and run test parses on cached pages:
+- Verify that `extract_links.py` results match the loaded seed queues.
+- Verify that the image URLs parsed from `be9efd1ad886331a3c17c67dd28e2312.html` (2021 Hot Wheels) and `d01a4cc7a42551602625af4c65cfaccd.html` (Pop Race Enigma) are correctly resolved to high quality `/revision/latest` URLs.
 
 ### Manual Verification
-1. Launch local preview server.
-2. Verify that clicking on tabs (MINI GT, Hot Wheels, Pop Race) updates the catalog views seamlessly.
-3. Test searching and filters across each brand.
-4. Verify layout responsiveness on both desktop and mobile views.
+- Clear `cache/crawler_state.json` to force rediscovery.
+- Run `py app.py` and select **Option 1 -> Scrape Pop Race** and **Option 1 -> Scrape Hot Wheels** to verify the discovery phase enqueues the complete list of filters.
+- Verify that the database JSON outputs (`database/products_hotwheels.json` and `database/products_poprace.json`) are updated with the full range of years and high-res image URLs.
