@@ -261,7 +261,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "set_manufacturers": [
@@ -336,7 +336,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "set_manufacturers": [
@@ -361,7 +361,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Toyota",
     "set_manufacturers": [
@@ -386,7 +386,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "set_manufacturers": [
@@ -436,7 +436,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "set_manufacturers": [
@@ -461,7 +461,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "set_manufacturers": [
@@ -486,7 +486,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "set_manufacturers": [
@@ -511,7 +511,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "set_manufacturers": [
@@ -536,7 +536,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "set_manufacturers": [
@@ -1435,8 +1435,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "set_manufacturers": [
       "Lamborghini"
@@ -1569,7 +1569,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/86/MGT00063-PTE.jpg/revision/latest?cb=20220716144457"
+      "https://static.wikia.nocookie.net/minigt/images/8/86/MGT00063-PTE.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -1967,8 +1967,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "set_manufacturers": [
       "Lamborghini"
@@ -1989,8 +1989,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "set_manufacturers": [
       "Lamborghini"
@@ -2058,8 +2058,8 @@
     "source": "myminigt",
     "release_year": 2020,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "set_manufacturers": [
       "Lamborghini"
@@ -2146,17 +2146,12 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1605305273_18595.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400782_185236.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400783_18594.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400783_185439.JPG"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2020,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Nissan",
     "set_manufacturers": [
       "Nissan"
@@ -5142,17 +5137,12 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1622152764_236533.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354731_236197.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354731_236977.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354734_236301.JPG"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2021,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Toyota",
     "set_manufacturers": [
       "Toyota"
@@ -7058,17 +7048,17 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "MGT00282L",
-    "product_name": "Honda S2000 CR Rio Yellow Pearl",
+    "item_number": "MGT00282R",
+    "product_name": "Honda S2000 Type S New Indy Yellow Pearl",
     "brand": "Honda",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635963273_311919.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626711576_311146.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626711582_311723.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626711588_311266.JPG"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994117_574623.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994129_574444.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994139_574915.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1673994147_574227.JPG"
     ],
     "source": "official",
     "release_year": 2022,
@@ -7807,17 +7797,12 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/picfile_list/6a0d931fae361f38db720c9327f4e82420250510040225915.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160775_346834.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160783_34654.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160792_346989.JPG"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2021,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Nissan",
     "set_manufacturers": [
       "Nissan"
@@ -8300,17 +8285,16 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "MGT00331L",
-    "product_name": "Mazda Miata MX-5 (NA) Mariner Blue     Headlight Up  LHD",
+    "item_number": "MGT00331R",
+    "product_name": "Eunos Roadster  Mariner Blue     Headlight Up",
     "brand": "Mazda",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1649481565_366782.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635186004_366398.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635186010_366762.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635186050_366433.JPG"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635194707_367403.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635194720_367373.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635194726_367527.JPG"
     ],
     "source": "official",
     "release_year": 2022,
@@ -14166,7 +14150,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/1/10/MGT00568.jpg/revision/latest?cb=20241006193558"
+      "https://static.wikia.nocookie.net/minigt/images/1/10/MGT00568.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -17217,7 +17201,7 @@
     "product_name": "Honda NSX GT3 EVO22 #18 \"UPGARAGE NSX GT3\" TEAM UPGARAGE 2023 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/f82a10924c247e63568b8446e937a09420241127181719542.jpg",
@@ -20226,7 +20210,7 @@
     "product_name": "Lamborghini Huracán GT3 EVO2 #63 Iron Lynx  IMSA 2023  Daytona 24 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/ebd601ff7f46bc971fce65f5d43d81bc20240908042743262.jpg",
@@ -20301,7 +20285,7 @@
     "product_name": "Lamborghini SC63 #63 Iron Lynx 2024 IMSA Sebring 12 Hrs",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/912478ef92417ae073c0913d50ca12f220250427215316029.jpg",
@@ -21093,7 +21077,7 @@
     "product_name": "Honda NSX-GT \"TYPE S\" GT500 #16 \"Red Bull MOTUL MUGEN NSX-GT \"  TEAM Red Bull MUGEN  2022 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/a0ad886259c7d37cb0fc4f8c07b04ec320250419193319011.jpg",
@@ -22400,7 +22384,7 @@
     "product_name": "Aston Martin DB5 “Thunderball”",
     "brand": "Aston Martin",
     "scale": "1:64",
-    "series": "007 Movie Car",
+    "series": "Regular",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/6c20075d0621e23260e44da050129df020240810082851687.JPG",
@@ -26578,7 +26562,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/c/c0/1078-1.png/revision/latest?cb=20250715074054"
+      "https://static.wikia.nocookie.net/minigt/images/c/c0/1078-1.png"
     ],
     "source": "fandom",
     "release_year": null,
@@ -34711,7 +34695,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/5/53/KHMG00x.jpg/revision/latest?cb=20220208221802"
+      "https://static.wikia.nocookie.net/minigt/images/5/53/KHMG00x.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -42135,7 +42119,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/4/4d/BL2126.jpg/revision/latest?cb=20201008081818"
+      "https://static.wikia.nocookie.net/minigt/images/4/4d/BL2126.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -42157,7 +42141,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/a/a5/BL2127.jpg/revision/latest?cb=20201008081851"
+      "https://static.wikia.nocookie.net/minigt/images/a/a5/BL2127.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -42179,7 +42163,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/86/BL2128.jpg/revision/latest?cb=20201008081926"
+      "https://static.wikia.nocookie.net/minigt/images/8/86/BL2128.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -42200,9 +42184,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/minigt/images/d/d2/19OEM41.jpg/revision/latest?cb=20260503182719"
-    ],
+    "images": [],
     "source": "fandom",
     "release_year": null,
     "release_year_confidence": null,
@@ -42223,7 +42205,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/0c/21OEM01.jpg/revision/latest?cb=20210528014240"
+      "https://static.wikia.nocookie.net/minigt/images/0/0c/21OEM01.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43125,7 +43107,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/89/MGTAC01.jpg/revision/latest?cb=20201003172658"
+      "https://static.wikia.nocookie.net/minigt/images/8/89/MGTAC01.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43147,7 +43129,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/6/61/MGTAC02.jpg/revision/latest?cb=20201003172758"
+      "https://static.wikia.nocookie.net/minigt/images/6/61/MGTAC02.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43169,7 +43151,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/2/2d/MGTAC03.jpg/revision/latest?cb=20201003173027"
+      "https://static.wikia.nocookie.net/minigt/images/2/2d/MGTAC03.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43268,7 +43250,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/d/df/MGTAC09.jpg/revision/latest?cb=20201003173555"
+      "https://static.wikia.nocookie.net/minigt/images/d/df/MGTAC09.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43315,7 +43297,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/3/33/MGTAC11.jpg/revision/latest?cb=20201003173841"
+      "https://static.wikia.nocookie.net/minigt/images/3/33/MGTAC11.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43337,7 +43319,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/0f/MGTAC12.jpg/revision/latest?cb=20201003174017"
+      "https://static.wikia.nocookie.net/minigt/images/0/0f/MGTAC12.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43359,7 +43341,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/5/55/MGTAC13.jpg/revision/latest?cb=20201003174133"
+      "https://static.wikia.nocookie.net/minigt/images/5/55/MGTAC13.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43381,7 +43363,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/9/94/MGTAC14.jpg/revision/latest?cb=20201003174211"
+      "https://static.wikia.nocookie.net/minigt/images/9/94/MGTAC14.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43553,7 +43535,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/6/69/MGTAC21.jpg/revision/latest?cb=20241028194945"
+      "https://static.wikia.nocookie.net/minigt/images/6/69/MGTAC21.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43598,7 +43580,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/1/1e/MGTAC23.jpg/revision/latest?cb=20241028195548"
+      "https://static.wikia.nocookie.net/minigt/images/1/1e/MGTAC23.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43644,7 +43626,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/7/73/MGTAC26.jpg/revision/latest?cb=20241028195011"
+      "https://static.wikia.nocookie.net/minigt/images/7/73/MGTAC26.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43780,7 +43762,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/e/e7/MGTAC32.jpg/revision/latest?cb=20241028195454"
+      "https://static.wikia.nocookie.net/minigt/images/e/e7/MGTAC32.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -43873,7 +43855,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/f/fe/MGTAC37.jpg/revision/latest?cb=20241028195717"
+      "https://static.wikia.nocookie.net/minigt/images/f/fe/MGTAC37.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -44340,12 +44322,12 @@
     "toy_brand": "MINI GT",
     "item_number": "MGTS0015",
     "product_name": "Oracle Red Bull Racing RB19 #11 Sergio Pérez 2023 F1 2023 Japanese Grand Prix Pit Crew SetLimited Edition 5000 Sets",
-    "brand": "MINI GT Sets",
+    "brand": "Cancelled Models",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/09/MGTS0015.jpg/revision/latest?cb=20241029000323"
+      "https://static.wikia.nocookie.net/minigt/images/0/09/MGTS0015.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45509,9 +45491,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/minigt/images/a/a2/MGT00331-R.jpg/revision/latest?cb=20230209154631"
-    ],
+    "images": [],
     "source": "fandom",
     "release_year": null,
     "release_year_confidence": null,
@@ -45566,7 +45546,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/e/e6/MGT00005_LB_MC28-BG.jpg/revision/latest?cb=20201014051146"
+      "https://static.wikia.nocookie.net/minigt/images/e/e6/MGT00005_LB_MC28-BG.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45588,7 +45568,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/f/fb/MGT000129_LB_MC60-RD.jpg/revision/latest?cb=20201014053422"
+      "https://static.wikia.nocookie.net/minigt/images/f/fb/MGT000129_LB_MC60-RD.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45610,7 +45590,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/5/53/MGT00049_LB_MC28-CR.jpg/revision/latest?cb=20201014051207"
+      "https://static.wikia.nocookie.net/minigt/images/5/53/MGT00049_LB_MC28-CR.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45632,7 +45612,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/a/a0/MGT00057_LB_MC50-SB.jpg/revision/latest?cb=20201014051854"
+      "https://static.wikia.nocookie.net/minigt/images/a/a0/MGT00057_LB_MC50-SB.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45654,7 +45634,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/6/62/MGT00058_LB_MC50-BK.jpg/revision/latest?cb=20201015173234"
+      "https://static.wikia.nocookie.net/minigt/images/6/62/MGT00058_LB_MC50-BK.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45676,7 +45656,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/2/2d/MGT00064_LB_MC28-WHNI.jpg/revision/latest?cb=20201014051920"
+      "https://static.wikia.nocookie.net/minigt/images/2/2d/MGT00064_LB_MC28-WHNI.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45698,7 +45678,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/80/MGT00066_LB_MC28-BRE.jpg/revision/latest?cb=20201106030753"
+      "https://static.wikia.nocookie.net/minigt/images/8/80/MGT00066_LB_MC28-BRE.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45720,7 +45700,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/3/38/MGT00067_LB_MC28-GN.jpg/revision/latest?cb=20201014051941"
+      "https://static.wikia.nocookie.net/minigt/images/3/38/MGT00067_LB_MC28-GN.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45742,7 +45722,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/3/3e/MGT00068_LB_MC48-WH.jpg/revision/latest?cb=20201014051959"
+      "https://static.wikia.nocookie.net/minigt/images/3/3e/MGT00068_LB_MC48-WH.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45764,7 +45744,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/1/1f/MGT00069_LB_MC48-BR.jpg/revision/latest?cb=20201014052018"
+      "https://static.wikia.nocookie.net/minigt/images/1/1f/MGT00069_LB_MC48-BR.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45786,7 +45766,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/1/16/MGT00070_LB_MC48-ID.jpg/revision/latest?cb=20201015173724"
+      "https://static.wikia.nocookie.net/minigt/images/1/16/MGT00070_LB_MC48-ID.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45808,7 +45788,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/7/79/MGT00074_LB_MC48-AD.jpg/revision/latest?cb=20201014052037"
+      "https://static.wikia.nocookie.net/minigt/images/7/79/MGT00074_LB_MC48-AD.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45830,7 +45810,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/b/b2/MGT00075_LB_MC28-BKWH.jpg/revision/latest?cb=20201014052202"
+      "https://static.wikia.nocookie.net/minigt/images/b/b2/MGT00075_LB_MC28-BKWH.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45852,7 +45832,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/3/31/MGT00076_LB_MC48-PK.jpg/revision/latest?cb=20201014053341"
+      "https://static.wikia.nocookie.net/minigt/images/3/31/MGT00076_LB_MC48-PK.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45874,7 +45854,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/9/91/MGT00077_LB_MC28-RD.jpg/revision/latest?cb=20201014053402"
+      "https://static.wikia.nocookie.net/minigt/images/9/91/MGT00077_LB_MC28-RD.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45896,7 +45876,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/6/6a/MGT00126_LB_MC60-WH.jpg/revision/latest?cb=20201015181125"
+      "https://static.wikia.nocookie.net/minigt/images/6/6a/MGT00126_LB_MC60-WH.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45918,7 +45898,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/3/3b/MGT00130_LB_MC60-YE.jpg/revision/latest?cb=20201014053440"
+      "https://static.wikia.nocookie.net/minigt/images/3/3b/MGT00130_LB_MC60-YE.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45960,7 +45940,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/8e/MGT00133_LB_MC28-MT.jpg/revision/latest?cb=20201014053516"
+      "https://static.wikia.nocookie.net/minigt/images/8/8e/MGT00133_LB_MC28-MT.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -45982,7 +45962,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/00/MGT00135_LB_MC48-BL.jpg/revision/latest?cb=20201015175826"
+      "https://static.wikia.nocookie.net/minigt/images/0/00/MGT00135_LB_MC48-BL.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46004,7 +45984,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/02/MGT00140_LB_MC48-JPS.jpg/revision/latest?cb=20201014053553"
+      "https://static.wikia.nocookie.net/minigt/images/0/02/MGT00140_LB_MC48-JPS.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46026,7 +46006,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/7/78/MGT00148_LB_MC68-WH.jpg/revision/latest?cb=20201014053610"
+      "https://static.wikia.nocookie.net/minigt/images/7/78/MGT00148_LB_MC68-WH.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46048,7 +46028,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/89/MGT00149_LB_MC68-GN.jpg/revision/latest?cb=20201014053627"
+      "https://static.wikia.nocookie.net/minigt/images/8/89/MGT00149_LB_MC68-GN.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46070,7 +46050,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/5/5a/MGT00154_LB_MC74-RD.jpg/revision/latest?cb=20201015181310"
+      "https://static.wikia.nocookie.net/minigt/images/5/5a/MGT00154_LB_MC74-RD.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46092,7 +46072,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/03/MGT00161_LB_MC74-WH.jpg/revision/latest?cb=20201015181455"
+      "https://static.wikia.nocookie.net/minigt/images/0/03/MGT00161_LB_MC74-WH.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46174,7 +46154,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/2/20/MGT00182_MC75-YE.jpg/revision/latest?cb=20210325185845"
+      "https://static.wikia.nocookie.net/minigt/images/2/20/MGT00182_MC75-YE.jpg"
     ],
     "source": "fandom",
     "release_year": null,
@@ -46236,7 +46216,7 @@
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/9/93/MGT00234_MC68-BK.jpg/revision/latest?cb=20211203150354"
+      "https://static.wikia.nocookie.net/minigt/images/9/93/MGT00234_MC68-BK.jpg"
     ],
     "source": "fandom",
     "release_year": null,

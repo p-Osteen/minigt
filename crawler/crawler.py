@@ -997,12 +997,15 @@ class HotWheelsBrandHandler:
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        # Fetch live Hot Wheels Wiki page
-        url = "https://hotwheels.fandom.com/wiki/Hot_Wheels"
-        html = self.crawler.fetch_url(url, use_cache=False)
-        if html:
+        # Fetch via API to bypass 403 blocks
+        api_url = "https://hotwheels.fandom.com/api.php?action=parse&page=Hot_Wheels&format=json&prop=text"
+        res_json = self.crawler.fetch_url(api_url, use_cache=False)
+        if res_json:
             try:
-                soup = BeautifulSoup(html, "lxml")
+                data = json.loads(res_json)
+                if "parse" in data and "text" in data["parse"]:
+                    html = data["parse"]["text"]["*"]
+                    soup = BeautifulSoup(html, "lxml")
                 center = soup.find("center")
                 if center:
                     seen_pages = set()
@@ -1240,54 +1243,66 @@ class PopRaceBrandHandler:
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        # Dynamically discover pages from Pop Race Wiki homepage
-        url = "https://pop-race.fandom.com/wiki/POP_RACE_Wiki"
-        html = self.crawler.fetch_url(url, use_cache=True)
+        # Fetch via API to bypass 403 blocks
+        api_url = "https://pop-race.fandom.com/api.php?action=parse&page=POP_RACE_Wiki&format=json&prop=text"
+        res_json = self.crawler.fetch_url(api_url, use_cache=True)
         
         seen_pages = set()
-        if html:
-            soup = BeautifulSoup(html, "lxml")
-            
-            # Extract links from navigation menu and content body
-            containers = []
-            nav = soup.find("nav", class_="fandom-community-header__local-navigation")
-            if nav:
-                containers.append(nav)
-            body = soup.find(class_="mw-parser-output")
-            if body:
-                containers.append(body)
-                
-            for container in containers:
-                for a in container.find_all("a", href=True):
-                    href = a["href"]
-                    if "/wiki/" in href:
-                        page = href.split("/wiki/")[-1]
-                        page = urllib.parse.unquote(page)
-                        if not page:
-                            continue
-                        if any(x in page for x in [":", "Main_Page", "Special:", "File:", "Help:", "Template:"]):
-                            if not page.startswith("Category:"):
-                                continue
-                        if "POP_RACE_Wiki" in page or "fandom.com" in page:
-                            continue
-                        if page in seen_pages:
-                            continue
-                        seen_pages.add(page)
+        if res_json:
+            try:
+                data = json.loads(res_json)
+                if "parse" in data and "text" in data["parse"]:
+                    html = data["parse"]["text"]["*"]
+                    soup = BeautifulSoup(html, "lxml")
+                    
+                    # Extract links from navigation menu and content body
+                    containers = []
+                    nav = soup.find("nav", class_="fandom-community-header__local-navigation")
+                    if nav:
+                        containers.append(nav)
+                    body = soup.find(class_="mw-parser-output")
+                    if body:
+                        containers.append(body)
                         
-                        api_url = (
-                            f"https://pop-race.fandom.com/api.php"
-                            f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
-                        )
-                        pending.append({
-                            "source": "fandom_list",
-                            "url": api_url,
-                            "meta": {
-                                "page_name": page,
-                                "series": page.replace("_", " ")
-                            }
-                        })
+                    for container in containers:
+                        for a in container.find_all("a", href=True):
+                            href = a["href"]
+                            if "/wiki/" in href:
+                                page = href.split("/wiki/")[-1]
+                                page = urllib.parse.unquote(page)
+                                if not page:
+                                    continue
+                                if any(x in page for x in [":", "Main_Page", "Special:", "File:", "Help:", "Template:"]):
+                                    if not page.startswith("Category:"):
+                                        continue
+                                if "POP_RACE_Wiki" in page or "fandom.com" in page:
+                                    continue
+                                
+                                # Exclude non-Pop Race brands
+                                page_clean = page.replace("_", " ").lower()
+                                if any(b in page_clean for b in ["bm creations", "inno64", "mini gt", "para64", "tarmac works", "unique model"]):
+                                    continue
+                                    
+                                if page in seen_pages:
+                                    continue
+                                seen_pages.add(page)
+                                
+                                api_url = (
+                                    f"https://pop-race.fandom.com/api.php"
+                                    f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+                                )
+                                pending.append({
+                                    "source": "fandom_list",
+                                    "url": api_url,
+                                    "meta": {
+                                        "page_name": page,
+                                        "series": page.replace("_", " ")
+                                    }
+                                })
+            except Exception as e:
+                logger.error(f"Error discovering Pop Race sources: {e}")
                         
-        for p_idx in range(1, 4):
+        for p_idx in range(1, 16):
             url = f"https://diecastsociety.com/page/{p_idx}/?s=Pop+Race"
             pending.append({"source": "diecastsociety_search", "url": url, "meta": {"page": p_idx}})
 
@@ -1329,6 +1344,12 @@ class PopRaceBrandHandler:
                     member_page = parts[-1]
                     if any(x in member_page for x in [":", "Main_Page", "Special:", "File:", "Category:", "Help:", "Template:"]):
                         continue
+                    
+                    # Exclude non-Pop Race brands
+                    member_clean = member_page.replace("_", " ").lower()
+                    if any(b in member_clean for b in ["bm creations", "inno64", "mini gt", "para64", "tarmac works", "unique model"]):
+                        continue
+                        
                     if member_page not in seen_links:
                         seen_links.add(member_page)
                         api_url = (

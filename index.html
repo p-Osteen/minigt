@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
   <title>MINI GT 1:64 Catalog</title>
   <meta name="description" content="Complete MINI GT 1:64 scale diecast model catalog — browse, filter, and print.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,6 +55,7 @@
       <button class="clear-btn" id="clearSearch" onclick="clearSearch()" title="Clear search">×</button>
     </div>
 
+    <!-- MINI GT Filters (default) -->
     <select id="manufacturerSelect" class="filter-select" onchange="applyFilters()">
       <option value="">All Manufacturers</option>
     </select>
@@ -64,6 +66,52 @@
     
     <select id="yearSelect" class="filter-select" onchange="applyFilters()">
       <option value="">All Years</option>
+    </select>
+
+    <!-- Pop Race Filters -->
+    <select id="popraceCollectionSelect" class="filter-select" onchange="applyFilters()" style="display:none;">
+      <option value="">All Collections</option>
+      <option value="Regular Collection">Regular Collection</option>
+      <option value="Enigma">Enigma</option>
+      <option value="Event Exclusives">Event Exclusives</option>
+      <option value="Dark Chrome Series">Dark Chrome Series</option>
+      <option value="TS Exclusives">TS Exclusives</option>
+      <option value="Blind Box Series">Blind Box Series</option>
+      <option value="Xcartoys (china and all)">Xcartoys (china and all)</option>
+    </select>
+
+    <select id="popraceRegionSelect" class="filter-select" onchange="handlePopraceRegionChange()" style="display:none;">
+      <option value="">All Regions</option>
+      <option value="Japanese">Japanese</option>
+      <option value="Japanese Tuners">Japanese Tuners</option>
+      <option value="European">European</option>
+      <option value="American">American</option>
+    </select>
+
+    <select id="popraceManufacturerSelect" class="filter-select" onchange="applyFilters()" style="display:none;">
+      <option value="">All Manufacturers</option>
+    </select>
+
+    <!-- Hot Wheels Filters -->
+    <select id="hotwheelsYearSelect" class="filter-select" onchange="applyFilters()" style="display:none;">
+      <option value="">All Years</option>
+    </select>
+
+    <select id="hotwheelsSeriesGroupSelect" class="filter-select" onchange="handleHotwheelsSeriesGroupChange()" style="display:none;">
+      <option value="">All Series Groups</option>
+      <option value="Early Collections">Early Collections</option>
+      <option value="Early Special Series">Early Special Series</option>
+      <option value="Other Early Series">Other Early Series</option>
+      <option value="Modern Special Series">Modern Special Series</option>
+      <option value="Notable Modern Themed Assortments">Notable Modern Themed Assortments</option>
+      <option value="Other Modern Series">Other Modern Series</option>
+      <option value="Exclusives">Exclusives</option>
+      <option value="Larger Scale">Larger Scale</option>
+      <option value="Miscellaneous">Miscellaneous</option>
+    </select>
+
+    <select id="hotwheelsSeriesSelect" class="filter-select" onchange="applyFilters()" style="display:none;">
+      <option value="">All Series</option>
     </select>
 
     <button class="btn-reset" onclick="resetFilters()">Reset</button>
@@ -246,21 +294,69 @@ function clearSearch() {
 function resetFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('clearSearch').style.display = 'none';
-  document.getElementById('manufacturerSelect').value = '';
-  document.getElementById('seriesSelect').value = '';
-  document.getElementById('yearSelect').value = '';
+  
+  const selectors = [
+    'manufacturerSelect', 'seriesSelect', 'yearSelect',
+    'popraceCollectionSelect', 'popraceRegionSelect', 'popraceManufacturerSelect',
+    'hotwheelsYearSelect', 'hotwheelsSeriesGroupSelect', 'hotwheelsSeriesSelect'
+  ];
+  selectors.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  
+  if (CURRENT_BRAND === 'Pop Race') {
+    handlePopraceRegionChange();
+  } else if (CURRENT_BRAND === 'Hot Wheels') {
+    handleHotwheelsSeriesGroupChange();
+  }
+  
   applyFilters();
 }
 
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim();
+  
+  // MINI GT
   const manufacturer = document.getElementById('manufacturerSelect').value;
   const series = document.getElementById('seriesSelect').value;
   const year = document.getElementById('yearSelect').value;
 
+  // Pop Race
+  const popCollection = document.getElementById('popraceCollectionSelect').value;
+  const popRegion = document.getElementById('popraceRegionSelect').value;
+  const popManufacturer = document.getElementById('popraceManufacturerSelect').value;
+
+  // Hot Wheels
+  const hwYear = document.getElementById('hotwheelsYearSelect').value;
+  const hwGroup = document.getElementById('hotwheelsSeriesGroupSelect').value;
+  const hwSeries = document.getElementById('hotwheelsSeriesSelect').value;
+
   FILTERED = ALL_PRODUCTS.filter(p => {
     const matchSearch = tokenMatch(query, [p.product_name || '', p.item_number || '']);
     
+    if (CURRENT_BRAND === 'Pop Race') {
+      const matchCol = !popCollection || p.collection === popCollection;
+      const matchReg = !popRegion || p.region === popRegion;
+      let matchMfg = true;
+      if (popManufacturer) {
+        if (Array.isArray(p.set_manufacturers)) {
+          matchMfg = p.set_manufacturers.includes(popManufacturer);
+        } else {
+          matchMfg = (p.manufacturer || '') === popManufacturer;
+        }
+      }
+      return matchSearch && matchCol && matchReg && matchMfg;
+    }
+    
+    if (CURRENT_BRAND === 'Hot Wheels') {
+      const matchYr = !hwYear || (p.year || '') === hwYear;
+      const matchGrp = !hwGroup || p.series_group === hwGroup;
+      const matchSr = !hwSeries || (p.series || '') === hwSeries || (p.sub_series || '') === hwSeries;
+      return matchSearch && matchYr && matchGrp && matchSr;
+    }
+    
+    // MINI GT
     let matchManufacturer = true;
     if (manufacturer) {
       if (Array.isArray(p.set_manufacturers)) {
@@ -269,7 +365,6 @@ function applyFilters() {
         matchManufacturer = (p.manufacturer || '') === manufacturer;
       }
     }
-
     const matchSeries = !series || (p.series || '') === series;
     const matchYear = !year || (p.year || '') === year;
 
@@ -474,26 +569,156 @@ function updateSelectionBar() {
 // ══════════════════════════════════════════════════════════════════
 //  Filter Facets Dropdowns
 // ══════════════════════════════════════════════════════════════════
-function populateFilterFacets() {
-  const manufacturers = [...new Set(ALL_PRODUCTS.flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
-  const seriesList = [...new Set(ALL_PRODUCTS.map(p => p.series).filter(Boolean))].sort();
-  const years = [...new Set(ALL_PRODUCTS.map(p => p.year).filter(Boolean))].sort((a, b) => b - a);
+const HW_GROUPS = {
+  "Early Collections": [
+    "Action Command", "Classics", "Classy Customs", "Drag Strippers", "Extras", 
+    "Flying Colors", "Grand Prix", "HiRakers", "Megaforce", "Oldies But Goodies", 
+    "Real Riders", "Rescue Team", "Speed Demons", "Speed Fleet", "Speed Machines", 
+    "Speedway Specials", "Super Chromes", "Super Streeters", "The Heavies", 
+    "The Heavys", "The Hot Ones", "The Spoilers", "Trailbusters", "Ultra Hots", "Workhorses"
+  ],
+  "Early Special Series": [
+    "Action Packs", "Auto-City", "Automagic", "California Custom", "Chopcycles", 
+    "Color Changers", "Color FX", "Convertables", "Crack-Ups", "Crashers", "Farbs", 
+    "Fat Daddy Sizzlers", "Flip Outs", "Flippers", "Gran Toros", "Hot Birds", 
+    "Hot Line", "Hot Shots", "Hot Wheels U.S.A.", "Hot Wheels World", 
+    "Motorized X-V Racers", "Night Ridin' Sizzlers", "Planet Micro", "Revvers", 
+    "RRRumblers", "Scorchers", "Shift Kickers", "Sizzlers", "Sizzlers II", 
+    "Small Shots", "Steering Rigs", "Super California Custom", "Truck Co.", "X-V Racers", "Zowees"
+  ],
+  "Other Early Series": [
+    "Action Cycles", "Action Racers", "Attack Pack", "Hot Wheels Railroad", "Key Force"
+  ],
+  "Modern Special Series": [
+    "100%", "AcceleRacers", "Auto Affinity", "Battle Force 5", "Boulevard", "Car Culture", 
+    "Character Cars", "Color Shifters", "Cool Classics", "Classics", "Delivery", 
+    "Dragstrip Demons", "Fast & Furious Premium", "Flying Customs", "Formula One Collection", 
+    "Hot Wheels Garage", "Hall of Fame", "High-Speed Wheels Track Stars", 
+    "Highway 35 World Race", "Heritage", "Hot Wheels id", "Hot Wheels Racing", 
+    "Mario Kart", "Nostalgic Brands", "Pop Culture", "Premium Collector Sets", 
+    "Pro Racing", "Replica Entertainment", "Retro Style", "Since '68", 
+    "Speed Machines", "Super Chromes", "Team Hot Wheels High-Speed Wheel", 
+    "The Hot Ones", "Ultra Hots", "Vintage Racing"
+  ],
+  "Notable Modern Themed Assortments": [
+    "50th Anniversary Favorites", "50th Anniversary Originals", "50th Anniversary Throwback", 
+    "Pearl and Chrome Anniversary Series", "Batman", "Cars of the Decades", "Cop Rods", 
+    "Easter Eggsclusives", "Easter", "Fast & Furious", "Fast & Furious Spy Racers", 
+    "Fire Rods", "Fright Cars", "Halloween Cars", "Holiday Hot Rods", "HW Road Trippin'", 
+    "HW Winter", "Neon Speeders", "Pantone", "Retro Style", "Spring", "Stars & Stripes", 
+    "The Beatles Yellow Submarine", "Throwback", "Ultra Hots", "Vintage Racing Club"
+  ],
+  "Other Modern Series": [
+    "1:87", "Atomix", "Battle X", "Custom Classics", "Custom Motors", "Dropstars", 
+    "Extreme Shoxx", "Ferrari X-V", "G-Machines", "Hot Import Nights", "Hot Tunerz", 
+    "Hot Wheels Haulers", "Hot Wheels Skate", "Lightyear", "Long Haulers", 
+    "Modifighters", "Monster Jam", "Monster Trucks", "Moto Track Stars", "Motor Cycles", 
+    "Pavement Pounders", "RacerVerse", "Racing Rigs", "Rapid Transit", "RC", 
+    "Road Beasts", "Robo Wheels", "Shogun Racers", "Skate Freaks", "Sky Busters", 
+    "Snap Rides", "Speed Cycles", "Speed Demons", "Starships", "Super Rigs", 
+    "Superstar Speeders", "Thunder Cycles", "Track Fleet", "Track Stars Haulers", 
+    "Trackin' Trucks", "Truckin' Transporters", "Volkswagen", "Wrecking Wheels"
+  ],
+  "Exclusives": [
+    "Elite 64", "HWC.com", "Red Line Club", "Virtual Garage"
+  ],
+  "Larger Scale": [
+    "1:18", "1:24", "100% 1:18", "1:43 Battle Vehicles", "1:43 Pull-Backs", "Batman 1:50", 
+    "Classics 1:18", "Collectibles 1:18", "Ferrari 1:18", "Ferrari 1:24", "Ferrari 1:43", 
+    "Formula Fuelers", "Hot Wheels Elite", "Hot Wheels Racing", "Hot Wheels XL", "La Storia", 
+    "Let's Race: Activate!", "Passione", "Premium 1:43", "Pro Racing 1:43", 
+    "Pull-Back Speeders", "Pullbax", "Street Power", "Tunerz", "Turbos Collection"
+  ]
+};
 
-  function fillSelect(id, list, placeholder) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = `<option value="">${placeholder}</option>`;
-    list.forEach(item => {
-      const opt = document.createElement('option');
-      opt.value = item;
-      opt.textContent = item;
-      el.appendChild(opt);
-    });
+function updateFilterVisibility() {
+  const brand = CURRENT_BRAND;
+  const isMini = (brand === 'MINI GT');
+  document.getElementById('manufacturerSelect').style.display = isMini ? 'inline-block' : 'none';
+  document.getElementById('seriesSelect').style.display = isMini ? 'inline-block' : 'none';
+  document.getElementById('yearSelect').style.display = isMini ? 'inline-block' : 'none';
+
+  const isPop = (brand === 'Pop Race');
+  document.getElementById('popraceCollectionSelect').style.display = isPop ? 'inline-block' : 'none';
+  document.getElementById('popraceRegionSelect').style.display = isPop ? 'inline-block' : 'none';
+  document.getElementById('popraceManufacturerSelect').style.display = isPop ? 'inline-block' : 'none';
+
+  const isHW = (brand === 'Hot Wheels');
+  document.getElementById('hotwheelsYearSelect').style.display = isHW ? 'inline-block' : 'none';
+  document.getElementById('hotwheelsSeriesGroupSelect').style.display = isHW ? 'inline-block' : 'none';
+  document.getElementById('hotwheelsSeriesSelect').style.display = isHW ? 'inline-block' : 'none';
+}
+
+function handlePopraceRegionChange() {
+  const region = document.getElementById('popraceRegionSelect').value;
+  let filteredMakers = [];
+  if (!region) {
+    filteredMakers = [...new Set(ALL_PRODUCTS.flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
+  } else {
+    filteredMakers = [...new Set(ALL_PRODUCTS.filter(p => p.region === region).flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
   }
+  fillSelect('popraceManufacturerSelect', filteredMakers, 'All Manufacturers');
+  applyFilters();
+}
 
-  fillSelect('manufacturerSelect', manufacturers, 'All Manufacturers');
-  fillSelect('seriesSelect', seriesList, 'All Series');
-  fillSelect('yearSelect', years, 'All Years');
+function populateHotwheelsYears() {
+  const el = document.getElementById('hotwheelsYearSelect');
+  if (!el) return;
+  el.innerHTML = '<option value="">All Years</option>';
+  for (let y = 2027; y >= 1968; y--) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    el.appendChild(opt);
+  }
+}
+
+function handleHotwheelsSeriesGroupChange() {
+  const group = document.getElementById('hotwheelsSeriesGroupSelect').value;
+  const sSelect = document.getElementById('hotwheelsSeriesSelect');
+  if (!sSelect) return;
+  sSelect.innerHTML = '<option value="">All Series</option>';
+  
+  const allHWSeries = [...new Set(ALL_PRODUCTS.flatMap(p => [p.series, p.sub_series]).filter(Boolean))];
+  
+  let filteredSeries = [];
+  if (!group) {
+    filteredSeries = allHWSeries.sort();
+  } else {
+    const groupList = HW_GROUPS[group] || [];
+    const groupListLower = groupList.map(n => n.toLowerCase());
+    filteredSeries = allHWSeries.filter(s => {
+      const sLower = s.toLowerCase();
+      return groupListLower.some(g => sLower === g || sLower.includes(g));
+    }).sort();
+  }
+  
+  filteredSeries.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    sSelect.appendChild(opt);
+  });
+  
+  applyFilters();
+}
+
+function fillSelect(id, list, placeholder) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = `<option value="">${placeholder}</option>`;
+  list.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    el.appendChild(opt);
+  });
+}
+
+function populateFilterFacets() {
+  updateFilterVisibility();
+
+  const manufacturers = [...new Set(ALL_PRODUCTS.flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
 
   const mSelect = document.getElementById('modalBrandSel');
   if (mSelect) {
@@ -504,6 +729,24 @@ function populateFilterFacets() {
       opt.textContent = m;
       mSelect.appendChild(opt);
     });
+  }
+
+  if (CURRENT_BRAND === 'MINI GT') {
+    const seriesList = [...new Set(ALL_PRODUCTS.map(p => p.series).filter(Boolean))].sort();
+    const years = [...new Set(ALL_PRODUCTS.map(p => p.year).filter(Boolean))].sort((a, b) => b - a);
+
+    fillSelect('manufacturerSelect', manufacturers, 'All Manufacturers');
+    fillSelect('seriesSelect', seriesList, 'All Series');
+    fillSelect('yearSelect', years, 'All Years');
+  } else if (CURRENT_BRAND === 'Pop Race') {
+    document.getElementById('popraceCollectionSelect').value = '';
+    document.getElementById('popraceRegionSelect').value = '';
+    handlePopraceRegionChange();
+  } else if (CURRENT_BRAND === 'Hot Wheels') {
+    document.getElementById('hotwheelsYearSelect').value = '';
+    document.getElementById('hotwheelsSeriesGroupSelect').value = '';
+    populateHotwheelsYears();
+    handleHotwheelsSeriesGroupChange();
   }
 }
 
