@@ -310,20 +310,21 @@ class MINI_GTCrawler:
         # --- Normalise item number ---
         clean_num = re.sub(r"[^a-zA-Z0-9]", "", item_number).upper()
 
-        # --- D-prefix filter: never save these ---
-        if D_PREFIX_RE.match(clean_num):
-            logger.debug(f"Skipping D-prefix product: {clean_num}")
-            return
+        if toy_brand == "MINI GT":
+            # --- D-prefix filter: never save these ---
+            if D_PREFIX_RE.match(clean_num):
+                logger.debug(f"Skipping D-prefix product: {clean_num}")
+                return
 
-        # --- A-prefix filter: never save these ---
-        if clean_num.startswith("A"):
-            logger.debug(f"Skipping A-prefix product: {clean_num}")
-            return
+            # --- A-prefix filter: never save these ---
+            if clean_num.startswith("A"):
+                logger.debug(f"Skipping A-prefix product: {clean_num}")
+                return
 
-        # --- MJ-suffix filter: never save these ---
-        if clean_num.endswith("MJ"):
-            logger.debug(f"Skipping MJ-suffix product: {clean_num}")
-            return
+            # --- MJ-suffix filter: never save these ---
+            if clean_num.endswith("MJ"):
+                logger.debug(f"Skipping MJ-suffix product: {clean_num}")
+                return
 
         if not clean_num:
             clean_num = re.sub(r"[^A-Z0-9]", "_", product_name.upper())
@@ -992,38 +993,62 @@ class MiniGTBrandHandler:
 class HotWheelsBrandHandler:
     def __init__(self, crawler: "MINI_GTCrawler"):
         self.crawler = crawler
+        self.seen_castings = set()
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        links = get_links_from_filters_json("reference_htmls/hot_wheels_filters.json")
-        for url in links:
-            parsed = urllib.parse.urlparse(url)
-            page = parsed.path.split("/wiki/")[-1]
-            page = urllib.parse.unquote(page)
-            if not page:
-                continue
-            api_url = (
-                f"https://hotwheels.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
-            )
-            # Infer release year from page title
-            year = None
-            ym = re.search(r"\b(20\d{2})\b", page)
-            if not ym:
-                ym = re.search(r"\b(19\d{2})\b", page)
-            if ym:
-                year = int(ym.group(1))
-                
-            pending.append({
-                "source": "fandom_list",
-                "url": api_url,
-                "meta": {
-                    "page_name": page,
-                    "year": year,
-                    "series_group": "By Year" if "List_of_" in page else "Category Member",
-                    "sub_series": "Regular"
-                }
-            })
+        # Fetch live Hot Wheels Wiki page
+        url = "https://hotwheels.fandom.com/wiki/Hot_Wheels"
+        html = self.crawler.fetch_url(url, use_cache=False)
+        if html:
+            try:
+                soup = BeautifulSoup(html, "lxml")
+                center = soup.find("center")
+                if center:
+                    seen_pages = set()
+                    for a in center.find_all("a", href=True):
+                        href = a["href"]
+                        # Match /wiki/ links
+                        if "/wiki/" in href:
+                            page = href.split("/wiki/")[-1]
+                            page = urllib.parse.unquote(page)
+                            if not page:
+                                continue
+                            # Skip administrative/special pages
+                            if any(x in page for x in [":", "Main_Page", "Special:", "File:", "Help:", "Template:"]):
+                                # Exception: Category pages ARE crawled
+                                if not page.startswith("Category:"):
+                                    continue
+                            if "Category:Castings" in page or "Category:Hot_Wheels" in page:
+                                continue
+                            if page in seen_pages:
+                                continue
+                            seen_pages.add(page)
+                            
+                            api_url = (
+                                f"https://hotwheels.fandom.com/api.php"
+                                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+                            )
+                            # Infer release year from page title
+                            year = None
+                            ym = re.search(r"\b(20\d{2})\b", page)
+                            if not ym:
+                                ym = re.search(r"\b(19\d{2})\b", page)
+                            if ym:
+                                year = int(ym.group(1))
+                                
+                            pending.append({
+                                "source": "fandom_list",
+                                "url": api_url,
+                                "meta": {
+                                    "page_name": page,
+                                    "year": year,
+                                    "series_group": "By Year" if "List_of_" in page else "Category Member",
+                                    "sub_series": "Regular"
+                                }
+                            })
+            except Exception as e:
+                logger.error(f"Error discovering Hot Wheels sources from live site: {e}")
         return pending
 
     def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
@@ -1039,6 +1064,7 @@ class HotWheelsBrandHandler:
 
         meta = task["meta"]
         page_name = meta.get("page_name", "")
+        source_type = task.get("source")
         
         # Check if it is a category page
         if page_name.startswith("Category:"):
@@ -1071,14 +1097,18 @@ class HotWheelsBrandHandler:
             return new_tasks
 
         # Otherwise, parse product tables
+        new_tasks = []
         page_year = meta.get("year")
         series_group = meta.get("series_group", "By Year")
         default_sub_series = meta.get("sub_series", "Regular")
 
+        # Determine casting name if we are on a casting page
+        casting_name = page_name.replace("_", " ")
+
         for table in soup.find_all("table"):
             headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
             
-            code_idx = name_idx = series_idx = photo_idx = -1
+            code_idx = name_idx = series_idx = photo_idx = year_idx = color_idx = -1
             for idx, h in enumerate(headers):
                 if "toy #" in h or h == "toy":
                     code_idx = idx
@@ -1088,34 +1118,65 @@ class HotWheelsBrandHandler:
                     name_idx = idx
                 elif any(k in h for k in ("name", "model")):
                     name_idx = idx
+                elif "color" in h:
+                    color_idx = idx
                 elif "series" in h:
                     series_idx = idx
+                elif "year" in h:
+                    year_idx = idx
                 elif any(k in h for k in ("photo", "image", "pic")):
                     photo_idx = idx
 
-            if code_idx == -1 or name_idx == -1:
+            if code_idx == -1 and name_idx == -1 and color_idx == -1:
                 continue
 
             for row in table.find_all("tr")[1:]:
                 cells = row.find_all(["td", "th"])
-                if len(cells) <= max(code_idx, name_idx):
+                if len(cells) <= max(code_idx, name_idx, color_idx, series_idx, year_idx):
                     continue
 
-                item_number = cells[code_idx].get_text(strip=True)
-                product_name = cells[name_idx].get_text(strip=True)
+                item_number = ""
+                if code_idx != -1:
+                    item_number = cells[code_idx].get_text(strip=True)
+                    if item_number == "-":
+                        item_number = ""
 
-                if not item_number or not product_name or item_number.strip() == "-":
+                row_name = ""
+                if name_idx != -1:
+                    row_name = cells[name_idx].get_text(strip=True)
+                
+                row_color = ""
+                if color_idx != -1:
+                    row_color = cells[color_idx].get_text(strip=True)
+
+                if source_type == "fandom_casting":
+                    if row_color:
+                        product_name = f"{casting_name} ({row_color})"
+                    elif row_name:
+                        product_name = f"{casting_name} ({row_name})"
+                    else:
+                        product_name = casting_name
+                else:
+                    product_name = row_name or row_color or casting_name
+
+                if not product_name:
                     continue
+
+                row_year = page_year
+                if year_idx != -1:
+                    year_str = cells[year_idx].get_text(strip=True)
+                    ym = re.search(r"\b((?:19|20)\d{2})\b", year_str)
+                    if ym:
+                        row_year = int(ym.group(1))
 
                 series = series_group
                 sub_series = default_sub_series
-                if series_idx != -1 and series_idx < len(cells):
+                if series_idx != -1:
                     cell_series = cells[series_idx].get_text(" ", strip=True)
                     series_cleaned = cell_series.split("\n")[0].split("New for")[0].strip()
-                    if series_cleaned and default_sub_series == "Regular":
+                    if series_cleaned:
                         sub_series = series_cleaned
 
-                # Extract images using robust finder and fallback
                 img_urls = get_row_product_images(row)
                 if not img_urls and photo_idx != -1 and photo_idx < len(cells):
                     img_tag = cells[photo_idx].find("img")
@@ -1125,6 +1186,37 @@ class HotWheelsBrandHandler:
                             img_url = clean_fandom_image_url(img_url)
                             img_urls = [img_url]
 
+                # If this is a list page, discover casting page links!
+                if source_type == "fandom_list":
+                    target_cells = []
+                    if name_idx != -1:
+                        target_cells.append(cells[name_idx])
+                    if color_idx != -1:
+                        target_cells.append(cells[color_idx])
+                    for cell in target_cells:
+                        for a in cell.find_all("a", href=True):
+                            href = a["href"]
+                            if "/wiki/" in href:
+                                casting_page = href.split("/wiki/")[-1]
+                                casting_page = urllib.parse.unquote(casting_page)
+                                if casting_page and not any(x in casting_page for x in [":", "Main_Page", "Special:", "File:", "Category:", "Help:", "Template:"]):
+                                    if "List_of_" not in casting_page:
+                                        api_url = (
+                                            f"https://hotwheels.fandom.com/api.php"
+                                            f"?action=parse&page={urllib.parse.quote(casting_page)}&format=json&prop=text"
+                                        )
+                                        if casting_page not in self.seen_castings:
+                                            self.seen_castings.add(casting_page)
+                                            new_tasks.append({
+                                                "source": "fandom_casting",
+                                                "url": api_url,
+                                                "meta": {
+                                                    "page_name": casting_page,
+                                                    "year": row_year,
+                                                    "series_group": "Casting Variation"
+                                                }
+                                            })
+
                 self.crawler._save_or_merge_product(
                     item_number=item_number,
                     product_name=product_name,
@@ -1133,13 +1225,13 @@ class HotWheelsBrandHandler:
                     series=series,
                     img_urls=img_urls,
                     source="fandom",
-                    release_year=page_year,
-                    release_year_confidence="confirmed" if page_year else None,
+                    release_year=row_year,
+                    release_year_confidence="confirmed" if row_year else None,
                     status="Released",
                     toy_brand="Hot Wheels",
                     sub_series=sub_series
                 )
-        return None
+        return new_tasks
 
 
 class PopRaceBrandHandler:
@@ -1148,27 +1240,53 @@ class PopRaceBrandHandler:
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        links = get_links_from_filters_json("reference_htmls/pop_race_filters.json")
-        for url in links:
-            parsed = urllib.parse.urlparse(url)
-            page = parsed.path.split("/wiki/")[-1]
-            page = urllib.parse.unquote(page)
-            if not page:
-                continue
+        # Dynamically discover pages from Pop Race Wiki homepage
+        url = "https://pop-race.fandom.com/wiki/POP_RACE_Wiki"
+        html = self.crawler.fetch_url(url, use_cache=True)
+        
+        seen_pages = set()
+        if html:
+            soup = BeautifulSoup(html, "lxml")
             
-            api_url = (
-                f"https://pop-race.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
-            )
-            pending.append({
-                "source": "fandom_list",
-                "url": api_url,
-                "meta": {
-                    "page_name": page,
-                    "series": page.replace("_", " ")
-                }
-            })
-            
+            # Extract links from navigation menu and content body
+            containers = []
+            nav = soup.find("nav", class_="fandom-community-header__local-navigation")
+            if nav:
+                containers.append(nav)
+            body = soup.find(class_="mw-parser-output")
+            if body:
+                containers.append(body)
+                
+            for container in containers:
+                for a in container.find_all("a", href=True):
+                    href = a["href"]
+                    if "/wiki/" in href:
+                        page = href.split("/wiki/")[-1]
+                        page = urllib.parse.unquote(page)
+                        if not page:
+                            continue
+                        if any(x in page for x in [":", "Main_Page", "Special:", "File:", "Help:", "Template:"]):
+                            if not page.startswith("Category:"):
+                                continue
+                        if "POP_RACE_Wiki" in page or "fandom.com" in page:
+                            continue
+                        if page in seen_pages:
+                            continue
+                        seen_pages.add(page)
+                        
+                        api_url = (
+                            f"https://pop-race.fandom.com/api.php"
+                            f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+                        )
+                        pending.append({
+                            "source": "fandom_list",
+                            "url": api_url,
+                            "meta": {
+                                "page_name": page,
+                                "series": page.replace("_", " ")
+                            }
+                        })
+                        
         for p_idx in range(1, 4):
             url = f"https://diecastsociety.com/page/{p_idx}/?s=Pop+Race"
             pending.append({"source": "diecastsociety_search", "url": url, "meta": {"page": p_idx}})
