@@ -15,11 +15,16 @@
 <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
 <header class="site-header">
   <div class="header-brand">
-    <span class="brand-logo">MINI GT</span>
+    <span class="brand-logo">Diecast Catalog</span>
     <span class="brand-scale">1:64</span>
-    <span class="catalog-count" id="catalogCount">Loading…</span>
+  </div>
+  <div class="brand-tabs" id="brandTabs">
+    <button class="brand-tab active" data-brand="MINI GT" onclick="changeBrand('MINI GT')">MINI GT</button>
+    <button class="brand-tab" data-brand="Hot Wheels" onclick="changeBrand('Hot Wheels')">Hot Wheels</button>
+    <button class="brand-tab" data-brand="Pop Race" onclick="changeBrand('Pop Race')">Pop Race</button>
   </div>
   <div class="header-actions">
+    <span class="catalog-count" id="catalogCount">Loading…</span>
     <button class="btn-icon" id="btnPrint" onclick="openPrintModal()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
@@ -51,6 +56,10 @@
 
     <select id="manufacturerSelect" class="filter-select" onchange="applyFilters()">
       <option value="">All Manufacturers</option>
+    </select>
+
+    <select id="seriesSelect" class="filter-select" onchange="applyFilters()">
+      <option value="">All Series</option>
     </select>
     
     <select id="yearSelect" class="filter-select" onchange="applyFilters()">
@@ -146,6 +155,7 @@ let FILTERED = [];          // after search/brand filter
 let SELECTED = new Set();   // selected item_numbers
 let renderIndex = 0;        // how many cards rendered so far
 const PAGE_SIZE = 60;       // cards per infinite-scroll batch
+let CURRENT_BRAND = 'MINI GT';
 
 // ── Per-card carousel state ──────────────────────────────────────
 const carouselState = {};   // { itemNumber: { idx: 0, count: N } }
@@ -163,16 +173,48 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadProducts() {
+  const brandFileMap = {
+    'MINI GT': 'products_minigt.json',
+    'Hot Wheels': 'products_hotwheels.json',
+    'Pop Race': 'products_poprace.json'
+  };
+  const fileName = brandFileMap[CURRENT_BRAND] || 'products_minigt.json';
+
   try {
-    const res = await fetch('database/products.json?v=' + Date.now());
+    const res = await fetch(`database/${fileName}?v=` + Date.now());
     if (!res.ok) throw new Error(res.statusText);
     ALL_PRODUCTS = await res.json();
   } catch (e) {
-    showEmpty('Could not load catalog', 'Make sure products.json exists. Run a scrape first.');
+    showEmpty('Could not load catalog', `Make sure ${fileName} exists. Run a scrape first.`);
     return;
   }
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    if (CURRENT_BRAND === 'Hot Wheels') {
+      searchInput.placeholder = 'Search by name, toy #…';
+    } else if (CURRENT_BRAND === 'Pop Race') {
+      searchInput.placeholder = 'Search by name, model #…';
+    } else {
+      searchInput.placeholder = 'Search by name, item #…';
+    }
+  }
+
+  SELECTED.clear();
+  updateSelectionBar();
   populateFilterFacets();
   applyFilters();
+}
+
+async function changeBrand(brand) {
+  if (CURRENT_BRAND === brand && ALL_PRODUCTS.length > 0) return;
+  CURRENT_BRAND = brand;
+  
+  document.querySelectorAll('.brand-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.brand === brand);
+  });
+  
+  await loadProducts();
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -205,6 +247,7 @@ function resetFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('clearSearch').style.display = 'none';
   document.getElementById('manufacturerSelect').value = '';
+  document.getElementById('seriesSelect').value = '';
   document.getElementById('yearSelect').value = '';
   applyFilters();
 }
@@ -212,6 +255,7 @@ function resetFilters() {
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim();
   const manufacturer = document.getElementById('manufacturerSelect').value;
+  const series = document.getElementById('seriesSelect').value;
   const year = document.getElementById('yearSelect').value;
 
   FILTERED = ALL_PRODUCTS.filter(p => {
@@ -226,9 +270,10 @@ function applyFilters() {
       }
     }
 
+    const matchSeries = !series || (p.series || '') === series;
     const matchYear = !year || (p.year || '') === year;
 
-    return matchSearch && matchManufacturer && matchYear;
+    return matchSearch && matchManufacturer && matchSeries && matchYear;
   });
 
   // Update count display
@@ -299,7 +344,29 @@ function buildCard(p) {
        <button class="cr-btn cr-next" onclick="crSlide('${escHtml(num)}',1,event)">&#8250;</button>`
     : '';
 
-  const yearChipHTML = p.year ? `<span class="card-year-chip">${escHtml(p.year)}</span>` : '';
+  // Brand-appropriate label prefix
+  let labelPrefix = 'Item #: ';
+  if (CURRENT_BRAND === 'Hot Wheels') {
+    labelPrefix = 'Toy #: ';
+  } else if (CURRENT_BRAND === 'Pop Race') {
+    labelPrefix = 'Model #: ';
+  }
+
+  // Create badges HTML (e.g. year, line, sub-series, chrome finish)
+  let badgeHTML = '';
+  if (p.year) {
+    badgeHTML += `<span class="card-year-chip">${escHtml(p.year)}</span>`;
+  }
+  if (p.finish && p.finish !== 'Standard') {
+    badgeHTML += `<span class="card-badge finish-${p.finish.toLowerCase().replace(/\s+/g, '-')}">${escHtml(p.finish)}</span>`;
+  }
+  if (p.series_line) {
+    badgeHTML += `<span class="card-badge line-${p.series_line.toLowerCase()}">${escHtml(p.series_line)}</span>`;
+  }
+  if (p.sub_series && p.sub_series !== 'Regular') {
+    badgeHTML += `<span class="card-badge sub-${p.sub_series.toLowerCase().replace(/\s+/g, '-')}">${escHtml(p.sub_series)}</span>`;
+  }
+  const badgesHTML = `<div class="card-badges-container">${badgeHTML}</div>`;
 
   card.innerHTML = `
     <div class="card-media">
@@ -308,7 +375,7 @@ function buildCard(p) {
       </div>
       ${arrowsHTML}
       ${dotsHTML}
-      ${yearChipHTML}
+      ${badgesHTML}
       <label class="card-chk" title="Select for printing">
         <input type="checkbox" id="chk-${escHtml(num)}"
           ${SELECTED.has(num) ? 'checked' : ''}
@@ -317,7 +384,7 @@ function buildCard(p) {
       </label>
     </div>
     <div class="card-info">
-      <div class="card-num">${escHtml(num)}</div>
+      <div class="card-num"><span class="card-num-prefix">${labelPrefix}</span>${escHtml(num)}</div>
       <div class="card-name">${escHtml(name)}</div>
     </div>
   `;
@@ -409,6 +476,7 @@ function updateSelectionBar() {
 // ══════════════════════════════════════════════════════════════════
 function populateFilterFacets() {
   const manufacturers = [...new Set(ALL_PRODUCTS.flatMap(p => p.set_manufacturers || [p.manufacturer]).filter(Boolean))].sort();
+  const seriesList = [...new Set(ALL_PRODUCTS.map(p => p.series).filter(Boolean))].sort();
   const years = [...new Set(ALL_PRODUCTS.map(p => p.year).filter(Boolean))].sort((a, b) => b - a);
 
   function fillSelect(id, list, placeholder) {
@@ -424,6 +492,7 @@ function populateFilterFacets() {
   }
 
   fillSelect('manufacturerSelect', manufacturers, 'All Manufacturers');
+  fillSelect('seriesSelect', seriesList, 'All Series');
   fillSelect('yearSelect', years, 'All Years');
 
   const mSelect = document.getElementById('modalBrandSel');

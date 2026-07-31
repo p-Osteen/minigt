@@ -21,7 +21,7 @@ from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
 from database.db_manager import get_db_session, sync_to_json
-from database.models import Product
+from database.models import MiniGTProduct, HotWheelsProduct, PopRaceProduct, get_product_model
 
 # Suppress SSL warnings (we disable SSL verification for speed)
 warnings.filterwarnings("ignore", message="Unverified HTTPS request")
@@ -66,6 +66,11 @@ class MINI_GTCrawler:
         # Dynamic task counters (fixed progress bug)
         self._total_tasks = 0
         self._completed_tasks = 0
+        self.handlers = {
+            "MINI GT": MiniGTBrandHandler(self),
+            "Hot Wheels": HotWheelsBrandHandler(self),
+            "Pop Race": PopRaceBrandHandler(self),
+        }
 
     # ------------------------------------------------------------------ #
     #  HTTP Session                                                        #
@@ -175,104 +180,21 @@ class MINI_GTCrawler:
     #  Discovery Phase                                                     #
     # ------------------------------------------------------------------ #
 
-    def run_discovery(self) -> None:
-        """Discovers product listing URLs from all three sources."""
+    def run_discovery(self, brand_limit: Optional[str] = None) -> None:
+        """Discovers product listing URLs from the specified brand(s)."""
         logger.info("Starting Crawl Discovery Phase...")
-
-        # 1. Official site brands
-        official_brands = []
-        logger.info("Discovering Official site Brands...")
-        off_html = self.fetch_url(
-            "https://minigt.tsm-models.com/index.php?action=product", use_cache=False
-        )
-        if off_html:
-            soup = BeautifulSoup(off_html, "lxml")
-            brands_dict = {}
-            for link in soup.find_all("a", href=True):
-                href = link["href"]
-                text = link.get_text(strip=True)
-                if "action=product-list" in href:
-                    b_id_match = re.search(r"b_id=(\d+)", href)
-                    if b_id_match:
-                        b_id = b_id_match.group(1)
-                        if text and text not in brands_dict.values():
-                            brands_dict[b_id] = text
-            for b_id, name in brands_dict.items():
-                official_brands.append({"b_id": b_id, "name": name})
-
-        self.crawler_state["discovered_sources"]["official_brands"] = official_brands
-        logger.info(f"Discovered {len(official_brands)} Official Brands.")
-
-        # 2. Fandom Wiki
-        fandom_pages = []
-        logger.info("Discovering Fandom Wiki category pages...")
-        fandom_api = (
-            "https://minigt.fandom.com/api.php"
-            "?action=parse&page=MINI_GT&format=json&prop=text"
-        )
-        api_res = self.fetch_url(fandom_api, use_cache=False)
-        if api_res:
-            try:
-                res_data = json.loads(api_res)
-                html_content = res_data["parse"]["text"]["*"]
-                soup = BeautifulSoup(html_content, "lxml")
-                links = set()
-                for a in soup.find_all("a", href=True):
-                    href = a["href"]
-                    if "/wiki/" in href and not any(
-                        x in href for x in [":", "Main_Page", "Special:", "File:", "Category:"]
-                    ):
-                        page_name = href.split("/wiki/")[-1]
-                        page_name = urllib.parse.unquote(page_name)
-                        links.add(page_name)
-                fandom_pages = list(links)
-            except Exception as e:
-                logger.error(f"Failed to parse Fandom Wiki API: {e}")
-
-        self.crawler_state["discovered_sources"]["fandom_pages"] = fandom_pages
-        logger.info(f"Discovered {len(fandom_pages)} Fandom articles.")
-
-        # 3. MyMiniGT sitemap
-        myminigt_urls = []
-        logger.info("Discovering MyMiniGT catalog items from sitemap...")
-        sitemap_html = self.fetch_url("https://myminigt.com/sitemap.xml", use_cache=True)
-        if sitemap_html:
-            soup = BeautifulSoup(sitemap_html, "lxml-xml")
-            for loc in soup.find_all("loc"):
-                loc_url = loc.get_text(strip=True)
-                if "modelId=" in loc_url:
-                    myminigt_urls.append(loc_url)
-
-        self.crawler_state["discovered_sources"]["myminigt_urls"] = myminigt_urls
-        logger.info(f"Discovered {len(myminigt_urls)} MyMiniGT items.")
-
-        # 4. Build task queue
-        pending: List[Dict] = []
-        crawled = set(self.crawler_state.get("crawled_urls", []))
-
-        for brand in official_brands:
-            pending.append(
-                {
-                    "source": "official_list",
-                    "url": (
-                        f"https://minigt.tsm-models.com/index.php"
-                        f"?action=product-list&b_id={brand['b_id']}&p=1"
-                    ),
-                    "meta": {"brand_name": brand["name"], "b_id": brand["b_id"], "page": 1},
-                }
-            )
-
-        for page in fandom_pages:
-            api_url = (
-                f"https://minigt.fandom.com/api.php"
-                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
-            )
-            pending.append({"source": "fandom", "url": api_url, "meta": {"page_name": page}})
-
-        for url in myminigt_urls:
-            if url not in crawled:
-                pending.append({"source": "myminigt", "url": url, "meta": {}})
-
+        pending = []
+        brands_to_run = [brand_limit] if brand_limit else list(self.handlers.keys())
+        for brand in brands_to_run:
+            handler = self.handlers.get(brand)
+            if not handler:
+                continue
+            logger.info(f"Running discovery for {brand}...")
+            brand_tasks = handler.discover_sources()
+            for task in brand_tasks:
+                task["brand"] = brand
+            pending.extend(brand_tasks)
+            
         self.crawler_state["pending_urls"] = pending
         self.save_state()
         logger.info(f"Discovery Phase complete. Queued {len(pending)} source tasks.")
@@ -292,7 +214,9 @@ class MINI_GTCrawler:
         source: str = "",
         release_year: Optional[int] = None,
         release_year_confidence: Optional[str] = None,
-        status: Optional[str] = None
+        status: Optional[str] = None,
+        toy_brand: str = "MINI GT",
+        sub_series: Optional[str] = None
     ) -> None:
         """
         Saves product to DB, merging if already exists.
@@ -332,6 +256,7 @@ class MINI_GTCrawler:
         brand = brand.strip() or "MINI GT"
         product_name = product_name.strip()
         series = series.strip() or "Regular"
+        sub_series = (sub_series or "Regular").strip()
 
         # --- Deduplicate URLs ---
         seen_urls: Set[str] = set()
@@ -343,23 +268,28 @@ class MINI_GTCrawler:
 
         with db_lock:
             with get_db_session() as session:
+                model_cls = get_product_model(toy_brand)
                 existing = (
-                    session.query(Product)
-                    .filter(Product.item_number == clean_num)
+                    session.query(model_cls)
+                    .filter(model_cls.item_number == clean_num)
                     .first()
                 )
 
                 if existing:
                     # Determine source priorities (lower is higher priority)
-                    prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
-                    incoming_prio = prio_map.get(source, 9)
-                    existing_prio = prio_map.get(existing.source, 9)
+                    if toy_brand == "MINI GT":
+                        prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
+                    else:
+                        prio_map = {"fandom": 1, "diecastsociety": 2}
+                    incoming_prio = prio_map.get(source.lower(), 9)
+                    existing_prio = prio_map.get((existing.source or "").lower(), 9)
 
                     # Overwrite metadata and images if incoming has higher priority
                     if incoming_prio < existing_prio:
                         existing.product_name = product_name
                         existing.brand = brand
                         existing.series = series
+                        existing.sub_series = sub_series
                         existing.scale = scale
                         existing.source = source
                         existing.set_images(clean_img_urls)
@@ -375,6 +305,9 @@ class MINI_GTCrawler:
                         if len(product_name) > len(existing.product_name):
                             existing.product_name = product_name
                         
+                        existing.series = series
+                        if sub_series and sub_series != "Regular":
+                            existing.sub_series = sub_series
                         if existing.release_year is None:
                             existing.release_year = release_year
                             existing.release_year_confidence = release_year_confidence
@@ -388,12 +321,14 @@ class MINI_GTCrawler:
                             existing.status = status
                         logger.debug(f"Ignored lower-priority source data for product {clean_num}")
                 else:
-                    new_prod = Product(
+                    new_prod = model_cls(
+                        toy_brand=toy_brand,
                         item_number=clean_num,
                         product_name=product_name,
                         brand=brand,
                         scale=scale,
                         series=series,
+                        sub_series=sub_series,
                         source=source,
                         release_year=release_year,
                         release_year_confidence=release_year_confidence,
@@ -595,8 +530,12 @@ class MINI_GTCrawler:
             code_idx = name_idx = brand_idx = photo_idx = -1
 
             for idx, h in enumerate(headers):
-                if any(k in h for k in ("code", "item", "number")):
+                if "model #" in h:
                     code_idx = idx
+                elif any(k in h for k in ("code", "item", "number", "toy", "sku")):
+                    code_idx = idx
+                elif h == "model":
+                    name_idx = idx
                 elif any(k in h for k in ("name", "model")):
                     name_idx = idx
                 elif any(k in h for k in ("brand", "marque")):
@@ -770,7 +709,7 @@ class MINI_GTCrawler:
     #  Core Crawler Loop                                                   #
     # ------------------------------------------------------------------ #
 
-    def run_crawler(self) -> None:
+    def run_crawler(self, brand_limit: Optional[str] = None) -> None:
         """
         Runs the concurrent task queue loop with correct progress tracking.
         Supports pause/resume via saved state.
@@ -778,7 +717,7 @@ class MINI_GTCrawler:
         logger.info("Starting Crawl Execution Phase...")
 
         if not self.crawler_state.get("pending_urls"):
-            self.run_discovery()
+            self.run_discovery(brand_limit)
 
         pending_queue: List[Dict] = self.crawler_state["pending_urls"]
         crawled_urls: Set[str] = set(self.crawler_state.get("crawled_urls", []))
@@ -816,25 +755,22 @@ class MINI_GTCrawler:
                     url = task["url"]
                     source = task["source"]
                     meta = task["meta"]
+                    brand = task.get("brand", "MINI GT")
 
                     try:
                         html = future.result()
                         if html:
-                            if source == "official_detail":
-                                self._parse_official_detail(html, meta["brand_page_name"])
-                            elif source == "official_list":
-                                new_tasks = self._parse_official_list(
-                                    html, meta["brand_name"], meta["b_id"], meta["page"]
-                                )
-                                with state_lock:
-                                    pending_queue.extend(new_tasks)
-                                # FIX: update total as new tasks are discovered
-                                with counter_lock:
-                                    self._total_tasks += len(new_tasks)
-                            elif source == "fandom":
-                                self._parse_fandom_page(html, meta["page_name"])
-                            elif source == "myminigt":
-                                self._parse_myminigt_detail(html, url)
+                            handler = self.handlers.get(brand)
+                            if handler:
+                                new_tasks = handler.parse_task(html, task)
+                                if new_tasks:
+                                    for nt in new_tasks:
+                                        nt["brand"] = brand
+                                    with state_lock:
+                                        pending_queue.extend(new_tasks)
+                                    # FIX: update total as new tasks are discovered
+                                    with counter_lock:
+                                        self._total_tasks += len(new_tasks)
 
                             crawled_urls.add(url)
                     except Exception as e:
@@ -868,3 +804,447 @@ class MINI_GTCrawler:
         sync_to_json()
         logger.info("Scrape and sync complete!")
         print("\n[SUCCESS] Scrape and JSON sync complete!")
+
+
+class MiniGTBrandHandler:
+    def __init__(self, crawler: "MINI_GTCrawler"):
+        self.crawler = crawler
+
+    def discover_sources(self) -> List[Dict]:
+        pending = []
+        # 1. Discover Official site brands
+        official_brands = []
+        logger.info("Discovering Official site Brands...")
+        off_html = self.crawler.fetch_url(
+            "https://minigt.tsm-models.com/index.php?action=product", use_cache=False
+        )
+        if off_html:
+            soup = BeautifulSoup(off_html, "lxml")
+            brands_dict = {}
+            for link in soup.find_all("a", href=True):
+                href = link["href"]
+                text = link.get_text(strip=True)
+                if "action=product-list" in href:
+                    b_id_match = re.search(r"b_id=(\d+)", href)
+                    if b_id_match:
+                        b_id = b_id_match.group(1)
+                        if text and text not in brands_dict.values():
+                            brands_dict[b_id] = text
+            for b_id, name in brands_dict.items():
+                official_brands.append({"b_id": b_id, "name": name})
+
+        self.crawler.crawler_state["discovered_sources"]["official_brands"] = official_brands
+        for brand in official_brands:
+            pending.append(
+                {
+                    "source": "official_list",
+                    "url": (
+                        f"https://minigt.tsm-models.com/index.php"
+                        f"?action=product-list&b_id={brand['b_id']}&p=1"
+                    ),
+                    "meta": {"brand_name": brand["name"], "b_id": brand["b_id"], "page": 1},
+                }
+            )
+
+        # 2. Discover Fandom Wiki Category pages
+        fandom_pages = []
+        logger.info("Discovering Fandom Wiki category pages...")
+        fandom_api = (
+            "https://minigt.fandom.com/api.php"
+            "?action=parse&page=MINI_GT&format=json&prop=text"
+        )
+        api_res = self.crawler.fetch_url(fandom_api, use_cache=False)
+        if api_res:
+            try:
+                res_data = json.loads(api_res)
+                html_content = res_data["parse"]["text"]["*"]
+                soup = BeautifulSoup(html_content, "lxml")
+                links = set()
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    if "/wiki/" in href and not any(
+                        x in href for x in [":", "Main_Page", "Special:", "File:", "Category:"]
+                    ):
+                        page_name = href.split("/wiki/")[-1]
+                        page_name = urllib.parse.unquote(page_name)
+                        links.add(page_name)
+                fandom_pages = list(links)
+            except Exception as e:
+                logger.error(f"Failed to parse Fandom Wiki API: {e}")
+        self.crawler.crawler_state["discovered_sources"]["fandom_pages"] = fandom_pages
+        for page in fandom_pages:
+            api_url = (
+                f"https://minigt.fandom.com/api.php"
+                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+            )
+            pending.append({"source": "fandom", "url": api_url, "meta": {"page_name": page}})
+
+        # 3. Discover MyMiniGT sitemaps
+        myminigt_urls = []
+        logger.info("Discovering MyMiniGT catalog items from sitemap...")
+        sitemap_html = self.crawler.fetch_url("https://myminigt.com/sitemap.xml", use_cache=True)
+        if sitemap_html:
+            soup = BeautifulSoup(sitemap_html, "lxml-xml")
+            for loc in soup.find_all("loc"):
+                loc_url = loc.get_text(strip=True)
+                if "modelId=" in loc_url:
+                    myminigt_urls.append(loc_url)
+        self.crawler.crawler_state["discovered_sources"]["myminigt_urls"] = myminigt_urls
+        crawled = set(self.crawler.crawler_state.get("crawled_urls", []))
+        for url in myminigt_urls:
+            if url not in crawled:
+                pending.append({"source": "myminigt", "url": url, "meta": {}})
+
+        return pending
+
+    def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        source = task["source"]
+        meta = task["meta"]
+        url = task["url"]
+        
+        if source == "official_list":
+            return self.crawler._parse_official_list(html_or_json, meta["brand_name"], meta["b_id"], meta["page"])
+        elif source == "official_detail":
+            self.crawler._parse_official_detail(html_or_json, meta["brand_page_name"])
+        elif source == "fandom":
+            self.crawler._parse_fandom_page(html_or_json, meta["page_name"])
+        elif source == "myminigt":
+            self.crawler._parse_myminigt_detail(html_or_json, url)
+        return None
+
+
+class HotWheelsBrandHandler:
+    def __init__(self, crawler: "MINI_GTCrawler"):
+        self.crawler = crawler
+
+    def discover_sources(self) -> List[Dict]:
+        pending = []
+        years = list(range(2020, 2027))
+        for y in years:
+            page = f"List_of_{y}_Hot_Wheels"
+            api_url = (
+                f"https://hotwheels.fandom.com/api.php"
+                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+            )
+            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page, "year": y, "series_group": "By Year"}})
+
+        for y in years:
+            page = f"{y}_Hot_Wheels_Boulevard"
+            api_url = (
+                f"https://hotwheels.fandom.com/api.php"
+                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+            )
+            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page, "year": y, "series_group": "Modern Special Series", "sub_series": "Boulevard"}})
+
+        for y in years:
+            page = f"{y}_Car_Culture"
+            api_url = (
+                f"https://hotwheels.fandom.com/api.php"
+                f"?action=parse&page={urllib.parse.quote(page)}&format=json&prop=text"
+            )
+            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page, "year": y, "series_group": "Modern Special Series", "sub_series": "Car Culture"}})
+
+            page_tt = f"{y}_Car_Culture:_Team_Transport"
+            api_url = (
+                f"https://hotwheels.fandom.com/api.php"
+                f"?action=parse&page={urllib.parse.quote(page_tt)}&format=json&prop=text"
+            )
+            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": page_tt, "year": y, "series_group": "Modern Special Series", "sub_series": "Team Transport"}})
+
+        return pending
+
+    def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        try:
+            res_data = json.loads(html_or_json)
+            if "parse" not in res_data or "text" not in res_data["parse"]:
+                return None
+            html_content = res_data["parse"]["text"]["*"]
+            soup = BeautifulSoup(html_content, "lxml")
+        except Exception as e:
+            logger.error(f"Hot Wheels JSON parse error for {task['meta']['page_name']}: {e}")
+            return None
+
+        meta = task["meta"]
+        page_year = meta.get("year")
+        series_group = meta.get("series_group", "By Year")
+        default_sub_series = meta.get("sub_series", "Regular")
+
+        for table in soup.find_all("table"):
+            headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
+            
+            code_idx = name_idx = series_idx = photo_idx = -1
+            for idx, h in enumerate(headers):
+                if "toy #" in h or h == "toy":
+                    code_idx = idx
+                elif any(k in h for k in ("code", "item", "number", "toy", "sku")):
+                    code_idx = idx
+                elif "model name" in h or h == "model":
+                    name_idx = idx
+                elif any(k in h for k in ("name", "model")):
+                    name_idx = idx
+                elif "series" in h:
+                    series_idx = idx
+                elif any(k in h for k in ("photo", "image", "pic")):
+                    photo_idx = idx
+
+            if code_idx == -1 or name_idx == -1:
+                continue
+
+            for row in table.find_all("tr")[1:]:
+                cells = row.find_all(["td", "th"])
+                if len(cells) <= max(code_idx, name_idx):
+                    continue
+
+                item_number = cells[code_idx].get_text(strip=True)
+                product_name = cells[name_idx].get_text(strip=True)
+
+                if not item_number or not product_name or item_number.strip() == "-":
+                    continue
+
+                series = series_group
+                sub_series = default_sub_series
+                if series_idx != -1 and series_idx < len(cells):
+                    cell_series = cells[series_idx].get_text(" ", strip=True)
+                    series_cleaned = cell_series.split("\n")[0].split("New for")[0].strip()
+                    if series_cleaned and default_sub_series == "Regular":
+                        sub_series = series_cleaned
+
+                img_urls = []
+                if photo_idx != -1 and photo_idx < len(cells):
+                    img_tag = cells[photo_idx].find("img")
+                    if img_tag:
+                        img_url = img_tag.get("data-src") or img_tag.get("src", "")
+                        if img_url and "data:image" not in img_url:
+                            if "/revision/latest" in img_url:
+                                img_url = img_url.split("/revision/latest")[0]
+                            img_urls.append(img_url)
+
+                self.crawler._save_or_merge_product(
+                    item_number=item_number,
+                    product_name=product_name,
+                    brand="Hot Wheels",
+                    scale="1:64",
+                    series=series,
+                    img_urls=img_urls,
+                    source="fandom",
+                    release_year=page_year,
+                    release_year_confidence="confirmed" if page_year else None,
+                    status="Released",
+                    toy_brand="Hot Wheels",
+                    sub_series=sub_series
+                )
+        return None
+
+
+class PopRaceBrandHandler:
+    def __init__(self, crawler: "MINI_GTCrawler"):
+        self.crawler = crawler
+
+    def discover_sources(self) -> List[Dict]:
+        pending = []
+        pages = [
+            "Regular_Collection",
+            "Blind_Box_Series",
+            "Dark_Chrome_Series",
+            "Event_Exclusives",
+            "Enigma",
+            "TS_Exclusives",
+            "Xcartoys_China"
+        ]
+        for p in pages:
+            api_url = (
+                f"https://pop-race.fandom.com/api.php"
+                f"?action=parse&page={urllib.parse.quote(p)}&format=json&prop=text"
+            )
+            pending.append({"source": "fandom_list", "url": api_url, "meta": {"page_name": p, "series": p.replace("_", " ")}})
+
+        for p_idx in range(1, 4):
+            url = f"https://diecastsociety.com/page/{p_idx}/?s=Pop+Race"
+            pending.append({"source": "diecastsociety_search", "url": url, "meta": {"page": p_idx}})
+
+        return pending
+
+    def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        source = task["source"]
+        meta = task["meta"]
+
+        if source == "fandom_list":
+            return self._parse_fandom_list(html_or_json, meta)
+        elif source == "diecastsociety_search":
+            return self._parse_diecastsociety_search(html_or_json)
+        elif source == "diecastsociety_post":
+            self._parse_diecastsociety_post(html_or_json, task["url"])
+        return None
+
+    def _parse_fandom_list(self, html_or_json: str, meta: Dict) -> Optional[List[Dict]]:
+        try:
+            res_data = json.loads(html_or_json)
+            if "parse" not in res_data or "text" not in res_data["parse"]:
+                return None
+            html_content = res_data["parse"]["text"]["*"]
+            soup = BeautifulSoup(html_content, "lxml")
+        except Exception as e:
+            logger.error(f"Pop Race JSON parse error for {meta['page_name']}: {e}")
+            return None
+
+        default_series = meta.get("series", "Regular Collection")
+
+        for table in soup.find_all("table"):
+            headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
+            
+            code_idx = name_idx = make_idx = year_idx = photo_idx = -1
+            for idx, h in enumerate(headers):
+                if "model #" in h:
+                    code_idx = idx
+                elif any(k in h for k in ("code", "item", "number", "toy", "sku")):
+                    code_idx = idx
+                elif h == "model":
+                    name_idx = idx
+                elif any(k in h for k in ("name", "model")):
+                    name_idx = idx
+                elif "make" in h:
+                    make_idx = idx
+                elif "release" in h:
+                    year_idx = idx
+                elif any(k in h for k in ("photo", "image", "pic")):
+                    photo_idx = idx
+
+            if code_idx == -1 or name_idx == -1:
+                continue
+
+            for row in table.find_all("tr")[1:]:
+                cells = row.find_all(["td", "th"])
+                if len(cells) <= max(code_idx, name_idx):
+                    continue
+
+                item_number = cells[code_idx].get_text(strip=True)
+                product_name = cells[name_idx].get_text(strip=True)
+
+                if not item_number or not product_name or item_number.strip() == "-":
+                    continue
+
+                brand = "Pop Race"
+                if make_idx != -1 and make_idx < len(cells):
+                    m_val = cells[make_idx].get_text(strip=True)
+                    if m_val:
+                        brand = m_val
+
+                release_year = None
+                release_year_confidence = None
+                if year_idx != -1 and year_idx < len(cells):
+                    release_val = cells[year_idx].get_text(strip=True)
+                    ym = re.search(r"\b(20\d{2})\b", release_val)
+                    if ym:
+                        release_year = int(ym.group(1))
+                        release_year_confidence = "confirmed"
+
+                img_urls = []
+                if photo_idx != -1 and photo_idx < len(cells):
+                    img_tag = cells[photo_idx].find("img")
+                    if img_tag:
+                        img_url = img_tag.get("data-src") or img_tag.get("src", "")
+                        if img_url and "data:image" not in img_url:
+                            if "/revision/latest" in img_url:
+                                img_url = img_url.split("/revision/latest")[0]
+                            img_urls.append(img_url)
+
+                self.crawler._save_or_merge_product(
+                    item_number=item_number,
+                    product_name=product_name,
+                    brand=brand,
+                    scale="1:64",
+                    series=default_series,
+                    img_urls=img_urls,
+                    source="fandom",
+                    release_year=release_year,
+                    release_year_confidence=release_year_confidence,
+                    status="Released",
+                    toy_brand="Pop Race"
+                )
+        return None
+
+    def _parse_diecastsociety_search(self, html: str) -> List[Dict]:
+        soup = BeautifulSoup(html, "lxml")
+        new_tasks = []
+        for article in soup.find_all("article"):
+            title_node = article.find("h2")
+            if title_node:
+                link_node = title_node.find("a", href=True)
+                if link_node:
+                    url = link_node["href"]
+                    title_text = link_node.get_text(strip=True)
+                    if "pop race" in title_text.lower() or "pop-race" in title_text.lower():
+                        new_tasks.append({
+                            "source": "diecastsociety_post",
+                            "url": url,
+                            "meta": {"title": title_text}
+                        })
+        return new_tasks
+
+    def _parse_diecastsociety_post(self, html: str, post_url: str) -> None:
+        soup = BeautifulSoup(html, "lxml")
+        entry_content = soup.find(class_=re.compile(r"(post-content|entry-content|post-holder)", re.I))
+        if not entry_content:
+            entry_content = soup
+            
+        full_text = entry_content.get_text("\n")
+        
+        all_imgs = entry_content.find_all("img")
+        img_dict = {}
+        for img in all_imgs:
+            src = img.get("src") or img.get("data-src", "")
+            if src and "data:image" not in src:
+                filename = os.path.basename(src).lower().split(".")[0]
+                img_dict[filename] = src
+
+        code_pattern = re.compile(r"\b(PR64\d{3,4}|PRDC\d{2,3}|PR64-[A-Z0-9-]+)\b", re.I)
+        
+        lines = [line.strip() for line in full_text.split("\n") if line.strip()]
+        for line in lines:
+            matches = list(code_pattern.finditer(line))
+            if not matches:
+                continue
+                
+            for i, m in enumerate(matches):
+                code = m.group(1).upper()
+                start_idx = m.end()
+                end_idx = matches[i+1].start() if i+1 < len(matches) else len(line)
+                name_candidate = line[start_idx:end_idx].strip()
+                
+                name_candidate = re.sub(r"^[\s\-–—:#+•/]+", "", name_candidate).strip()
+                if not name_candidate or len(name_candidate) < 3:
+                    continue
+                
+                matched_img = None
+                code_lower = code.lower()
+                for fn, src in img_dict.items():
+                    if code_lower in fn:
+                        matched_img = src
+                        break
+                        
+                img_urls = [matched_img] if matched_img else []
+                
+                release_year = None
+                release_year_confidence = None
+                title_text = post_url
+                title_node = soup.find("h1")
+                if title_node:
+                    title_text = title_node.get_text(strip=True)
+                ym = re.search(r"\b(20\d{2})\b", title_text)
+                if ym:
+                    release_year = int(ym.group(1))
+                    release_year_confidence = "inferred"
+                
+                self.crawler._save_or_merge_product(
+                    item_number=code,
+                    product_name=name_candidate,
+                    brand="Pop Race",
+                    scale="1:64",
+                    series="Pre-Order",
+                    img_urls=img_urls,
+                    source="diecastsociety",
+                    release_year=release_year,
+                    release_year_confidence=release_year_confidence,
+                    status="Pre-Order",
+                    toy_brand="Pop Race"
+                )

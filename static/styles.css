@@ -753,12 +753,58 @@ body {
   }
 }
 
-/* ── Year Chip & Responsive Filters ─────────────────────────── */
-.card-year-chip {
+/* ── Brand Switching Tabs ───────────────────────────────────── */
+.brand-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  padding: 2px;
+  border-radius: 8px;
+  gap: 2px;
+  margin: 0 16px;
+}
+
+.brand-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: -0.01em;
+}
+
+.brand-tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.brand-tab.active {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(79, 126, 255, 0.3);
+}
+
+/* ── Badges & Chips ────────────────────────────────────────── */
+.card-badges-container {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(8, 12, 23, 0.75);
+  left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.card-year-chip {
+  background: rgba(8, 12, 23, 0.85);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   color: var(--accent);
@@ -767,19 +813,95 @@ body {
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 4px;
-  z-index: 5;
-  pointer-events: none;
   letter-spacing: 0.02em;
+}
+
+.card-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Line / Assortment Badges */
+.card-badge.line-premium {
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.card-badge.line-mainline {
+  background: rgba(144, 238, 144, 0.15);
+  color: #90ee90;
+  border: 1px solid rgba(144, 238, 144, 0.3);
+}
+
+/* Finish Badges */
+.card-badge.finish-zamac {
+  background: rgba(224, 224, 224, 0.2);
+  color: #e0e0e0;
+  border: 1px solid rgba(224, 224, 224, 0.4);
+}
+.card-badge.finish-chrome,
+.card-badge.finish-purple-chrome,
+.card-badge.finish-dark-chrome {
+  background: rgba(230, 230, 250, 0.2);
+  color: #e6e6fa;
+  border: 1px solid rgba(230, 230, 250, 0.4);
+  box-shadow: 0 0 8px rgba(230, 230, 250, 0.3);
+}
+.card-badge.finish-super-treasure-hunt {
+  background: rgba(255, 69, 0, 0.2);
+  color: #ff4500;
+  border: 1px solid rgba(255, 69, 0, 0.4);
+  box-shadow: 0 0 8px rgba(255, 69, 0, 0.4);
+}
+.card-badge.finish-treasure-hunt {
+  background: rgba(0, 206, 209, 0.2);
+  color: #00ced1;
+  border: 1px solid rgba(0, 206, 209, 0.4);
+}
+
+/* Sub-series / Collaborations */
+.card-badge.sub-rwb {
+  background: rgba(255, 20, 147, 0.15);
+  color: #ff1493;
+  border: 1px solid rgba(255, 20, 147, 0.3);
+}
+.card-badge.sub-singer {
+  background: rgba(30, 144, 255, 0.15);
+  color: #1e90ff;
+  border: 1px solid rgba(30, 144, 255, 0.3);
+}
+.card-badge.sub-bape {
+  background: rgba(210, 180, 140, 0.15);
+  color: #d2b48c;
+  border: 1px solid rgba(210, 180, 140, 0.3);
+}
+.card-badge.sub-evangelion-racing {
+  background: rgba(138, 43, 226, 0.2);
+  color: #8a2be2;
+  border: 1px solid rgba(138, 43, 226, 0.4);
+}
+
+/* Card layout enhancements */
+.card-num-prefix {
+  color: var(--text-faint);
+  font-weight: 500;
+  margin-right: 4px;
 }
 
 @media (max-width: 800px) {
   :root {
-    --filter-h: 96px;
+    --filter-h: 112px;
   }
   .filter-bar {
-    height: 96px;
+    height: 112px;
     flex-wrap: wrap;
-    padding: 8px 16px;
+    padding: 10px 16px;
     gap: 8px;
     align-content: center;
   }
@@ -789,6 +911,8 @@ body {
   }
   .filter-bar .filter-select {
     flex: 1;
-    min-width: 120px;
+    min-width: 80px;
+    font-size: 12px;
+    padding: 0 6px;
   }
 }

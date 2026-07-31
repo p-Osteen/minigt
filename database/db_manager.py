@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from typing import Generator
 from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker, Session
-from database.models import Base, Product
+from database.models import Base, MiniGTProduct, HotWheelsProduct, PopRaceProduct, get_product_model
 
 DB_DIR = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(DB_DIR, exist_ok=True)
@@ -37,29 +37,62 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 logger = logging.getLogger("db_manager")
 
 
+def migrate_to_separate_tables() -> None:
+    """Migrate unified products table into separate per-brand tables."""
+    inspector = inspect(engine)
+    table_names = inspector.get_table_names()
+    
+    # 1. Initialize the new tables if they don't exist
+    Base.metadata.create_all(bind=engine)
+    
+    if "products" in table_names:
+        logger.info("Found old 'products' table. Migrating data to brand-specific tables...")
+        with get_db_session() as session:
+            conn = session.connection()
+            result = conn.execute(text("SELECT * FROM products"))
+            columns = result.keys()
+            rows = result.fetchall()
+            
+            migrated_count = 0
+            for row in rows:
+                p_dict = dict(zip(columns, row))
+                toy_brand = p_dict.get("toy_brand", "MINI GT")
+                model_cls = get_product_model(toy_brand)
+                
+                item_num = p_dict.get("item_number")
+                existing = session.query(model_cls).filter(model_cls.item_number == item_num).first()
+                if not existing:
+                    new_item = model_cls(
+                        item_number=item_num,
+                        product_name=p_dict.get("product_name"),
+                        brand=p_dict.get("brand"),
+                        scale=p_dict.get("scale", "1:64"),
+                        series=p_dict.get("series"),
+                        sub_series=p_dict.get("sub_series") or "Regular",
+                        images=p_dict.get("images"),
+                        source=p_dict.get("source"),
+                        release_year=p_dict.get("release_year"),
+                        release_year_confidence=p_dict.get("release_year_confidence"),
+                        status=p_dict.get("status"),
+                        is_cancelled=bool(p_dict.get("is_cancelled", 0)),
+                        toy_brand=toy_brand
+                    )
+                    session.add(new_item)
+                    migrated_count += 1
+            
+            logger.info(f"Successfully migrated {migrated_count} records to brand tables.")
+            
+        # Drop the old products table
+        logger.info("Dropping old 'products' table...")
+        with engine.begin() as conn:
+            conn.execute(text("DROP TABLE products"))
+        logger.info("Old 'products' table dropped successfully.")
+
+
 def init_db() -> None:
     """Creates database tables and indexes if they do not exist, migrating columns if needed."""
     try:
-        # Run composite key schema migration
-        from database.migration import run_migration
-        run_migration()
-
-        inspector = inspect(engine)
-        if "products" in inspector.get_table_names():
-            existing_cols = [c["name"] for c in inspector.get_columns("products")]
-            cols_to_add = {
-                "release_year": "INTEGER",
-                "release_year_confidence": "VARCHAR",
-                "status": "VARCHAR",
-                "is_cancelled": "BOOLEAN DEFAULT 0"
-            }
-            for col_name, col_type in cols_to_add.items():
-                if col_name not in existing_cols:
-                    logger.info(f"Migrating products table: adding {col_name} column...")
-                    with engine.begin() as conn:
-                        conn.execute(text(f"ALTER TABLE products ADD COLUMN {col_name} {col_type}"))
-
-        Base.metadata.create_all(bind=engine)
+        migrate_to_separate_tables()
         logger.info("SQLite database tables and indexes initialized.")
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
@@ -99,7 +132,7 @@ def deduplicate_database() -> None:
         from database.classify import is_cancelled_product
 
         with get_db_session() as session:
-            products = session.query(Product).filter(Product.toy_brand == "MINI GT").all()
+            products = session.query(MiniGTProduct).all()
             if not products:
                 return
 
@@ -193,26 +226,39 @@ def sync_to_json() -> None:
         poprace_data = []
         
         with get_db_session() as session:
-            products = session.query(Product).all()
+            minigt_prods = session.query(MiniGTProduct).all()
+            hotwheels_prods = session.query(HotWheelsProduct).all()
+            poprace_prods = session.query(PopRaceProduct).all()
             
             # 1. Classification
-            from database.classify import get_manufacturers
+            from database.classify import get_manufacturers, classify_product
             
-            for p in products:
+            for p in minigt_prods:
                 d = p.to_dict()
-                
-                # Apply classification rules
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
                 d["set_manufacturers"] = m_list
                 d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d = classify_product(d, p.toy_brand)
+                minigt_data.append(d)
                 
-                if p.toy_brand == "Hot Wheels":
-                    hotwheels_data.append(d)
-                elif p.toy_brand == "Pop Race":
-                    poprace_data.append(d)
-                else:
-                    minigt_data.append(d)
+            for p in hotwheels_prods:
+                d = p.to_dict()
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                d["manufacturer"] = m_primary
+                d["set_manufacturers"] = m_list
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d = classify_product(d, p.toy_brand)
+                hotwheels_data.append(d)
+                
+            for p in poprace_prods:
+                d = p.to_dict()
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                d["manufacturer"] = m_primary
+                d["set_manufacturers"] = m_list
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d = classify_product(d, p.toy_brand)
+                poprace_data.append(d)
             
             # 2. Sorting
             # MINI GT sorting (existing custom sort_key logic)
@@ -316,7 +362,7 @@ def purge_d_prefix_products() -> int:
     try:
         with get_db_session() as session:
             # Find all D-prefix products
-            all_products = session.query(Product).all()
+            all_products = session.query(MiniGTProduct).all()
             d_items = [p for p in all_products if re.match(r'^D', p.item_number, re.IGNORECASE)]
 
             if not d_items:
@@ -374,13 +420,20 @@ def clear_all_data() -> None:
         except Exception as e:
             print(f"[ERROR] Failed to remove products.db: {e}")
 
-    # 2. Delete JSON file
-    if os.path.exists(JSON_PATH):
-        try:
-            os.remove(JSON_PATH)
-            print("[x] Removed JSON database products.json")
-        except Exception as e:
-            print(f"[ERROR] Failed to remove products.json: {e}")
+    # 2. Delete JSON files
+    json_files = [
+        JSON_PATH,
+        os.path.join(DB_DIR, "products_minigt.json"),
+        os.path.join(DB_DIR, "products_hotwheels.json"),
+        os.path.join(DB_DIR, "products_poprace.json")
+    ]
+    for jp in json_files:
+        if os.path.exists(jp):
+            try:
+                os.remove(jp)
+                print(f"[x] Removed JSON database {os.path.basename(jp)}")
+            except Exception as e:
+                print(f"[ERROR] Failed to remove {os.path.basename(jp)}: {e}")
 
     # 3. Delete folders: images/, cache/, logs/, exports/
     workspace_root = os.path.dirname(DB_DIR)
@@ -424,3 +477,25 @@ def clear_all_data() -> None:
     SessionLocal.configure(bind=engine)
     init_db()
     print("[SUCCESS] All local data cleared and database re-initialized.")
+
+
+def clear_brand_data(toy_brand: str) -> None:
+    """
+    Clears all records for a specific toy brand from its SQLite table
+    and regenerates the corresponding JSON export.
+    """
+    model_cls = get_product_model(toy_brand)
+    print(f"\n--- Clearing Local Catalog Data for {toy_brand} ---")
+    try:
+        with get_db_session() as session:
+            # Delete all rows from this brand's table
+            deleted_count = session.query(model_cls).delete()
+            logger.info(f"Cleared {deleted_count} records from {model_cls.__tablename__} table.")
+            print(f"[x] Removed {deleted_count} records from database.")
+        
+        # Regenerate JSON files
+        sync_to_json()
+        print(f"[SUCCESS] JSON catalog for {toy_brand} regenerated.")
+    except Exception as e:
+        logger.error(f"Failed to clear data for {toy_brand}: {e}")
+        print(f"[ERROR] Clear failed: {e}")
