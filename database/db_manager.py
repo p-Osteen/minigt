@@ -8,7 +8,11 @@ from contextlib import contextmanager
 from typing import Generator
 from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker, Session
-from database.models import Base, MiniGTProduct, HotWheelsProduct, PopRaceProduct, get_product_model
+from database.models import (
+    Base, MiniGTProduct, HotWheelsProduct, PopRaceProduct,
+    TarmacWorksProduct, Inno64Product, TrendsHobbyProduct,
+    get_product_model
+)
 
 DB_DIR = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(DB_DIR, exist_ok=True)
@@ -224,11 +228,17 @@ def sync_to_json() -> None:
         minigt_data = []
         hotwheels_data = []
         poprace_data = []
+        tarmacworks_data = []
+        inno64_data = []
+        trendshobby_data = []
         
         with get_db_session() as session:
             minigt_prods = session.query(MiniGTProduct).all()
             hotwheels_prods = session.query(HotWheelsProduct).all()
             poprace_prods = session.query(PopRaceProduct).all()
+            tarmacworks_prods = session.query(TarmacWorksProduct).all()
+            inno64_prods = session.query(Inno64Product).all()
+            trendshobby_prods = session.query(TrendsHobbyProduct).all()
             
             # 1. Classification
             from database.classify import get_manufacturers, classify_product
@@ -237,7 +247,6 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["set_manufacturers"] = m_list
                 d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
                 d = classify_product(d, p.toy_brand)
                 minigt_data.append(d)
@@ -246,7 +255,6 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["set_manufacturers"] = m_list
                 d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
                 d = classify_product(d, p.toy_brand)
                 hotwheels_data.append(d)
@@ -255,10 +263,33 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["set_manufacturers"] = m_list
                 d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
                 d = classify_product(d, p.toy_brand)
                 poprace_data.append(d)
+
+            for p in tarmacworks_prods:
+                d = p.to_dict()
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                d["manufacturer"] = m_primary
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d = classify_product(d, p.toy_brand)
+                tarmacworks_data.append(d)
+
+            for p in inno64_prods:
+                d = p.to_dict()
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                d["manufacturer"] = m_primary
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d = classify_product(d, p.toy_brand)
+                inno64_data.append(d)
+
+            for p in trendshobby_prods:
+                d = p.to_dict()
+                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
+                d["manufacturer"] = m_primary
+                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d = classify_product(d, p.toy_brand)
+                trendshobby_data.append(d)
             
             # 2. Sorting
             # MINI GT sorting (existing custom sort_key logic)
@@ -317,11 +348,33 @@ def sync_to_json() -> None:
                 return (-year_num, p_dict.get("item_number", "") or "")
                 
             poprace_data.sort(key=poprace_sort_key)
+
+            # Tarmac Works sorting: release_year desc (nulls last), then item_number
+            def tarmacworks_sort_key(p_dict):
+                year_val = p_dict.get("release_year")
+                year_num = year_val if year_val is not None else 0
+                return (-year_num, p_dict.get("item_number", "") or "")
+
+            tarmacworks_data.sort(key=tarmacworks_sort_key)
+
+            # INNO64 sorting: release_year desc (nulls last), then item_number
+            def inno64_sort_key(p_dict):
+                year_val = p_dict.get("release_year")
+                year_num = year_val if year_val is not None else 0
+                return (-year_num, p_dict.get("item_number", "") or "")
+
+            inno64_data.sort(key=inno64_sort_key)
+
+            # Trends Hobby sorting: item_number
+            trendshobby_data.sort(key=lambda p_dict: p_dict.get("item_number", "") or "")
             
         # Write files
         minigt_path = os.path.join(DB_DIR, "products_minigt.json")
         hotwheels_path = os.path.join(DB_DIR, "products_hotwheels.json")
         poprace_path = os.path.join(DB_DIR, "products_poprace.json")
+        tarmacworks_path = os.path.join(DB_DIR, "products_tarmacworks.json")
+        inno64_path = os.path.join(DB_DIR, "products_inno64.json")
+        trendshobby_path = os.path.join(DB_DIR, "products_trendshobby.json")
         
         with open(minigt_path, "w", encoding="utf-8") as f:
             json.dump(minigt_data, f, indent=2, ensure_ascii=False)
@@ -329,12 +382,23 @@ def sync_to_json() -> None:
             json.dump(hotwheels_data, f, indent=2, ensure_ascii=False)
         with open(poprace_path, "w", encoding="utf-8") as f:
             json.dump(poprace_data, f, indent=2, ensure_ascii=False)
+        with open(tarmacworks_path, "w", encoding="utf-8") as f:
+            json.dump(tarmacworks_data, f, indent=2, ensure_ascii=False)
+        with open(inno64_path, "w", encoding="utf-8") as f:
+            json.dump(inno64_data, f, indent=2, ensure_ascii=False)
+        with open(trendshobby_path, "w", encoding="utf-8") as f:
+            json.dump(trendshobby_data, f, indent=2, ensure_ascii=False)
             
         # Compatibility backup
         with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump(minigt_data, f, indent=2, ensure_ascii=False)
             
-        logger.info(f"Synchronized brand JSONs: MINI GT ({len(minigt_data)}), Hot Wheels ({len(hotwheels_data)}), Pop Race ({len(poprace_data)})")
+        logger.info(
+            f"Synchronized brand JSONs: MINI GT ({len(minigt_data)}), "
+            f"Hot Wheels ({len(hotwheels_data)}), Pop Race ({len(poprace_data)}), "
+            f"Tarmac Works ({len(tarmacworks_data)}), INNO64 ({len(inno64_data)}), "
+            f"Trends Hobby ({len(trendshobby_data)})"
+        )
     except Exception as e:
         logger.error(f"Failed to synchronize database to JSON: {e}")
 
@@ -425,7 +489,10 @@ def clear_all_data() -> None:
         JSON_PATH,
         os.path.join(DB_DIR, "products_minigt.json"),
         os.path.join(DB_DIR, "products_hotwheels.json"),
-        os.path.join(DB_DIR, "products_poprace.json")
+        os.path.join(DB_DIR, "products_poprace.json"),
+        os.path.join(DB_DIR, "products_tarmacworks.json"),
+        os.path.join(DB_DIR, "products_inno64.json"),
+        os.path.join(DB_DIR, "products_trendshobby.json")
     ]
     for jp in json_files:
         if os.path.exists(jp):

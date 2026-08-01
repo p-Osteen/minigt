@@ -22,6 +22,7 @@ class ProductMixin:
     status = Column(String, nullable=True)
     is_cancelled = Column(Boolean, default=False, index=True)
     toy_brand = Column(String, nullable=False, index=True)
+    attributes = Column(Text, nullable=True) # JSON-encoded extra attributes
 
     @property
     def image_list(self) -> List[str]:
@@ -36,7 +37,7 @@ class ProductMixin:
         self.images = json.dumps(paths, ensure_ascii=False)
 
     def to_dict(self) -> dict:
-        return {
+        base_dict = {
             "toy_brand": self.toy_brand,
             "item_number": self.item_number,
             "product_name": self.product_name,
@@ -51,6 +52,14 @@ class ProductMixin:
             "status": self.status or "Released",
             "is_cancelled": bool(self.is_cancelled)
         }
+        if self.attributes:
+            try:
+                extra = json.loads(self.attributes)
+                if isinstance(extra, dict):
+                    base_dict.update(extra)
+            except Exception:
+                pass
+        return base_dict
 
 class MiniGTProduct(Base, ProductMixin):
     __tablename__ = "minigt_products"
@@ -82,14 +91,51 @@ class PopRaceProduct(Base, ProductMixin):
             Index(f"idx_{cls.__tablename__}_brand_scale", "brand", "scale"),
         )
 
+class TarmacWorksProduct(Base, ProductMixin):
+    __tablename__ = "tarmacworks_products"
+
+    @declared_attr
+    def __table_args__(cls):
+        return (
+            Index(f"idx_{cls.__tablename__}_brand_series", "brand", "series"),
+            Index(f"idx_{cls.__tablename__}_brand_scale", "brand", "scale"),
+        )
+
+class Inno64Product(Base, ProductMixin):
+    __tablename__ = "inno64_products"
+
+    @declared_attr
+    def __table_args__(cls):
+        return (
+            Index(f"idx_{cls.__tablename__}_brand_series", "brand", "series"),
+            Index(f"idx_{cls.__tablename__}_brand_scale", "brand", "scale"),
+        )
+
+class TrendsHobbyProduct(Base, ProductMixin):
+    __tablename__ = "trendshobby_products"
+
+    @declared_attr
+    def __table_args__(cls):
+        return (
+            Index(f"idx_{cls.__tablename__}_brand_series", "brand", "series"),
+            Index(f"idx_{cls.__tablename__}_brand_scale", "brand", "scale"),
+        )
+
 BRAND_MODELS = {
     "MINI GT": MiniGTProduct,
     "Hot Wheels": HotWheelsProduct,
     "Pop Race": PopRaceProduct,
+    "Tarmac Works": TarmacWorksProduct,
+    "INNO64": Inno64Product,
+    "Trends Hobby": TrendsHobbyProduct,
 }
 
 def get_product_model(toy_brand: str):
     """Retrieves the specific product model class for a toy brand name."""
+    # Exact match first
+    if toy_brand in BRAND_MODELS:
+        return BRAND_MODELS[toy_brand]
+    # Case-insensitive substring match
     brand_clean = toy_brand.lower()
     for k, model in BRAND_MODELS.items():
         if k.lower() in brand_clean:
