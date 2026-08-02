@@ -10,6 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="static/styles.css?v=1.0.2">
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 </head>
 <body>
 
@@ -185,6 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadProducts() {
+  ALL_PRODUCTS = [];
+  FILTERED = [];
+  SELECTED.clear();
+  updateSelectionBar();
+  const grid = document.getElementById('productGrid');
+  if (grid) grid.innerHTML = '';
+
   const brandFileMap = {
     'MINI GT': 'products_minigt.json',
     'Hot Wheels': 'products_hotwheels.json',
@@ -199,8 +208,14 @@ async function loadProducts() {
     const res = await fetch(`database/${fileName}?v=` + Date.now());
     if (!res.ok) throw new Error(res.statusText);
     ALL_PRODUCTS = await res.json();
+    if (!ALL_PRODUCTS || ALL_PRODUCTS.length === 0) {
+      showEmpty('No models available yet', 'Our devs are hard at work!', 'assets/no_data.lottie');
+      populateFilterFacets();
+      return;
+    }
   } catch (e) {
-    showEmpty('Could not load catalog', `Make sure ${fileName} exists. Run a scrape first.`);
+    showEmpty('No models available yet', 'Our devs are hard at work!', 'assets/no_data.lottie');
+    populateFilterFacets();
     return;
   }
 
@@ -283,7 +298,28 @@ const DEPENDENT_FILTERS = {
   'sub_category': 'category'
 };
 
+function updateDependentFiltersConfig() {
+  delete DEPENDENT_FILTERS['brand'];
+  if (CURRENT_BRAND === 'Pop Race') {
+    DEPENDENT_FILTERS['brand'] = 'make';
+  }
+}
+
+function handleFilterChange(changedKey) {
+  for (const [childKey, parentKey] of Object.entries(DEPENDENT_FILTERS)) {
+    if (parentKey === changedKey) {
+      const childSelect = document.getElementById(`filter-${childKey}`);
+      if (childSelect && childSelect.value !== "") {
+        childSelect.value = "";
+        handleFilterChange(childKey);
+      }
+    }
+  }
+  applyFilters();
+}
+
 function populateFilterFacets() {
+  updateDependentFiltersConfig();
   const container = document.getElementById('dynamicFiltersContainer');
   container.innerHTML = '';
   ACTIVE_FILTER_KEYS = [];
@@ -302,8 +338,17 @@ function populateFilterFacets() {
     'model_type', 'vehicle_type', 'description', 'collection', 'region',
     'tags', 'product_type'
   ]);
+
+  if (CURRENT_BRAND === 'Hot Wheels') {
+    excludeKeys.add('brand');
+  }
+  if (CURRENT_BRAND === 'Pop Race') {
+    excludeKeys.add('status');
+  }
+
   // Human-friendly labels for filter keys
   const filterLabels = {
+    'make': 'Make',
     'release_year': 'Year',
     'brand': 'Brand',
     'series': 'Series',
@@ -311,6 +356,7 @@ function populateFilterFacets() {
     'scale': 'Scale',
     'status': 'Status'
   };
+
   const keyValues = {};
 
   ALL_PRODUCTS.forEach(p => {
@@ -331,7 +377,7 @@ function populateFilterFacets() {
 
   // 2. Build select dropdowns for keys that have > 1 unique value
   // We sort keys to put important ones first
-  const priority = ['brand', 'series', 'sub_series', 'release_year', 'scale', 'status'];
+  const priority = ['make', 'brand', 'series', 'sub_series', 'release_year', 'scale', 'status'];
   const sortedKeys = Object.keys(keyValues).sort((a, b) => {
     let ia = priority.indexOf(a);
     let ib = priority.indexOf(b);
@@ -343,7 +389,7 @@ function populateFilterFacets() {
 
   sortedKeys.forEach(key => {
     const vals = Array.from(keyValues[key]).sort();
-    if (vals.length < 2 && key !== 'brand') return; // Skip trivial filters
+    if (vals.length < 2 && key !== 'brand' && key !== 'make') return; // Skip trivial filters
 
     ACTIVE_FILTER_KEYS.push(key);
 
@@ -356,7 +402,7 @@ function populateFilterFacets() {
     const select = document.createElement('select');
     select.id = `filter-${key}`;
     select.className = 'filter-select-full';
-    select.onchange = applyFilters;
+    select.onchange = () => handleFilterChange(key);
     
     const isDependent = Object.keys(DEPENDENT_FILTERS).includes(key);
     
@@ -606,15 +652,55 @@ function buildCard(p) {
   return card;
 }
 
-function showEmpty(title, body) {
+function showEmpty(title, body, lottiePath = null) {
   const grid = document.getElementById('productGrid');
+  if (!grid) return;
+  
+  let mediaHtml = `
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem;">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  `;
+  
+  if (lottiePath) {
+    if (lottiePath.endsWith('.lottie')) {
+      mediaHtml = `
+        <dotlottie-player 
+          src="${lottiePath}" 
+          background="transparent" 
+          speed="1" 
+          style="width: 200px; height: 200px; margin: 0 auto 1.5rem;" 
+          loop 
+          autoplay>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 76px auto; animation: spin 2s linear infinite;">
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+            <circle cx="12" cy="12" r="10" stroke-dasharray="30" stroke-dashoffset="10"/>
+          </svg>
+        </dotlottie-player>
+      `;
+    } else {
+      mediaHtml = `
+        <lottie-player 
+          src="${lottiePath}" 
+          background="transparent" 
+          speed="1" 
+          style="width: 200px; height: 200px; margin: 0 auto 1.5rem;" 
+          loop 
+          autoplay>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 76px auto; animation: spin 2s linear infinite;">
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+            <circle cx="12" cy="12" r="10" stroke-dasharray="30" stroke-dashoffset="10"/>
+          </svg>
+        </lottie-player>
+      `;
+    }
+  }
+  
   grid.innerHTML = `
-    <div class="state-empty">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <h4>${escHtml(title)}</h4>
-      <p>${escHtml(body)}</p>
+    <div class="state-empty" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+      ${mediaHtml}
+      <h4 style="margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 600; color: var(--text-color);">${escHtml(title)}</h4>
+      <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;">${escHtml(body)}</p>
     </div>`;
 }
 

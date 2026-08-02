@@ -230,7 +230,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2019"
@@ -296,7 +296,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2018"
@@ -318,7 +318,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Toyota",
     "year": "2019"
@@ -340,7 +340,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2018"
@@ -384,7 +384,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2019"
@@ -406,7 +406,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2018"
@@ -428,7 +428,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2018"
@@ -450,7 +450,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2019"
@@ -472,7 +472,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Pre-Order",
+    "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2019"
@@ -1259,8 +1259,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Lamborghini",
     "year": "2019"
   },
@@ -1345,25 +1345,6 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "MGT00063PTE",
-    "product_name": "Porsche 911 GT2 RS Weissach Package GT Silver Metallic Porsche New Taipei",
-    "brand": "Website Unlisted Models",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/86/MGT00063-PTE.jpg/revision/latest?cb=20220716144457"
-    ],
-    "source": "fandom",
-    "release_year": null,
-    "release_year_confidence": null,
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Porsche",
-    "year": null
-  },
-  {
-    "toy_brand": "MINI GT",
     "item_number": "MGT00063",
     "product_name": "Porsche 911 GT2 RS Weissach Package  GT Silver Metallic",
     "brand": "Porsche",
@@ -1384,6 +1365,25 @@
     "is_cancelled": false,
     "manufacturer": "Porsche",
     "year": "2019"
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "MGT00063PTE",
+    "product_name": "Porsche 911 GT2 RS Weissach Package GT Silver Metallic Porsche New Taipei",
+    "brand": "Website Unlisted Models",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://static.wikia.nocookie.net/minigt/images/8/86/MGT00063-PTE.jpg/revision/latest?cb=20220716144457"
+    ],
+    "source": "fandom",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Released",
+    "is_cancelled": false,
+    "manufacturer": "Porsche",
+    "year": null
   },
   {
     "toy_brand": "MINI GT",
@@ -1724,8 +1724,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Lamborghini",
     "year": "2019"
   },
@@ -1743,8 +1743,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Lamborghini",
     "year": "2019"
   },
@@ -1803,8 +1803,8 @@
     "source": "myminigt",
     "release_year": 2020,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Lamborghini",
     "year": "2020"
   },
@@ -1879,12 +1879,17 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1605305273_18595.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400782_185236.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400783_18594.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400783_185439.JPG"
+    ],
     "source": "official",
     "release_year": 2020,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Nissan",
     "year": "2020"
   },
@@ -4514,12 +4519,17 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1622152764_236533.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354731_236197.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354731_236977.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354734_236301.JPG"
+    ],
     "source": "official",
     "release_year": 2021,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Toyota",
     "year": "2021"
   },
@@ -6849,12 +6859,17 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/6a0d931fae361f38db720c9327f4e82420250510040225915.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160775_346834.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160783_34654.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160792_346989.JPG"
+    ],
     "source": "official",
     "release_year": 2021,
     "release_year_confidence": "confirmed",
-    "status": "Cancelled",
-    "is_cancelled": true,
+    "status": "Released",
+    "is_cancelled": false,
     "manufacturer": "Nissan",
     "year": "2021"
   },
@@ -7037,21 +7052,26 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGT00320",
-    "product_name": "Land Rover Defender 90 Pickup",
+    "product_name": "Land Rover Defender 90 Pickup - 2021 Christmas Edition",
     "brand": "Land Rover",
     "scale": "1:64",
     "series": "REGULAR GIFT BOX",
     "sub_series": "Regular",
     "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/f32774a7-7e7a-45cb-9b8d-57bfaf79b6e0"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1634273519_363915.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1634273548_363863.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1634273558_363760.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1634273567_363543.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1634273578_363134.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1634273590_363357.JPG"
     ],
-    "source": "myminigt",
+    "source": "official",
     "release_year": 2021,
-    "release_year_confidence": "confirmed",
+    "release_year_confidence": "inferred",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Land Rover",
-    "year": "2021"
+    "year": null
   },
   {
     "toy_brand": "MINI GT",
@@ -14137,7 +14157,7 @@
     "product_name": "BMW M4 GT3 #97 Turner Motorsport  IMSA 2023  Laguna Seca GTD 2nd Place",
     "brand": "BMW",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/600939b62b05df523925f58929179c7520240908161245419.JPG",
@@ -15099,7 +15119,7 @@
     "product_name": "Honda NSX GT3 EVO22 #18 \"UPGARAGE NSX GT3\" TEAM UPGARAGE 2023 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "SUPER GT SERIES",
+    "series": "REGULAR EXCLUSIVE PRODUCT",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/f82a10924c247e63568b8446e937a09420241127181719542.jpg",
@@ -18503,7 +18523,7 @@
     "product_name": "Honda NSX-GT \"TYPE S\" GT500 #16 \"Red Bull MOTUL MUGEN NSX-GT \"  TEAM Red Bull MUGEN  2022 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "SUPER GT SERIES",
+    "series": "Regular",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/a0ad886259c7d37cb0fc4f8c07b04ec320250419193319011.jpg",
@@ -20019,15 +20039,17 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGT00917",
-    "product_name": "Aston Martin DBS \r\n“Casino Royale”",
-    "brand": "Aston Martin",
+    "product_name": "Aston Martin DBS “Casino Royale”",
+    "brand": "007 Movie Car",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/0b133356-e003-4e56-8b45-6a53910eb018"
+      "https://minigt.tsm-models.com/upload/picfile_list/556c96c907b3cfa2afe13181aef45a9d20260506054713945.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/397d08e6c82dc885bee1dbd9efb49e3420260506054713947.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/502c720741e35313f22a7c15fe6ecb7220260506054713949.JPG"
     ],
-    "source": "myminigt",
+    "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
     "status": "Pre-Order",
@@ -23349,17 +23371,20 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGT01078",
-    "product_name": "Subaru Impreza WRC99#23 \n2000 Acropolis Rally",
-    "brand": "Subaru",
+    "product_name": "Subaru Impreza WRC99 #23  2000 Acropolis Rally",
+    "brand": "SUBARU",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/c/c0/1078-1.png/revision/latest?cb=20250715074054"
+      "https://minigt.tsm-models.com/upload/picfile_list/819641e590c6b89282edac28879be26b20251213024228141.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/1c742f15ee67e13b5e84e82b1ff5c7c220250720224357132.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/55109dea350ba8a35e4693e733da5b0c20250720224357135.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/c4d9b9ebb5b3a1dbe9c7abe3feef8d1420250720224357140.JPG"
     ],
-    "source": "fandom",
-    "release_year": null,
-    "release_year_confidence": null,
+    "source": "official",
+    "release_year": 2000,
+    "release_year_confidence": "inferred",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Subaru",
@@ -25293,7 +25318,7 @@
     "product_name": "Acura ARX-06 GTP #93 Acura Meyer Shank Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "Acura",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/36fc062f5e053feb686b157bb091924a20260420175223766.JPG",
@@ -26827,7 +26852,7 @@
     "product_name": "BMW M4 GT3 EVO #1 Paul Miller Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "BMW",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/89a874bc4397bd4c2b2a9faa6e13770b20260513062136801.JPG",
@@ -26871,9 +26896,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/5e776293-71b6-47ae-aa8b-37ea3904932f"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
@@ -26903,6 +26926,27 @@
   },
   {
     "toy_brand": "MINI GT",
+    "item_number": "MGT01250BL",
+    "product_name": "Toyota Supra BOMEX \" The Fast and the Furious\" Brian O'Conner",
+    "brand": "Toyota",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/d82b7c9191bd841a5d844ef0101563f520260531213717666.jpg",
+      "https://minigt.tsm-models.com/upload/picfile_list/2b2eefc858c431cfc25185763e4a503920260531213717669.jpg",
+      "https://minigt.tsm-models.com/upload/picfile_list/f4a4d4012e334d9415b55f1a981c45e520260531213717671.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Toyota",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
     "item_number": "MGT01250BL2",
     "product_name": "Toyota Supra BOMEX \" The Fast and the Furious\" Brian O'Conner",
     "brand": "Toyota",
@@ -26919,27 +26963,6 @@
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Toyota",
-    "year": null
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "MGT01250BL",
-    "product_name": "Toyota Supra BOMEX \" The Fast and the Furious\" Brian O'Conner",
-    "brand": "Toyota",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/picfile_list/d82b7c9191bd841a5d844ef0101563f520260531213717666.jpg",
-      "https://minigt.tsm-models.com/upload/picfile_list/2b2eefc858c431cfc25185763e4a503920260531213717669.jpg",
-      "https://minigt.tsm-models.com/upload/picfile_list/f4a4d4012e334d9415b55f1a981c45e520260531213717671.jpg"
-    ],
-    "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
-    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Toyota",
     "year": null
@@ -26965,6 +26988,27 @@
   },
   {
     "toy_brand": "MINI GT",
+    "item_number": "MGT01251BL",
+    "product_name": "Mazda RX-7 VeilSide Fortune   \"The Fast and the Furious: Tokyo Drift\"  Han Seoul-Oh",
+    "brand": "Mazda",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/115ef85ff9c6b235777531493292918c20260531214704918.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/8c35425b80f3faa7e3b359c0cfe1ed2b20260531214704921.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/a09c265fbb938e2e7d3d65557999a1e620260531214704923.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Mazda",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
     "item_number": "MGT01251BL2",
     "product_name": "Mazda RX-7 VeilSide Fortune   \"The Fast and the Furious: Tokyo Drift\"  Han Seoul-Oh",
     "brand": "Mazda",
@@ -26981,27 +27025,6 @@
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Mazda",
-    "year": null
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "MGT01251BL",
-    "product_name": "Mazda RX-7 VeilSide Fortune   \"The Fast and the Furious: Tokyo Drift\"  Han Seoul-Oh",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/picfile_list/115ef85ff9c6b235777531493292918c20260531214704918.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/8c35425b80f3faa7e3b359c0cfe1ed2b20260531214704921.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/a09c265fbb938e2e7d3d65557999a1e620260531214704923.jpg"
-    ],
-    "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
-    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Mazda",
     "year": null
@@ -28082,9 +28105,7 @@
     "scale": "1:64",
     "series": "REGULAR EXCLUSIVE PRODUCT",
     "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/2437e3fc-7a6e-46ca-ba8f-df9c3efc06d6"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
@@ -28446,7 +28467,7 @@
     "product_name": "BMW M Hybrid V8 GTP #24 BMW M Team RLL 2024 IMSA Daytona 24 Hrs",
     "brand": "BMW",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/d860cc3241f440973e668d0c48fcd1b120260630041445639.JPG",
@@ -30418,19 +30439,22 @@
     "toy_brand": "MINI GT",
     "item_number": "KHMG006",
     "product_name": "Datsun 510 Pro Street BRE510 V2",
-    "brand": "Datsun",
+    "brand": "Nissan",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/8b4f747c-8dff-4b39-a95e-2683c866b601"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635530285_371526.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635530292_371687.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635530300_371610.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1635530307_371772.JPG"
     ],
-    "source": "myminigt",
+    "source": "official",
     "release_year": 2022,
     "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
-    "manufacturer": "Datsun",
+    "manufacturer": "Nissan",
     "year": "2022"
   },
   {
@@ -32006,9 +32030,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/f85bb0fa-1d51-45bb-8b93-9e9db59570b9"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2023,
     "release_year_confidence": "confirmed",
@@ -32044,9 +32066,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/c90f3425-75fc-4592-9b9b-b0f1b5cef235"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2023,
     "release_year_confidence": "confirmed",
@@ -33256,9 +33276,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7a928aeb-30c1-421d-a9d7-f88150bd05d1"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2025,
     "release_year_confidence": "confirmed",
@@ -33275,9 +33293,7 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/310bead8-8477-4c51-8d47-b41404bba9bc"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2025,
     "release_year_confidence": "confirmed",
@@ -37946,13 +37962,15 @@
     "item_number": "MGTAC01",
     "product_name": "Parking Lot Pad Type A",
     "brand": "Accessories",
-    "scale": "1:64",
+    "scale": "40 x 25 CM",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/8/89/MGTAC01.jpg/revision/latest?cb=20201003172658"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560175987_100808.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560175982_100867.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560175968_100877.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -37963,15 +37981,19 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGTAC02",
-    "product_name": "Acrylic Display Case Large",
+    "product_name": "Acrylic Display Case - Large",
     "brand": "Accessories",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/6/61/MGTAC02.jpg/revision/latest?cb=20201003172758"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176195_10191.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176196_101698.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176197_101882.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176198_101305.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176199_101397.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -37982,15 +38004,19 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGTAC03",
-    "product_name": "Acrylic Display Case Small",
+    "product_name": "Acrylic Display Case - Small",
     "brand": "Accessories",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/2/2d/MGTAC03.jpg/revision/latest?cb=20201003173027"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176298_102471.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176299_102111.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176301_102203.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1561054469_102201.jpg",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1560176303_102494.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -38112,13 +38138,16 @@
     "item_number": "MGTAC11",
     "product_name": "Parking Lot Pad Type B",
     "brand": "Accessories",
-    "scale": "1:64",
+    "scale": "40 x 25 CM",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/3/33/MGTAC11.jpg/revision/latest?cb=20201003173841"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1592611215_194647.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1592611215_194914.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1592611214_194924.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1592611214_194720.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -38129,15 +38158,18 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGTAC12",
-    "product_name": "Display Turntable Black w/ Mirror Surface",
+    "product_name": "5\" Display Turntable  Black w/ Mirror Surface",
     "brand": "Accessories",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/0/0f/MGTAC12.jpg/revision/latest?cb=20201003174017"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602008680_229689.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602008679_229496.jpg",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602008679_229344.jpg",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602008678_229439.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -38148,15 +38180,18 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGTAC13",
-    "product_name": "Display Turntable Liberty Walk Type A",
+    "product_name": "5\" Display Turntable  Liberty Walk Type A",
     "brand": "Accessories",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/5/55/MGTAC13.jpg/revision/latest?cb=20201003174133"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017406_23055.jpg",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017405_230228.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017402_230509.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017402_230262.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -38167,15 +38202,18 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGTAC14",
-    "product_name": "Display Turntable Liberty Walk Type B",
+    "product_name": "5\" Display Turntable  Liberty Walk Type B",
     "brand": "Accessories",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/9/94/MGTAC14.jpg/revision/latest?cb=20201003174211"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017589_231277.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017589_231780.jpg",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017588_231235.JPG",
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1602017587_231691.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -38318,15 +38356,19 @@
   {
     "toy_brand": "MINI GT",
     "item_number": "MGTAC21",
-    "product_name": "Car Hauler Trailer Type C",
+    "product_name": "Car Hauler Trailer Type C White",
     "brand": "Accessories",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
     "images": [
-      "https://static.wikia.nocookie.net/minigt/images/6/69/MGTAC21.jpg/revision/latest?cb=20241028194945"
+      "https://minigt.tsm-models.com/upload/picfile_list/d630058267d2ef94749b0f4c54eaa2b820240928210753724.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/f9a3e80d8cffdc6ba787129f27ea2b0620240330205655158.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/210a386370859e141c3f2d80bab4c40120240330205655159.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/5fc809341b583a04caf6933236685e2d20240330205655160.JPG",
+      "https://minigt.tsm-models.com/upload/picfile_list/f1bf09296afa011a39de25042d96749920240330205655161.JPG"
     ],
-    "source": "fandom",
+    "source": "official",
     "release_year": null,
     "release_year_confidence": null,
     "status": "Released",
@@ -39026,7 +39068,7 @@
     "toy_brand": "MINI GT",
     "item_number": "MGTS0015",
     "product_name": "Oracle Red Bull Racing RB19 #11 Sergio Pérez 2023 F1 2023 Japanese Grand Prix Pit Crew SetLimited Edition 5000 Sets",
-    "brand": "Cancelled Models",
+    "brand": "MINI GT Sets",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
@@ -39254,6 +39296,177 @@
     "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Lamborghini",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00101",
+    "product_name": "Nissan Skyline Kenmeri Liberty Walk Baby Blue",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/a358293648305d38518e931697cd8c8d20250809211941180.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00102",
+    "product_name": "Nissan Skyline Kenmeri Liberty Walk  #23 Heritage",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/d1d16dec37251b3cdfa8f4a222e82e6420260116004500859.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00201",
+    "product_name": "Nissan GT-R R35 LB★WORKS Type 1, Rear Wing ver 1 Matte Grey",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/7063e2b25e24a31ca625c9099289628320251123195118526.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00204",
+    "product_name": "Nissan GT-R (R35) LB★WORKS Type 1, Rear Wing ver 1   GT Works ’70",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/3d6c8ba4f43234e4926a2c6bd5f86b6c20260116004818506.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00301",
+    "product_name": "Nissan GT-R R35 LB★WORKS Type 1, Rear Wing ver 2 LB Gold",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/16fa60e7bb05f2772c000eb1e7fa139720250810171621940.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00302",
+    "product_name": "Nissan GT-R (R35) LB★WORKS Type 1, Rear Wing ver 2 Baby Blue",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/0bf508429466ca68dcefa17af1273b9320260116005046386.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00401",
+    "product_name": "Nissan LB-ER34 Super Silhouette SKYLINE Black",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/beab26222467f5cfef9b862b57b31d6c20250810172013040.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00501",
+    "product_name": "Nissan LB-Super Silhouette S15 SILVIA  Liberty Walk Presentation",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/4261978e4de253ee7fd78aff73d8f05920250810172321102.jpg"
+    ],
+    "source": "official",
+    "release_year": null,
+    "release_year_confidence": null,
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
+    "year": null
+  },
+  {
+    "toy_brand": "MINI GT",
+    "item_number": "QZ00502",
+    "product_name": "Nissan LB-Super Silhouette S15 SILVIA Auto Finesse SEMA 2023",
+    "brand": "Qube Cars",
+    "scale": "1:64",
+    "series": "Regular",
+    "sub_series": "Regular",
+    "images": [
+      "https://minigt.tsm-models.com/upload/picfile_list/594285dbdc936c518d1d0cd2e0db6df420250810172550043.jpg"
+    ],
+    "source": "official",
+    "release_year": 2023,
+    "release_year_confidence": "inferred",
+    "status": "Pre-Order",
+    "is_cancelled": false,
+    "manufacturer": "Nissan",
     "year": null
   },
   {
@@ -40039,7 +40252,7 @@
     "toy_brand": "MINI GT",
     "item_number": "EUNOSROADSTERMARINERBLUEHEADLIGHTUP",
     "product_name": "RHD",
-    "brand": "MINI GT",
+    "brand": "Mazda",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
@@ -40051,14 +40264,14 @@
     "release_year_confidence": null,
     "status": "Cancelled",
     "is_cancelled": true,
-    "manufacturer": null,
+    "manufacturer": "Mazda",
     "year": null
   },
   {
     "toy_brand": "MINI GT",
     "item_number": "HONDAS2000AP2BERMUDABLUEPEARL",
     "product_name": "RHD",
-    "brand": "MINI GT",
+    "brand": "Honda",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
@@ -40068,14 +40281,14 @@
     "release_year_confidence": null,
     "status": "Cancelled",
     "is_cancelled": true,
-    "manufacturer": null,
+    "manufacturer": "Honda",
     "year": null
   },
   {
     "toy_brand": "MINI GT",
     "item_number": "HONDAS2000TYPESNEWINDYYELLOWPEARL",
     "product_name": "RHD",
-    "brand": "MINI GT",
+    "brand": "Honda",
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
@@ -40085,7 +40298,7 @@
     "release_year_confidence": null,
     "status": "Cancelled",
     "is_cancelled": true,
-    "manufacturer": null,
+    "manufacturer": "Honda",
     "year": null
   },
   {

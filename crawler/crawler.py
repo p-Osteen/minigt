@@ -101,14 +101,29 @@ def get_row_product_images(tr) -> List[str]:
             is_product = True
         if "thumbimage" in img.get("class", []):
             is_product = True
-            
+
         if is_product:
-            url = img.get("data-src") or img.get("src", "")
-            if url and "data:image" not in url:
-                url = clean_fandom_image_url(url)
-                if url not in seen:
-                    img_urls.append(url)
-                    seen.add(url)
+            # The wrapping <a class="...image..." href="..."> is the canonical
+            # full-resolution original on Fandom (".../revision/latest?cb=...").
+            # img[data-src] / img[src] are resized thumbnail renditions
+            # (".../revision/latest/scale-to-width-down/75?cb=...") whose
+            # cache-buster can differ from href's if the image was re-uploaded
+            # or a different rendition was cached — path-stripping that URL
+            # down to the same shape as href does NOT guarantee it's the same
+            # cb value, so it can silently point at a stale/wrong revision.
+            # Prefer href; only fall back to data-src/src when no such link
+            # wraps the image at all.
+            url = ""
+            if parent_a and parent_a.get("href", "").startswith("http"):
+                url = parent_a["href"]
+            else:
+                url = img.get("data-src") or img.get("src", "")
+                if url and "data:image" not in url:
+                    url = clean_fandom_image_url(url)
+
+            if url and "data:image" not in url and url not in seen:
+                img_urls.append(url)
+                seen.add(url)
     return img_urls
 
 
@@ -136,6 +151,153 @@ def get_links_from_filters_json(filepath: str) -> List[str]:
     except Exception as e:
         logger.error(f"Error loading links from {filepath}: {e}")
         return []
+
+
+def parse_my64_list(crawler, html: str, grp_id: str, toy_brand: str) -> List[Dict]:
+    soup = BeautifulSoup(html, "lxml")
+    new_tasks = []
+    
+    # 1. Discover product detail pages
+    seen_ids = set()
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if "id=" in href and f"grpid={grp_id}" in href:
+            id_match = re.search(r"id=(\d+)", href)
+            if id_match:
+                prod_id = id_match.group(1)
+                if prod_id not in seen_ids:
+                    seen_ids.add(prod_id)
+                    abs_url = href
+                    if not abs_url.startswith("http"):
+                        clean_href = abs_url.lstrip("/")
+                        if clean_href.startswith("usr/"):
+                            clean_href = clean_href[4:]
+                        abs_url = f"https://www.my64.com.my/usr/{clean_href}"
+                    new_tasks.append({
+                        "source": "my64_detail",
+                        "url": abs_url,
+                        "meta": {
+                            "toy_brand": toy_brand,
+                            "grp_id": grp_id
+                        }
+                    })
+                    
+    # 2. Discover pagination
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if "pg=" in href and f"grpid={grp_id}" in href:
+            pg_match = re.search(r"pg=(\d+)", href)
+            if pg_match:
+                page_num = pg_match.group(1)
+                abs_url = href
+                if not abs_url.startswith("http"):
+                    clean_href = abs_url.lstrip("/")
+                    if clean_href.startswith("usr/"):
+                        clean_href = clean_href[4:]
+                    abs_url = f"https://www.my64.com.my/usr/{clean_href}"
+                new_tasks.append({
+                    "source": "my64_list",
+                    "url": abs_url,
+                    "meta": {
+                        "toy_brand": toy_brand,
+                        "grp_id": grp_id,
+                        "page": int(page_num)
+                    }
+                })
+                
+    return new_tasks
+
+
+def parse_my64_detail(crawler, html: str, url: str, toy_brand: str, grp_id: str) -> None:
+    soup = BeautifulSoup(html, "lxml")
+    
+    product_name = ""
+    title_tag = soup.find("title")
+    if title_tag:
+        title_text = title_tag.get_text(strip=True)
+        if "::" in title_text:
+            parts = title_text.split("::")
+            if len(parts) > 1:
+                product_name = parts[1].strip()
+                
+    for div in soup.find_all("div"):
+        txt = div.get_text(strip=True)
+        if "home > products" in txt.lower() and ">" in txt:
+            parts = [p.strip() for p in txt.split(">") if p.strip()]
+            if len(parts) > 2:
+                product_name = parts[-1]
+                break
+
+    if not product_name:
+        h2_tags = soup.find_all("h2")
+        for h2 in h2_tags:
+            h2_txt = h2.get_text(strip=True)
+            if h2_txt and len(h2_txt) > 10:
+                product_name = h2_txt
+                break
+
+    if not product_name:
+        return
+
+    brand = toy_brand
+    item_number = ""
+    
+    full_text = soup.get_text("\n")
+    lines = [l.strip() for l in full_text.split("\n") if l.strip()]
+    for idx, line in enumerate(lines):
+        line_lower = line.lower()
+        if "brand :" in line_lower or "brand:" in line_lower:
+            val = line.split(":")[-1].strip()
+            if not val and idx + 1 < len(lines):
+                val = lines[idx+1].strip()
+            if val:
+                brand = val
+        elif "item code" in line_lower:
+            val = line.split(":")[-1].strip()
+            if not val and idx + 1 < len(lines):
+                val = lines[idx+1].strip()
+            if val:
+                item_number = val
+
+    if not item_number:
+        id_match = re.search(r"id=(\d+)", url)
+        if id_match:
+            item_number = f"MY64-{toy_brand.replace(' ', '')}-{id_match.group(1)}"
+        else:
+            return
+
+    img_urls = []
+    for img in soup.find_all("img"):
+        src = img.get("src") or img.get("data-src") or ""
+        if src and ("wp-content" in src or "/data/prod/" in src) and not src.endswith(".gif") and "logo" not in src.lower():
+            if src.startswith("."):
+                src = src.lstrip(".")
+            if not src.startswith("http"):
+                src = f"https://www.my64.com.my/{src.lstrip('/')}"
+            if src not in img_urls:
+                img_urls.append(src)
+
+    scale = "1:64"
+    if "1:18" in product_name or "1/18" in product_name or grp_id == "27":
+        scale = "1:18"
+    elif "1:43" in product_name or "1/43" in product_name:
+        scale = "1:43"
+    elif "1:64" in product_name or "1/64" in product_name:
+        scale = "1:64"
+
+    crawler._save_or_merge_product(
+        item_number=item_number,
+        product_name=product_name,
+        brand=brand,
+        scale=scale,
+        series="Regular Collection" if toy_brand == "Pop Race" else "Regular",
+        img_urls=img_urls,
+        source="my64",
+        release_year=None,
+        release_year_confidence=None,
+        status=None if toy_brand == "Pop Race" else "Released",
+        toy_brand=toy_brand
+    )
 
 
 class MINI_GTCrawler:
@@ -238,12 +400,16 @@ class MINI_GTCrawler:
             except Exception as e:
                 logger.warning(f"Failed to read cache for {url}: {e}")
 
-        # For diecastsilkroad.com and tarmacworks.com, use curl.exe via subprocess to bypass Shopify rate limits/fingerprinting
-        if "diecastsilkroad.com" in url or "tarmacworks.com" in url:
+        # For diecastsilkroad.com, Tarmac, Shopify, and Fandom hub pages, use curl.exe via subprocess to bypass rate limits/anti-bot protection
+        if "diecastsilkroad.com" in url or "tarmacworks.com" in url or "treasuredmodels.com" in url or ("/wiki/" in url and "fandom.com" in url):
             import subprocess
             try:
                 result = subprocess.run(
-                    ["curl.exe", "-s", url],
+                    [
+                        "curl.exe", "-s", "-L",
+                        "-A", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                        url
+                    ],
                     capture_output=True,
                     text=True,
                     encoding="utf-8",
@@ -262,12 +428,15 @@ class MINI_GTCrawler:
                 logger.error(f"Failed to fetch {url} via curl.exe: {e}")
 
         # Live fetch — apply rate-limit delay
-        time.sleep(self.rate_limit_delay)
+        if "inno-models.com" in url:
+            time.sleep(1.0)
+        else:
+            time.sleep(self.rate_limit_delay)
 
         max_retries = 5
         for attempt in range(max_retries):
             try:
-                resp = self._session.get(url, timeout=15, verify=False)
+                resp = self._session.get(url, timeout=30, verify=False)
                 
                 # Handle rate limiting with exponential backoff
                 if resp.status_code == 429:
@@ -293,9 +462,9 @@ class MINI_GTCrawler:
                 return content
 
             except Exception as e:
-                if attempt < max_retries - 1 and "429" in str(e):
-                    backoff = 2 ** (attempt + 1)
-                    logger.warning(f"Retry {attempt+1}/{max_retries} for {url} after error: {e}")
+                if attempt < max_retries - 1:
+                    backoff = min(2 ** (attempt + 1), 30)
+                    logger.warning(f"Retry {attempt+1}/{max_retries} for {url} after error: {e}. Retrying in {backoff}s...")
                     time.sleep(backoff)
                     continue
                 logger.error(f"Failed to fetch {url}: {e}")
@@ -356,7 +525,7 @@ class MINI_GTCrawler:
         # Bypassed for Kaido House items (always 1:64)
         is_kaido = "kaido" in series.lower() or "kaido" in brand.lower() or "kaido" in product_name.lower()
         # Skip scale filter for brands that may have mixed scales (INNO64, Tarmac Works, Trends Hobby)
-        scale_exempt_brands = {"INNO64", "Tarmac Works", "Trends Hobby"}
+        scale_exempt_brands = {"MINI GT", "Hot Wheels", "INNO64", "Tarmac Works", "Trends Hobby"}
         if not is_kaido and toy_brand not in scale_exempt_brands:
             if not scale or "1:64" not in scale:
                 return
@@ -516,6 +685,8 @@ class MINI_GTCrawler:
         product_name = name_node.get_text(strip=True) if name_node else ""
         if not product_name:
             return
+        if brand_page_name == "QubeCarz":
+            brand_page_name = "Qube Cars"
 
         item_number = ""
         scale = "1:64"
@@ -532,6 +703,8 @@ class MINI_GTCrawler:
                     scale = txt.replace("Scale", "").replace("scale", "").strip()
                 elif "marque" in tl:
                     marque = txt.replace("Marque", "").replace("marque", "").strip()
+                    if marque == "QubeCarz":
+                        marque = "Qube Cars"
                 elif "status" in tl:
                     status = txt.replace("Status", "").replace("status", "").strip()
 
@@ -541,7 +714,7 @@ class MINI_GTCrawler:
         # Series mapping
         series = "Regular"
         special_brands = {
-            "007 Movie Car", "QubeCarz", "IMSA",
+            "007 Movie Car", "QubeCarz", "Qube Cars", "IMSA",
             "KAIDOHOUSE x MINI GT", "SUPER GT SERIES",
         }
         if brand_page_name in special_brands and brand_page_name != marque:
@@ -991,8 +1164,11 @@ class MiniGTBrandHandler:
                     b_id_match = re.search(r"b_id=(\d+)", href)
                     if b_id_match:
                         b_id = b_id_match.group(1)
-                        if text and text not in brands_dict.values():
-                            brands_dict[b_id] = text
+                        if text:
+                            if text == "QubeCarz":
+                                text = "Qube Cars"
+                            if text not in brands_dict.values():
+                                brands_dict[b_id] = text
             for b_id, name in brands_dict.items():
                 official_brands.append({"b_id": b_id, "name": name})
 
@@ -1087,24 +1263,44 @@ class HotWheelsBrandHandler:
         
         # Load the reference filters JSON which contains all categories and list links
         json_path = os.path.join(os.path.dirname(__file__), "..", "reference_htmls", "hot_wheels_filters.json")
+        hw_filters = {}
         try:
             with open(json_path, "r", encoding="utf-8") as f:
                 hw_filters = json.load(f)
         except Exception as e:
-            logger.error(f"Failed to load hot_wheels_filters.json: {e}")
-            return []
+            logger.warning(f"Failed to load hot_wheels_filters.json: {e}. Fetching links directly from the website.")
 
         # Extract all links
         urls = set()
-        def extract_links(obj):
-            if isinstance(obj, dict):
-                if "link" in obj: urls.add(obj["link"])
-                if "category_link" in obj: urls.add(obj["category_link"])
-                for v in obj.values(): extract_links(v)
-            elif isinstance(obj, list):
-                for v in obj: extract_links(v)
-                
-        extract_links(hw_filters.get("filters", {}))
+        if hw_filters:
+            def extract_links(obj):
+                if isinstance(obj, dict):
+                    if "link" in obj: urls.add(obj["link"])
+                    if "category_link" in obj: urls.add(obj["category_link"])
+                    for v in obj.values(): extract_links(v)
+                elif isinstance(obj, list):
+                    for v in obj: extract_links(v)
+                    
+            extract_links(hw_filters.get("filters", {}))
+        else:
+            # Fetch directly from the website to avoid old outdated data
+            hub_url = "https://hotwheels.fandom.com/api.php?action=parse&page=Hot_Wheels&format=json&prop=text"
+            res_json = self.crawler.fetch_url(hub_url, use_cache=True)
+            if res_json:
+                try:
+                    data = json.loads(res_json)
+                    html = data.get("parse", {}).get("text", {}).get("*", "")
+                    soup = BeautifulSoup(html, "lxml")
+                    for a in soup.find_all("a", href=True):
+                        href = a["href"]
+                        if "/wiki/" in href:
+                            page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
+                            namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
+                            if namespace_prefix in ("File:", "Special:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
+                                continue  # Category: is allowed through — handled separately below
+                            urls.add("https://hotwheels.fandom.com" + href)
+                except Exception as e:
+                    logger.error(f"Failed to parse Hot Wheels main hub page: {e}")
         
         # We process each url depending on whether it's a Category or a List
         for url in urls:
@@ -1216,9 +1412,20 @@ class HotWheelsBrandHandler:
                 pages = data.get("query", {}).get("allpages", [])
                 for p in pages:
                     page_name = p["title"]
-                    if any(x in page_name for x in [":", "Main_Page", "Category:", "Special:", "File:", "Template:", "Help:"]):
+                    # Only reject known non-content namespace prefixes (namespace-style
+                    # "Prefix:Rest"), not any colon anywhere in the title — legitimate
+                    # casting/series pages can contain a colon, e.g.
+                    # "Car Culture: Team Transport" or "Since '68: Series".
+                    namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
+                    if page_name == "Main_Page" or namespace_prefix in ("Category:", "Special:", "File:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
                         continue
-                        
+                    # Skip redirects: action=parse on a redirect silently resolves to
+                    # the target page's content, so we'd otherwise parse + save the
+                    # same target twice (once under the redirect title, once under its
+                    # own title when allpages reaches it directly).
+                    if "redirect" in p:
+                        continue
+
                     if page_name in seen_pages:
                         continue
                     seen_pages.add(page_name)
@@ -1279,7 +1486,8 @@ class HotWheelsBrandHandler:
                 if "/wiki/" in href_decoded:
                     parts = href_decoded.split("/wiki/")
                     member_page = parts[-1]
-                    if any(x in member_page for x in [":", "Main_Page", "Special:", "File:", "Category:", "Help:", "Template:"]):
+                    namespace_prefix = member_page.split(":", 1)[0] + ":" if ":" in member_page else ""
+                    if member_page == "Main_Page" or namespace_prefix in ("Special:", "File:", "Category:", "Help:", "Template:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
                         continue
                     if member_page not in seen_links:
                         seen_links.add(member_page)
@@ -1309,8 +1517,40 @@ class HotWheelsBrandHandler:
         casting_name = page_name.replace("_", " ")
 
         for table in soup.find_all("table"):
-            headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
-            
+            table_classes = table.get("class") or []
+            if "wikitable" not in table_classes:
+                continue  # skip nav-box / infobox tables that aren't product tables
+            if table.find_parent("table") is not None:
+                continue  # skip nested tables; they'll be walked as part of their own find_all("table") hit
+
+            thead = table.find("thead", recursive=False)
+            tbody = table.find("tbody", recursive=False)
+            tfoot = table.find("tfoot", recursive=False)
+
+            if thead is not None:
+                header_rows = thead.find_all("tr", recursive=False)
+                data_rows = (tbody.find_all("tr", recursive=False) if tbody else []) + \
+                            (tfoot.find_all("tr", recursive=False) if tfoot else [])
+                if not header_rows:
+                    continue
+                header_row = header_rows[0]
+                all_data_rows = data_rows
+            else:
+                # No explicit thead: rows sit directly under table (or under a
+                # single tbody with no thead/tfoot siblings) — first row is
+                # the header, the rest are data, same as classic HTML tables.
+                container = tbody if tbody is not None else table
+                all_rows = container.find_all("tr", recursive=False)
+                if not all_rows:
+                    continue
+                header_row = all_rows[0]
+                all_data_rows = all_rows[1:]
+
+            # Header row may use <th> (typical) or <td> (seen on some list pages) —
+            # check both, but only cells from THIS row, never the whole table.
+            header_cells = header_row.find_all(["th", "td"], recursive=False)
+            headers = [c.get_text(strip=True).lower() for c in header_cells]
+
             code_idx = name_idx = series_idx = photo_idx = year_idx = color_idx = -1
             for idx, h in enumerate(headers):
                 if "toy #" in h or h == "toy":
@@ -1333,8 +1573,8 @@ class HotWheelsBrandHandler:
             if code_idx == -1 and name_idx == -1 and color_idx == -1:
                 continue
 
-            for row in table.find_all("tr")[1:]:
-                cells = row.find_all(["td", "th"])
+            for row in all_data_rows:
+                cells = row.find_all(["td", "th"], recursive=False)
                 if len(cells) <= max(code_idx, name_idx, color_idx, series_idx, year_idx):
                     continue
 
@@ -1402,7 +1642,8 @@ class HotWheelsBrandHandler:
                             if "/wiki/" in href:
                                 casting_page = href.split("/wiki/")[-1]
                                 casting_page = urllib.parse.unquote(casting_page)
-                                if casting_page and not any(x in casting_page for x in [":", "Main_Page", "Special:", "File:", "Category:", "Help:", "Template:"]):
+                                casting_namespace_prefix = casting_page.split(":", 1)[0] + ":" if ":" in casting_page else ""
+                                if casting_page and casting_page != "Main_Page" and casting_namespace_prefix not in ("Special:", "File:", "Category:", "Help:", "Template:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
                                     if "List_of_" not in casting_page:
                                         api_url = (
                                             f"https://hotwheels.fandom.com/api.php"
@@ -1426,11 +1667,19 @@ class HotWheelsBrandHandler:
                 if row_name:
                     attributes["vehicle_model"] = row_name
                 
+                # Determine scale dynamically
+                hw_scale = "1:64"
+                scale_haystack = f"{product_name} {series} {sub_series}".lower()
+                for sc in ["1:18", "1/18", "1:43", "1/43", "1:50", "1/50", "1:24", "1/24"]:
+                    if sc in scale_haystack:
+                        hw_scale = sc.replace("/", ":")
+                        break
+
                 self.crawler._save_or_merge_product(
                     item_number=item_number,
                     product_name=product_name,
                     brand="Hot Wheels",
-                    scale="1:64",
+                    scale=hw_scale,
                     series=series,
                     img_urls=img_urls,
                     source="fandom",
@@ -1449,60 +1698,114 @@ class PopRaceBrandHandler:
         self._page_series_map = {}  # page_name -> series
 
     def _load_series_map(self):
-        """Load pop_race_filters.json and build a page→series lookup."""
-        json_path = os.path.join(os.path.dirname(__file__), "..", "reference_htmls", "pop_race_filters.json")
-        try:
-            with open(json_path, "r", encoding="utf-8") as f:
-                pr_filters = json.load(f)
-        except Exception as e:
-            logger.error(f"Failed to load pop_race_filters.json: {e}")
-            return
+        """Load series map from live POP_RACE_Wiki navigation or fall back to pop_race_filters.json."""
+        self._page_series_map = {}
+        
+        # Try fetching directly from the website first to ensure we have fresh up-to-date filters
+        logger.info("Fetching Pop Race filters directly from Pop Race Fandom Wiki...")
+        html = self.crawler.fetch_url("https://pop-race.fandom.com/wiki/POP_RACE_Wiki", use_cache=True)
+        if html:
+            try:
+                soup = BeautifulSoup(html, "lxml")
+                # Parse wds-dropdown menu items (dropdowns for Collections and Makes)
+                dropdowns = soup.find_all(class_="wds-dropdown")
+                for dropdown in dropdowns:
+                    placeholder = dropdown.find(class_="wds-dropdown__placeholder")
+                    if not placeholder:
+                        continue
+                    header_text = placeholder.get_text(strip=True).lower()
+                    
+                    if "collection" in header_text:
+                        for a in dropdown.find_all("a", href=True):
+                            href = a["href"]
+                            series_name = a.get_text(strip=True)
+                            if "/wiki/" in href:
+                                page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
+                                self._page_series_map[page_name] = series_name
+                                self._page_series_map[page_name.replace(" ", "_")] = series_name
+                                # Map child/nested pages if there are any
+                                for sibling in a.find_parents("li"):
+                                    for sub_a in sibling.find_all("a", href=True):
+                                        sub_href = sub_a["href"]
+                                        if "/wiki/" in sub_href:
+                                            sub_page = urllib.parse.unquote(sub_href.split("/wiki/")[-1])
+                                            if sub_page not in self._page_series_map:
+                                                self._page_series_map[sub_page] = series_name
+                                                self._page_series_map[sub_page.replace(" ", "_")] = series_name
+                logger.info(f"Populated {len(self._page_series_map)} series mappings from live Fandom navigation menu.")
+            except Exception as e:
+                logger.error(f"Failed to parse live Pop Race navigation: {e}")
 
-        filters = pr_filters.get("filters", {})
+        # If live fetch was unsuccessful or empty, fall back to local pop_race_filters.json
+        if not self._page_series_map:
+            json_path = os.path.join(os.path.dirname(__file__), "..", "reference_htmls", "pop_race_filters.json")
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    pr_filters = json.load(f)
+                
+                filters = pr_filters.get("filters", {})
+                for item in filters.get("collection", []):
+                    series_name = item.get("name", "")
+                    link = item.get("link", "")
+                    if link and "/wiki/" in link:
+                        page = urllib.parse.unquote(link.split("/wiki/")[-1])
+                        self._page_series_map[page] = series_name
+                    for child in item.get("children", []):
+                        child_link = child.get("link", "")
+                        if child_link and "/wiki/" in child_link:
+                            child_page = urllib.parse.unquote(child_link.split("/wiki/")[-1])
+                            self._page_series_map[child_page] = series_name
+                
+                by_mfr = filters.get("by_manufacturer", {})
+                for region_name, mfr_list in by_mfr.items():
+                    if not isinstance(mfr_list, list):
+                        continue
+                    for mfr in mfr_list:
+                        for child in mfr.get("children", []):
+                            child_link = child.get("link", "")
+                            if child_link and "/wiki/" in child_link:
+                                child_page = urllib.parse.unquote(child_link.split("/wiki/")[-1])
+                                if child_page not in self._page_series_map:
+                                    self._page_series_map[child_page] = "Regular Collection"
+            except Exception as e:
+                logger.warning(f"Could not load fallback pop_race_filters.json: {e}")
 
-        # "collection" contains top-level series: Regular Collection, Enigma, Event Exclusives, etc.
-        for item in filters.get("collection", []):
-            series_name = item.get("name", "")
-            link = item.get("link", "")
-            if link and "/wiki/" in link:
-                page = urllib.parse.unquote(link.split("/wiki/")[-1])
-                self._page_series_map[page] = series_name
-            # Some series pages have children (sub-pages listed under them)
-            for child in item.get("children", []):
-                child_link = child.get("link", "")
-                if child_link and "/wiki/" in child_link:
-                    child_page = urllib.parse.unquote(child_link.split("/wiki/")[-1])
-                    self._page_series_map[child_page] = series_name
+        # Ensure Xcartoys / Xcartoys China merge
+        self._page_series_map["Xcartoys"] = "Xcartoys China"
+        self._page_series_map["Xcartoys_China"] = "Xcartoys China"
 
-        # "by_manufacturer" has nested structure: region -> manufacturer -> model pages
-        by_mfr = filters.get("by_manufacturer", {})
-        for region_name, mfr_list in by_mfr.items():
-            if not isinstance(mfr_list, list):
-                continue
-            for mfr in mfr_list:
-                mfr_link = mfr.get("link", "")
-                if mfr_link and "/wiki/" in mfr_link:
-                    mfr_page = urllib.parse.unquote(mfr_link.split("/wiki/")[-1])
-                    # Manufacturer pages aren't series pages, but their children are model pages
-                for child in mfr.get("children", []):
-                    child_link = child.get("link", "")
-                    if child_link and "/wiki/" in child_link:
-                        child_page = urllib.parse.unquote(child_link.split("/wiki/")[-1])
-                        # Don't overwrite if already assigned from "collection"
-                        if child_page not in self._page_series_map:
-                            self._page_series_map[child_page] = "Regular Collection"
+    def _determine_series_from_categories(self, page_name: str, categories: List[Dict]) -> str:
+        # 1. Check page title first
+        if page_name in self._page_series_map:
+            return self._page_series_map[page_name]
+        p_clean = page_name.replace(" ", "_")
+        if p_clean in self._page_series_map:
+            return self._page_series_map[p_clean]
+            
+        # 2. Check categories tags
+        for cat in categories:
+            cat_name = cat.get("*", "")
+            if cat_name in self._page_series_map:
+                return self._page_series_map[cat_name]
+            cat_clean = cat_name.replace(" ", "_")
+            if cat_clean in self._page_series_map:
+                return self._page_series_map[cat_clean]
+                
+        # 3. Fallback to lowercase comparisons if not found exactly
+        p_lower = page_name.lower().replace(" ", "_").replace("-", "_")
+        for k, v in self._page_series_map.items():
+            k_lower = k.lower().replace(" ", "_").replace("-", "_")
+            if k_lower == p_lower:
+                return v
 
-        # "by_year" has year pages and "Pre-Order" — Pre-Order is a status, not a series
-        for item in filters.get("by_year", []):
-            year_name = item.get("name", "")
-            link = item.get("link", "")
-            if link and "/wiki/" in link:
-                page = urllib.parse.unquote(link.split("/wiki/")[-1])
-                if year_name.lower() != "pre-order":
-                    if page not in self._page_series_map:
-                        self._page_series_map[page] = "Regular Collection"
-
-        logger.info(f"Pop Race series map loaded: {len(self._page_series_map)} page->series mappings")
+        for cat in categories:
+            cat_lower = cat.get("*", "").lower().replace(" ", "_").replace("-", "_")
+            for k, v in self._page_series_map.items():
+                k_lower = k.lower().replace(" ", "_").replace("-", "_")
+                if k_lower == cat_lower:
+                    return v
+            
+        return "Regular Collection"
 
     def _get_series_for_page(self, page_name: str) -> str:
         """Look up the correct series for a page, defaulting to Regular Collection."""
@@ -1518,7 +1821,7 @@ class PopRaceBrandHandler:
         pending = []
         seen_urls = set()
 
-        # Load the series map from reference JSON
+        # Load the series map
         self._load_series_map()
 
         # 1. Exhaustively crawl all pages from Pop Race Fandom
@@ -1543,7 +1846,7 @@ class PopRaceBrandHandler:
                     if any(x in page_name for x in [":", "Main_Page", "Category:"]):
                         continue
                         
-                    page_api = f"https://pop-race.fandom.com/api.php?action=parse&page={urllib.parse.quote(page_name)}&format=json&prop=text"
+                    page_api = f"https://pop-race.fandom.com/api.php?action=parse&page={urllib.parse.quote(page_name)}&format=json&prop=text|categories"
                     if page_api not in seen_urls:
                         seen_urls.add(page_api)
                         series = self._get_series_for_page(page_name)
@@ -1566,6 +1869,29 @@ class PopRaceBrandHandler:
         # Diecastsociety fallback
         pending.append({"source": "diecastsociety_search", "url": "https://diecastsociety.com/page/1/?s=Pop+Race", "meta": {"page": 1}})
 
+        # 3. Discover Pop Race from local my64 reference HTML if it exists
+        local_path = os.path.join(os.path.dirname(__file__), "..", "reference_htmls", "4.Model Cars Online Malaysia __ POP RACE.html")
+        if os.path.exists(local_path):
+            logger.info("Discovering Pop Race from local reference HTML...")
+            try:
+                with open(local_path, "r", encoding="utf-8") as f:
+                    local_html = f.read()
+                local_tasks = parse_my64_list(self.crawler, local_html, "28", "Pop Race")
+                pending.extend(local_tasks)
+            except Exception as e:
+                logger.error(f"Failed to parse local Pop Race reference HTML: {e}")
+
+        # 4. Live my64 Pop Race page
+        pending.append({
+            "source": "my64_list",
+            "url": "https://www.my64.com.my/usr/product.aspx?pgid=4&grpid=28&lang=en&pg=1",
+            "meta": {
+                "toy_brand": "Pop Race",
+                "grp_id": "28",
+                "page": 1
+            }
+        })
+
         return pending
 
     def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
@@ -1578,6 +1904,10 @@ class PopRaceBrandHandler:
             return self._parse_diecastsociety_search(html_or_json, meta)
         elif source == "diecastsociety_post":
             self._parse_diecastsociety_post(html_or_json, task["url"])
+        elif source == "my64_list":
+            return parse_my64_list(self.crawler, html_or_json, meta["grp_id"], meta["toy_brand"])
+        elif source == "my64_detail":
+            parse_my64_detail(self.crawler, html_or_json, task["url"], meta["toy_brand"], meta["grp_id"])
         return None
 
     def _parse_fandom_list(self, html_or_json: str, meta: Dict) -> Optional[List[Dict]]:
@@ -1587,6 +1917,7 @@ class PopRaceBrandHandler:
                 return None
             html_content = res_data["parse"]["text"]["*"]
             soup = BeautifulSoup(html_content, "lxml")
+            categories_list = res_data.get("parse", {}).get("categories", [])
         except Exception as e:
             logger.error(f"Pop Race JSON parse error for {meta['page_name']}: {e}")
             return None
@@ -1614,7 +1945,7 @@ class PopRaceBrandHandler:
                         seen_links.add(member_page)
                         api_url = (
                             f"https://pop-race.fandom.com/api.php"
-                            f"?action=parse&page={urllib.parse.quote(member_page)}&format=json&prop=text"
+                            f"?action=parse&page={urllib.parse.quote(member_page)}&format=json&prop=text|categories"
                         )
                         new_tasks.append({
                             "source": "fandom_list",
@@ -1627,7 +1958,7 @@ class PopRaceBrandHandler:
             return new_tasks
 
         # Otherwise, parse product tables
-        default_series = meta.get("series", "Regular Collection")
+        default_series = self._determine_series_from_categories(page_name, categories_list)
 
         for table in soup.find_all("table"):
             headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
@@ -1671,22 +2002,20 @@ class PopRaceBrandHandler:
 
                 release_year = None
                 release_year_confidence = None
-                status = "Released"
                 if year_idx != -1 and year_idx < len(cells):
                     release_val = cells[year_idx].get_text(strip=True)
                     ym = re.search(r"\b(20\d{2})\b", release_val)
                     if ym:
-                        release_year = int(ym.group(1))
-                        release_year_confidence = "confirmed"
-                    if "pre-order" in release_val.lower() or "pre order" in release_val.lower():
-                        status = "Pre-Order"
+                        y = int(ym.group(1))
+                        if 2019 <= y <= 2026:
+                            release_year = y
+                            release_year_confidence = "confirmed"
 
                 if release_year is None and page_name.isdigit():
-                    release_year = int(page_name)
-                    release_year_confidence = "confirmed"
-
-                if "pre-order" in page_name.lower() or "pre order" in page_name.lower():
-                    status = "Pre-Order"
+                    y = int(page_name)
+                    if 2019 <= y <= 2026:
+                        release_year = y
+                        release_year_confidence = "confirmed"
 
                 # Extract images using robust finder and fallback
                 img_urls = get_row_product_images(row)
@@ -1708,7 +2037,7 @@ class PopRaceBrandHandler:
                     source="fandom",
                     release_year=release_year,
                     release_year_confidence=release_year_confidence,
-                    status=status,
+                    status=None,
                     toy_brand="Pop Race"
                 )
         return None
@@ -1793,33 +2122,34 @@ class PopRaceBrandHandler:
                     title_text = title_node.get_text(strip=True)
                 ym = re.search(r"\b(20\d{2})\b", title_text)
                 if ym:
-                    release_year = int(ym.group(1))
-                    release_year_confidence = "inferred"
+                    y = int(ym.group(1))
+                    if 2019 <= y <= 2026:
+                        release_year = y
+                        release_year_confidence = "inferred"
                 
                 self.crawler._save_or_merge_product(
                     item_number=code,
                     product_name=name_candidate,
                     brand="Pop Race",
                     scale="1:64",
-                    series="Pre-Order",
+                    series="Regular Collection",
                     img_urls=img_urls,
                     source="diecastsociety",
                     release_year=release_year,
                     release_year_confidence=release_year_confidence,
-                    status="Pre-Order",
+                    status=None,
                     toy_brand="Pop Race"
                 )
 
 
 class TarmacWorksBrandHandler:
-    """Crawls Tarmac Works models from the official Shopify API."""
+    """Crawls Tarmac Works models from the official Shopify API and Fandom Wiki."""
     def __init__(self, crawler: "MINI_GTCrawler"):
         self.crawler = crawler
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        # Tarmac Works uses Shopify, which exposes products.json
-        # We start at page 1 and dynamically enqueue subsequent pages.
+        # 1. Official Shopify products.json
         api_url = "https://www.tarmacworks.com/products.json?limit=250&page=1"
         pending.append({
             "source": "shopify_json",
@@ -1827,121 +2157,279 @@ class TarmacWorksBrandHandler:
             "meta": {"page": 1}
         })
         
+        # 2. Discover Fandom pages
+        pending.append({
+            "source": "fandom_allpages",
+            "url": "https://tarmacworks.fandom.com/api.php?action=query&list=allpages&apnamespace=0&aplimit=500&format=json",
+            "meta": {"apcontinue": ""}
+        })
+        
         return pending
 
     def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        source = task["source"]
         url = task["url"]
-        try:
-            data = json.loads(html_or_json)
-        except Exception as e:
-            logger.error(f"Tarmac Works JSON parse error for {url}: {e}")
-            return None
-
-        products = data.get("products", [])
-        if not products:
-            logger.info(f"Tarmac Works reached empty page at {url}")
-            return None
-
-        new_tasks = []
-        if len(products) == 250:
-            next_page = task.get("meta", {}).get("page", 1) + 1
-            new_tasks.append({
-                "source": "shopify_json",
-                "url": f"https://www.tarmacworks.com/products.json?limit=250&page={next_page}",
-                "meta": {"page": next_page}
-            })
-
-        for p in products:
-            title = p.get("title", "")
-            tags = p.get("tags", [])
-            product_type = p.get("product_type", "")
-            vendor = p.get("vendor", "Tarmac Works")
-            
-            # Skip non-diecast items based on type or tags if obvious
-            if "apparel" in product_type.lower() or "accessories" in product_type.lower():
-                continue
-
-            # Extract scale from tags
-            scale = "1:64"
-            if "1/43" in tags or "1:43" in tags:
-                scale = "1:43"
-            elif "1/18" in tags or "1:18" in tags:
-                scale = "1:18"
-            
-            # Try to figure out series
-            series = "Regular"
-            tag_upper = [t.upper() for t in tags]
-            if "HOBBY64" in tag_upper: series = "HOBBY64"
-            elif "GLOBAL64" in tag_upper: series = "GLOBAL64"
-            elif "ROAD64" in tag_upper: series = "ROAD64"
-            elif "COLLAB64" in tag_upper: series = "COLLAB64"
-            elif "PIT GARAGE DIORAMA" in tag_upper: series = "Diorama"
-            elif "TRUCK64" in tag_upper: series = "TRUCK64"
-
-            # Get image URLs
-            img_urls = []
-            for img in p.get("images", []):
-                src = img.get("src")
-                if src:
-                    # Strip shopify query params to get original image
-                    clean_src = src.split("?")[0]
-                    img_urls.append(clean_src)
-
-            # Get SKU
-            variants = p.get("variants", [])
-            item_number = None
-            for v in variants:
-                sku = v.get("sku")
-                if sku:
-                    item_number = sku
-                    break
-            
-            if not item_number:
-                # If no SKU is set (often for bundles), use the handle as a fallback unique ID
-                item_number = p.get("handle")
-
-            if not item_number:
-                continue
-
-            # Check year from created_at or title
-            created_at = p.get("created_at", "")
-            year = None
-            if created_at:
-                year_str = created_at[:4]
-                if year_str.isdigit():
-                    year = int(year_str)
-
-            attributes = {
-                "tags": tags,
-                "product_type": product_type
-            }
-
-            self.crawler._save_or_merge_product(
-                item_number=item_number,
-                product_name=title,
-                brand=vendor,
-                scale=scale,
-                series=series,
-                img_urls=img_urls,
-                source="shopify",
-                release_year=year,
-                release_year_confidence="inferred",
-                status="Released",
-                toy_brand="Tarmac Works",
-                attributes=attributes
-            )
+        meta = task["meta"]
         
-        return new_tasks if new_tasks else None
+        if source == "shopify_json":
+            try:
+                data = json.loads(html_or_json)
+            except Exception as e:
+                logger.error(f"Tarmac Works JSON parse error for {url}: {e}")
+                return None
+
+            products = data.get("products", [])
+            new_tasks = []
+            if len(products) == 250:
+                next_page = meta.get("page", 1) + 1
+                new_tasks.append({
+                    "source": "shopify_json",
+                    "url": f"https://www.tarmacworks.com/products.json?limit=250&page={next_page}",
+                    "meta": {"page": next_page}
+                })
+
+            for p in products:
+                title = p.get("title", "")
+                tags = p.get("tags", [])
+                product_type = p.get("product_type", "")
+                vendor = p.get("vendor", "Tarmac Works")
+                
+                if "apparel" in product_type.lower() or "accessories" in product_type.lower():
+                    continue
+
+                scale = "1:64"
+                if "1/43" in tags or "1:43" in tags:
+                    scale = "1:43"
+                elif "1/18" in tags or "1:18" in tags:
+                    scale = "1:18"
+                
+                series = "Regular"
+                tag_upper = [t.upper() for t in tags]
+                if "HOBBY64" in tag_upper: series = "HOBBY64"
+                elif "GLOBAL64" in tag_upper: series = "GLOBAL64"
+                elif "ROAD64" in tag_upper: series = "ROAD64"
+                elif "COLLAB64" in tag_upper: series = "COLLAB64"
+                elif "PIT GARAGE DIORAMA" in tag_upper: series = "Diorama"
+                elif "TRUCK64" in tag_upper: series = "TRUCK64"
+
+                img_urls = []
+                for img in p.get("images", []):
+                    src = img.get("src")
+                    if src:
+                        img_urls.append(src.split("?")[0])
+
+                variants = p.get("variants", [])
+                item_number = None
+                for v in variants:
+                    sku = v.get("sku")
+                    if sku:
+                        item_number = sku
+                        break
+                
+                if not item_number:
+                    item_number = p.get("handle")
+
+                if not item_number:
+                    continue
+
+                created_at = p.get("created_at", "")
+                year = None
+                if created_at:
+                    year_str = created_at[:4]
+                    if year_str.isdigit():
+                        year = int(year_str)
+
+                attributes = {
+                    "tags": tags,
+                    "product_type": product_type
+                }
+
+                self.crawler._save_or_merge_product(
+                    item_number=item_number,
+                    product_name=title,
+                    brand=vendor,
+                    scale=scale,
+                    series=series,
+                    img_urls=img_urls,
+                    source="shopify",
+                    release_year=year,
+                    release_year_confidence="inferred",
+                    status="Released",
+                    toy_brand="Tarmac Works",
+                    attributes=attributes
+                )
+            return new_tasks if new_tasks else None
+            
+        elif source == "fandom_allpages":
+            new_tasks = []
+            try:
+                data = json.loads(html_or_json)
+                pages = data.get("query", {}).get("allpages", [])
+                for p in pages:
+                    page_name = p["title"]
+                    if any(x in page_name for x in [":", "Main_Page", "Category:"]):
+                        continue
+                    page_api = f"https://tarmacworks.fandom.com/api.php?action=parse&page={urllib.parse.quote(page_name)}&format=json&prop=text"
+                    new_tasks.append({
+                        "source": "fandom_page",
+                        "url": page_api,
+                        "meta": {"page_name": page_name}
+                    })
+                apcontinue = data.get("continue", {}).get("apcontinue", "")
+                if apcontinue:
+                    new_tasks.append({
+                        "source": "fandom_allpages",
+                        "url": f"https://tarmacworks.fandom.com/api.php?action=query&list=allpages&apnamespace=0&aplimit=500&format=json&apcontinue={urllib.parse.quote(apcontinue)}",
+                        "meta": {"apcontinue": apcontinue}
+                    })
+            except Exception as e:
+                logger.error(f"Error parsing Tarmac Works Fandom allpages: {e}")
+            return new_tasks
+            
+        elif source == "fandom_page":
+            try:
+                res_data = json.loads(html_or_json)
+                if "parse" not in res_data or "text" not in res_data["parse"]:
+                    return None
+                html_content = res_data["parse"]["text"]["*"]
+                soup = BeautifulSoup(html_content, "lxml")
+            except Exception as e:
+                logger.error(f"Tarmac Works Fandom parse error for {meta['page_name']}: {e}")
+                return None
+                
+            default_series = "Regular"
+            page_name_lower = meta["page_name"].lower()
+            if "hobby64" in page_name_lower:
+                default_series = "HOBBY64"
+            elif "global64" in page_name_lower:
+                default_series = "GLOBAL64"
+            elif "road64" in page_name_lower:
+                default_series = "ROAD64"
+            elif "collab64" in page_name_lower:
+                default_series = "COLLAB64"
+
+            for table in soup.find_all("table", class_=re.compile(r"wikitable|sortable", re.I)):
+                headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
+                if not headers:
+                    first_tr = table.find("tr")
+                    if first_tr:
+                        headers = [td.get_text(strip=True).lower() for td in first_tr.find_all(["td", "th"])]
+                
+                code_idx = name_idx = make_idx = year_idx = photo_idx = -1
+                for idx, h in enumerate(headers):
+                    if any(k in h for k in ("code", "item", "sku", "ref", "no.")):
+                        code_idx = idx
+                    elif any(k in h for k in ("model", "name", "description")):
+                        name_idx = idx
+                    elif "make" in h or "brand" in h or "marque" in h:
+                        make_idx = idx
+                    elif "release" in h or "year" in h or "date" in h:
+                        year_idx = idx
+                    elif any(k in h for k in ("photo", "image", "pic")):
+                        photo_idx = idx
+
+                if code_idx == -1 or name_idx == -1:
+                    continue
+
+                for row in table.find_all("tr")[1:]:
+                    cells = row.find_all(["td", "th"])
+                    if len(cells) <= max(code_idx, name_idx):
+                        continue
+
+                    item_number = cells[code_idx].get_text(strip=True)
+                    product_name = cells[name_idx].get_text(strip=True)
+
+                    if not item_number or not product_name or item_number.strip() == "-":
+                        continue
+
+                    brand = "Tarmac Works"
+                    if make_idx != -1 and make_idx < len(cells):
+                        m_val = cells[make_idx].get_text(strip=True)
+                        if m_val:
+                            brand = m_val
+
+                    release_year = None
+                    release_year_confidence = None
+                    if year_idx != -1 and year_idx < len(cells):
+                        release_val = cells[year_idx].get_text(strip=True)
+                        ym = re.search(r"\b(20\d{2})\b", release_val)
+                        if ym:
+                            release_year = int(ym.group(1))
+                            release_year_confidence = "confirmed"
+
+                    img_urls = get_row_product_images(row)
+                    if not img_urls and photo_idx != -1 and photo_idx < len(cells):
+                        img_tag = cells[photo_idx].find("img")
+                        if img_tag:
+                            img_url = img_tag.get("data-src") or img_tag.get("src", "")
+                            if img_url and "data:image" not in img_url:
+                                img_url = clean_fandom_image_url(img_url)
+                                img_urls = [img_url]
+
+                    self.crawler._save_or_merge_product(
+                        item_number=item_number,
+                        product_name=product_name,
+                        brand=brand,
+                        scale="1:64",
+                        series=default_series,
+                        img_urls=img_urls,
+                        source="fandom",
+                        release_year=release_year,
+                        release_year_confidence=release_year_confidence,
+                        status="Released",
+                        toy_brand="Tarmac Works"
+                    )
 
 
 class Inno64BrandHandler:
-    """Crawls INNO64 models from the official WooCommerce site inno-models.com."""
+    """Crawls INNO64 models from local HTML files, official WooCommerce site, and my64.com.my."""
     def __init__(self, crawler: "MINI_GTCrawler"):
         self.crawler = crawler
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        # Fetch the WooCommerce sitemap index
+        
+        # 1. Discover from local reference HTML files
+        ref_dir = os.path.join(os.path.dirname(__file__), "..", "reference_htmls")
+        inno_shop_local = os.path.join(ref_dir, "1. Shop All Collectible Model Cars Online _ Inno Models.html")
+        inno64_local = os.path.join(ref_dir, "2. Model Cars Online Malaysia __ INNO64.html")
+        inno18r_local = os.path.join(ref_dir, "3.Model Cars Online Malaysia __ INNO18-R.html")
+        
+        if os.path.exists(inno_shop_local):
+            logger.info("Discovering INNO64 from local official shop HTML...")
+            try:
+                with open(inno_shop_local, "r", encoding="utf-8") as f:
+                    soup = BeautifulSoup(f.read(), "html.parser")
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    if "/product/" in href:
+                        pending.append({
+                            "source": "inno64_product",
+                            "url": href,
+                            "meta": {}
+                        })
+            except Exception as e:
+                logger.error(f"Error parsing local official shop HTML: {e}")
+                
+        if os.path.exists(inno64_local):
+            logger.info("Discovering INNO64 from local my64 HTML...")
+            try:
+                with open(inno64_local, "r", encoding="utf-8") as f:
+                    local_tasks = parse_my64_list(self.crawler, f.read(), "26", "INNO64")
+                    pending.extend(local_tasks)
+            except Exception as e:
+                logger.error(f"Error parsing local inno64 my64 HTML: {e}")
+                
+        if os.path.exists(inno18r_local):
+            logger.info("Discovering INNO18-R from local my64 HTML...")
+            try:
+                with open(inno18r_local, "r", encoding="utf-8") as f:
+                    local_tasks = parse_my64_list(self.crawler, f.read(), "27", "INNO64")
+                    pending.extend(local_tasks)
+            except Exception as e:
+                logger.error(f"Error parsing local inno18r my64 HTML: {e}")
+
+        # 2. Discover from live sitemap index
         index_url = "https://www.inno-models.com/sitemap_index.xml"
         index_xml = self.crawler.fetch_url(index_url, use_cache=True)
         sitemaps = []
@@ -1955,7 +2443,6 @@ class Inno64BrandHandler:
             except Exception as e:
                 logger.error(f"Failed to parse INNO64 sitemap index: {e}")
         
-        # Fallback if index fails
         if not sitemaps:
             sitemaps = ["https://www.inno-models.com/product-sitemap.xml"]
 
@@ -1966,7 +2453,6 @@ class Inno64BrandHandler:
                     soup = BeautifulSoup(sitemap_xml, "lxml-xml")
                     for loc in soup.find_all("loc"):
                         url = loc.get_text(strip=True)
-                        # Only product pages (not images)
                         if "/product/" in url and not url.endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
                             pending.append({
                                 "source": "inno64_product",
@@ -1975,16 +2461,63 @@ class Inno64BrandHandler:
                             })
                 except Exception as e:
                     logger.error(f"Failed to parse INNO64 sitemap {sitemap_url}: {e}")
+
+        # 3. Live my64 list pages
+        pending.append({
+            "source": "my64_list",
+            "url": "https://www.my64.com.my/usr/product.aspx?pgid=4&grpid=26&lang=en&pg=1",
+            "meta": {"toy_brand": "INNO64", "grp_id": "26", "page": 1}
+        })
+        pending.append({
+            "source": "my64_list",
+            "url": "https://www.my64.com.my/usr/product.aspx?pgid=4&grpid=27&lang=en&pg=1",
+            "meta": {"toy_brand": "INNO64", "grp_id": "27", "page": 1}
+        })
+        
+        # 4. Live official products page
+        pending.append({
+            "source": "inno_official_products_page",
+            "url": "https://www.inno-models.com/our-products/",
+            "meta": {}
+        })
+
         logger.info(f"INNO64 discovery: found {len(pending)} product pages.")
         return pending
 
     def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        source = task["source"]
         url = task["url"]
+        meta = task.get("meta", {})
+        
+        if source == "inno64_product":
+            self._parse_woocommerce_detail(html_or_json, url)
+        elif source == "inno_official_products_page":
+            new_tasks = []
+            try:
+                soup = BeautifulSoup(html_or_json, "lxml")
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    if "/product/" in href:
+                        new_tasks.append({
+                            "source": "inno64_product",
+                            "url": href,
+                            "meta": {}
+                        })
+            except Exception as e:
+                logger.error(f"Error parsing official products page: {e}")
+            return new_tasks
+        elif source == "my64_list":
+            return parse_my64_list(self.crawler, html_or_json, meta["grp_id"], meta["toy_brand"])
+        elif source == "my64_detail":
+            parse_my64_detail(self.crawler, html_or_json, url, meta["toy_brand"], meta["grp_id"])
+        return None
+
+    def _parse_woocommerce_detail(self, html_or_json: str, url: str) -> None:
         try:
             soup = BeautifulSoup(html_or_json, "lxml")
         except Exception as e:
             logger.error(f"INNO64 parse error for {url}: {e}")
-            return None
+            return
 
         # Extract title
         title_node = soup.find("h1", class_="product_title")
@@ -1992,7 +2525,7 @@ class Inno64BrandHandler:
             title_node = soup.find("h1")
         product_name = title_node.get_text(strip=True) if title_node else ""
         if not product_name:
-            return None
+            return
 
         # Extract dynamic listing fields (Jet Engine widgets)
         fields = {}
@@ -2023,15 +2556,13 @@ class Inno64BrandHandler:
 
         sku = fields.get("sku", "").strip()
         if not sku:
-            # Try to extract from URL slug
             slug = url.rstrip("/").split("/")[-1]
             sku = slug.upper().replace("-", " ")
         if not sku:
-            return None
+            return
 
         brand = fields.get("brand", "INNO64").strip() or "INNO64"
         scale = fields.get("scale", "1/64").strip()
-        # Normalize scale format
         scale = scale.replace("/", ":")
         if not scale.startswith("1:"):
             scale = f"1:{scale}" if scale.isdigit() else scale
@@ -2039,7 +2570,6 @@ class Inno64BrandHandler:
         status = fields.get("status", "Released").strip()
         model_type = fields.get("type", "Diecast").strip()
 
-        # Fix comma-delimited series: e.g. "Diecast,Limited Editions" -> series="Diecast", sub_series="Limited Editions"
         series = "Diecast"
         sub_series = "Regular"
         if model_type:
@@ -2051,9 +2581,7 @@ class Inno64BrandHandler:
             if qualifier_parts:
                 sub_series = qualifier_parts[0]
 
-        # Image: get the main product image
         img_urls = []
-        # Look for the primary product image in the gallery
         for img in soup.find_all("img"):
             src = img.get("src") or ""
             if (
@@ -2062,20 +2590,18 @@ class Inno64BrandHandler:
                 and "logo" not in src.lower()
                 and "data:image" not in src
                 and not src.endswith(".svg")
-                and "-600x" not in src  # skip thumbnails
+                and "-600x" not in src
                 and "-300x" not in src
                 and "-150x" not in src
             ):
                 if src not in img_urls:
                     img_urls.append(src)
-                    break  # Just need one primary image
+                    break
 
-        # Fallback: find any product image (even thumbnail, then strip size suffix)
         if not img_urls:
             for img in soup.find_all("img"):
                 src = img.get("src") or ""
                 if src and "wp-content/uploads" in src and "logo" not in src.lower() and "data:image" not in src:
-                    # Strip WordPress thumbnail suffix
                     cleaned = re.sub(r"-\d+x\d+(\.[a-zA-Z0-9]+)$", r"\1", src)
                     if cleaned not in img_urls:
                         img_urls.append(cleaned)
@@ -2101,54 +2627,122 @@ class Inno64BrandHandler:
             sub_series=sub_series,
             attributes=attributes
         )
-        return None
 
 
 class TrendsHobbyBrandHandler:
-    """Crawls Trends Hobby (Tiny HK) models from tiny.com.hk."""
+    """Crawls Trends Hobby models from Treasured Models Shopify store and local reference HTML."""
     def __init__(self, crawler: "MINI_GTCrawler"):
         self.crawler = crawler
 
     def discover_sources(self) -> List[Dict]:
         pending = []
-        import subprocess
-        try:
-            api_url = "https://diecastsilkroad.com/collections/trends-hobby/products.json?limit=250"
-            result = subprocess.run(
-                ["curl.exe", "-s", api_url],
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="ignore"
-            )
-            if result.returncode == 0 and result.stdout:
-                data = json.loads(result.stdout)
-                products = data.get("products", [])
-                logger.info(f"Trends Hobby (diecastsilkroad) discovery: found {len(products)} products.")
-                pending.append({
-                    "source": "silkroad_json",
-                    "url": api_url,
-                    "meta": {"products": products}
-                })
-        except Exception as e:
-            logger.error(f"Failed to fetch Trends Hobby from diecastsilkroad: {e}")
+        
+        # 1. Local HTML reference page
+        ref_dir = os.path.join(os.path.dirname(__file__), "..", "reference_htmls")
+        local_path = os.path.join(ref_dir, "5. Trends Hobby – Treasured Models.html")
+        if os.path.exists(local_path):
+            logger.info("Discovering Trends Hobby from local Treasured Models HTML...")
+            try:
+                with open(local_path, "r", encoding="utf-8") as f:
+                    soup = BeautifulSoup(f.read(), "html.parser")
+                # Parse all links to products
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    title = a.get_text(strip=True)
+                    if "/products/" in href:
+                        handle = href.split("/products/")[-1].split("?")[0]
+                        pending.append({
+                            "source": "trends_shopify_product",
+                            "url": f"https://treasuredmodels.com/products/{handle}",
+                            "meta": {"title": title, "handle": handle}
+                        })
+            except Exception as e:
+                logger.error(f"Error parsing local Trends Hobby reference HTML: {e}")
+
+        # 2. Live Shopify products.json
+        api_url = "https://treasuredmodels.com/collections/trends-hobby/products.json?limit=250&page=1"
+        pending.append({
+            "source": "trends_shopify_json",
+            "url": api_url,
+            "meta": {"page": 1}
+        })
+        
         return pending
 
     def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        source = task["source"]
+        url = task["url"]
         meta = task.get("meta", {})
-        products = meta.get("products", [])
-        if not products:
-            return None
+        
+        if source == "trends_shopify_json":
+            new_tasks = []
+            try:
+                data = json.loads(html_or_json)
+                products = data.get("products", [])
+                if products:
+                    if len(products) == 250:
+                        next_page = meta.get("page", 1) + 1
+                        new_tasks.append({
+                            "source": "trends_shopify_json",
+                            "url": f"https://treasuredmodels.com/collections/trends-hobby/products.json?limit=250&page={next_page}",
+                            "meta": {"page": next_page}
+                        })
+                    self._parse_shopify_products(products)
+            except Exception as e:
+                logger.error(f"Trends Hobby Shopify JSON parse error for {url}: {e}")
+            return new_tasks
+            
+        elif source == "trends_shopify_product":
+            title = meta.get("title", "")
+            handle = meta.get("handle", "")
+            if not title or not handle:
+                return None
+                
+            product_name = title.replace("Trends Hobby - ", "").replace("[Free Shipping] ", "").replace("[Pre-Order] ", "").strip()
+            
+            item_number = handle
+            m = re.search(r"\b(\d+[A-Z0-9\-]+)\b", product_name)
+            if m:
+                item_number = m.group(1)
+                
+            brand = "Trends Hobby"
+            title_lower = product_name.lower()
+            if "porsche" in title_lower:
+                brand = "Porsche"
+            elif "lamborghini" in title_lower:
+                brand = "Lamborghini"
+            elif "toyota" in title_lower:
+                brand = "Toyota"
+                
+            year = None
+            ym = re.search(r"\b(20\d{2})\b", product_name)
+            if ym:
+                year = int(ym.group(1))
+                
+            self.crawler._save_or_merge_product(
+                item_number=item_number,
+                product_name=product_name,
+                brand=brand,
+                scale="1:64",
+                series="Regular",
+                img_urls=[],
+                source="local_html",
+                release_year=year,
+                release_year_confidence="inferred" if year else None,
+                status="Released",
+                toy_brand="Trends Hobby",
+                sub_series="Regular"
+            )
+        return None
 
+    def _parse_shopify_products(self, products: List[Dict]) -> None:
         for p in products:
             title = p.get("title", "")
             if not title:
                 continue
 
-            # Clean title
-            product_name = title.replace("Trends Hobby - ", "").replace("[Free Shipping] ", "").strip()
+            product_name = title.replace("Trends Hobby - ", "").replace("[Free Shipping] ", "").replace("[Pre-Order] ", "").strip()
 
-            # SKU/Item number
             item_number = None
             for v in p.get("variants", []):
                 sku = v.get("sku")
@@ -2160,7 +2754,6 @@ class TrendsHobbyBrandHandler:
             if not item_number:
                 continue
 
-            # Brand (parse from title)
             brand = "Trends Hobby"
             title_lower = title.lower()
             if "porsche" in title_lower:
@@ -2172,27 +2765,17 @@ class TrendsHobbyBrandHandler:
             elif "mclaren" in title_lower:
                 brand = "McLaren"
 
-            # Images
             img_urls = []
             for img in p.get("images", []):
                 src = img.get("src")
                 if src:
                     img_urls.append(src.split("?")[0])
 
-            # Release Year
             year = None
             ym = re.search(r"\b(20\d{2})\b", title)
-            if not ym:
-                ym = re.search(r"\b(19\d{2})\b", title)
             if ym:
                 year = int(ym.group(1))
 
-            # Status
-            status = "Released"
-            if "pre-order" in title_lower or "pre order" in title_lower:
-                status = "Pre-Order"
-
-            # Series
             series = "Regular"
             tags = p.get("tags", [])
             for tag in tags:
@@ -2217,10 +2800,8 @@ class TrendsHobbyBrandHandler:
                 source="shopify",
                 release_year=year,
                 release_year_confidence="inferred" if year else None,
-                status=status,
+                status="Released",
                 toy_brand="Trends Hobby",
                 sub_series="Regular",
                 attributes=attributes
             )
-        return None
-
