@@ -557,6 +557,19 @@ class MINI_GTCrawler:
         brand = brand.strip() or "MINI GT"
         product_name = product_name.strip()
         if toy_brand == "MINI GT":
+            # --- Brand normalization ---
+            b_upper = brand.upper().strip()
+            if b_upper in ["KAIDO HOUSE", "KAIDO★HOUSE", "KAIDOHOUSE X MINI GT", "KAIDO STAR"]:
+                brand = "KAIDOHOUSE x MINI GT"
+            elif b_upper == "FERRARI":
+                brand = "Ferrari"
+            elif b_upper == "SUBARU":
+                brand = "Subaru"
+            elif b_upper in ["MINI GT SET", "MINI GT SETS"]:
+                brand = "MINI GT Set"
+            elif b_upper in ["RED BULL RACING", "ORACLE RED BULL", "ORACLE RED BULL RACING", "RED BULL"]:
+                brand = "Red Bull Racing"
+                
             series = series.upper().strip()
             if not series or series == "REGULAR COLLECTION":
                 series = "REGULAR"
@@ -1156,26 +1169,53 @@ class MiniGTBrandHandler:
         # 1. Discover Official site brands
         official_brands = []
         logger.info("Discovering Official site Brands...")
+        
+        brands_dict = {}
+        
+        def parse_brands_from_html(html_content):
+            if not html_content:
+                return
+            try:
+                soup = BeautifulSoup(html_content, "lxml")
+                for link in soup.find_all("a", href=True):
+                    href = link["href"]
+                    text = link.get_text(strip=True)
+                    if "action=product-list" in href:
+                        b_id_match = re.search(r"b_id=(\d+)", href)
+                        if b_id_match:
+                            b_id = b_id_match.group(1)
+                            if text:
+                                if text == "QubeCarz":
+                                    text = "Qube Cars"
+                                if b_id not in brands_dict:
+                                    brands_dict[b_id] = text
+            except Exception as e:
+                logger.error(f"Error parsing brands HTML: {e}")
+
+        # Live fetch
         off_html = self.crawler.fetch_url(
             "https://minigt.tsm-models.com/index.php?action=product", use_cache=False
         )
         if off_html:
-            soup = BeautifulSoup(off_html, "lxml")
-            brands_dict = {}
-            for link in soup.find_all("a", href=True):
-                href = link["href"]
-                text = link.get_text(strip=True)
-                if "action=product-list" in href:
-                    b_id_match = re.search(r"b_id=(\d+)", href)
-                    if b_id_match:
-                        b_id = b_id_match.group(1)
-                        if text:
-                            if text == "QubeCarz":
-                                text = "Qube Cars"
-                            if text not in brands_dict.values():
-                                brands_dict[b_id] = text
-            for b_id, name in brands_dict.items():
-                official_brands.append({"b_id": b_id, "name": name})
+            parse_brands_from_html(off_html)
+
+        # Merge with local reference HTML to guarantee completeness
+        ref_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "reference_htmls",
+            "MINIGT.com – Welcome to the World of 1_64!.html"
+        )
+        if os.path.exists(ref_path):
+            logger.info("Merging brands from local reference HTML...")
+            try:
+                with open(ref_path, "r", encoding="utf-8") as f:
+                    ref_html = f.read()
+                parse_brands_from_html(ref_html)
+            except Exception as e:
+                logger.error(f"Failed to read local reference HTML: {e}")
+
+        for b_id, name in brands_dict.items():
+            official_brands.append({"b_id": b_id, "name": name})
 
         self.crawler.crawler_state["discovered_sources"]["official_brands"] = official_brands
         for brand in official_brands:
