@@ -230,7 +230,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2019"
@@ -296,7 +296,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2018"
@@ -318,7 +318,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Toyota",
     "year": "2019"
@@ -340,7 +340,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2018"
@@ -384,7 +384,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2019"
@@ -406,7 +406,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2018"
@@ -428,7 +428,7 @@
     "source": "official",
     "release_year": 2018,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2018"
@@ -450,7 +450,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "McLaren",
     "year": "2019"
@@ -472,7 +472,7 @@
     "source": "official",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
+    "status": "Pre-Order",
     "is_cancelled": false,
     "manufacturer": "Honda",
     "year": "2019"
@@ -1259,8 +1259,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "year": "2019"
   },
@@ -1724,8 +1724,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "year": "2019"
   },
@@ -1743,8 +1743,8 @@
     "source": "myminigt",
     "release_year": 2019,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "year": "2019"
   },
@@ -1803,8 +1803,8 @@
     "source": "myminigt",
     "release_year": 2020,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Lamborghini",
     "year": "2020"
   },
@@ -1879,17 +1879,12 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1605305273_18595.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400782_185236.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400783_18594.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1591400783_185439.JPG"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2020,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Nissan",
     "year": "2020"
   },
@@ -4519,17 +4514,12 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1622152764_236533.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354731_236197.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354731_236977.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1609354734_236301.JPG"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2021,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Toyota",
     "year": "2021"
   },
@@ -6859,17 +6849,12 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [
-      "https://minigt.tsm-models.com/upload/picfile_list/6a0d931fae361f38db720c9327f4e82420250510040225915.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160775_346834.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160783_34654.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1639160792_346989.JPG"
-    ],
+    "images": [],
     "source": "official",
     "release_year": 2021,
     "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
+    "status": "Cancelled",
+    "is_cancelled": true,
     "manufacturer": "Nissan",
     "year": "2021"
   },
@@ -15114,7 +15099,7 @@
     "product_name": "Honda NSX GT3 EVO22 #18 \"UPGARAGE NSX GT3\" TEAM UPGARAGE 2023 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "REGULAR EXCLUSIVE PRODUCT",
+    "series": "SUPER GT SERIES",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/f82a10924c247e63568b8446e937a09420241127181719542.jpg",
@@ -18518,7 +18503,7 @@
     "product_name": "Honda NSX-GT \"TYPE S\" GT500 #16 \"Red Bull MOTUL MUGEN NSX-GT \"  TEAM Red Bull MUGEN  2022 SUPER GT SERIES",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular",
+    "series": "SUPER GT SERIES",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/a0ad886259c7d37cb0fc4f8c07b04ec320250419193319011.jpg",
@@ -26886,7 +26871,9 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/5e776293-71b6-47ae-aa8b-37ea3904932f"
+    ],
     "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
@@ -28095,7 +28082,9 @@
     "scale": "1:64",
     "series": "REGULAR EXCLUSIVE PRODUCT",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/2437e3fc-7a6e-46ca-ba8f-df9c3efc06d6"
+    ],
     "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
@@ -32017,7 +32006,9 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/f85bb0fa-1d51-45bb-8b93-9e9db59570b9"
+    ],
     "source": "official",
     "release_year": 2023,
     "release_year_confidence": "confirmed",
@@ -32053,7 +32044,9 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/c90f3425-75fc-4592-9b9b-b0f1b5cef235"
+    ],
     "source": "official",
     "release_year": 2023,
     "release_year_confidence": "confirmed",
@@ -33263,7 +33256,9 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7a928aeb-30c1-421d-a9d7-f88150bd05d1"
+    ],
     "source": "official",
     "release_year": 2025,
     "release_year_confidence": "confirmed",
@@ -33280,7 +33275,9 @@
     "scale": "1:64",
     "series": "Regular",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/310bead8-8477-4c51-8d47-b41404bba9bc"
+    ],
     "source": "official",
     "release_year": 2025,
     "release_year_confidence": "confirmed",
@@ -40784,7 +40781,7 @@
     "product_name": "Silhouette Nissan LB-ER34 SKYLINE \r\nLBWK *A BATHING APE CROSSOVER",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "EXPO 2",
+    "series": "EXPO 1",
     "sub_series": "Regular",
     "images": [
       "https://backend-static-ms.zmoif7.easypanel.host/api/images/e3e9c5a0-11b8-4a09-a950-5f07f699c58e"
