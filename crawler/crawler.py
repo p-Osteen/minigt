@@ -556,7 +556,12 @@ class MINI_GTCrawler:
 
         brand = brand.strip() or "MINI GT"
         product_name = product_name.strip()
-        series = series.strip() or "Regular"
+        if toy_brand == "MINI GT":
+            series = series.upper().strip()
+            if not series or series == "REGULAR COLLECTION":
+                series = "REGULAR"
+        else:
+            series = series.strip() or "Regular"
         sub_series = (sub_series or "Regular").strip()
 
         # --- Deduplicate URLs ---
