@@ -71,30 +71,67 @@ def main_menu():
 
         if choice == "1":
             print("\nSelect brand to scrape:")
-            print("  1. MINI GT")
-            print("  2. Hot Wheels")
-            print("  3. Pop Race")
-            print("  4. Tarmac Works")
-            print("  5. INNO64")
-            print("  6. Trends Hobby")
-            print("  7. All")
-            brand_choice = input("Enter choice (1-7): ").strip()
-            brand_map = {"1": "MINI GT", "2": "Hot Wheels", "3": "Pop Race", "4": "Tarmac Works", "5": "INNO64", "6": "Trends Hobby", "7": "All"}
-            brand_name = brand_map.get(brand_choice)
-            if brand_name:
-                target_brand = None if brand_name == "All" else brand_name
-                print(f"\n[INFO] Starting fresh discovery & crawl for {brand_name}...")
-                try:
-                    crawler = MINI_GTCrawler()
-                    crawler.run_discovery(target_brand)
-                    crawler.run_crawler(target_brand)
-                    print("\n[INFO] Auto-deploying to GitHub Pages...")
-                    from deploy import deploy
-                    deploy()
-                except KeyboardInterrupt:
-                    print("\n[INFO] Crawl interrupted. State cached.")
+            print("  1. All")
+            print("  2. MINI GT")
+            print("  3. Hot Wheels")
+            print("  4. Pop Race")
+            print("  5. Tarmac Works")
+            print("  6. INNO64")
+            print("  7. Trends Hobby")
+            brand_choice = input("Enter choice(s) (e.g. 1 or 2,3,6): ").strip()
+            
+            choices = [c.strip() for c in brand_choice.split(",") if c.strip()]
+            brand_map = {
+                "1": "All",
+                "2": "MINI GT",
+                "3": "Hot Wheels",
+                "4": "Pop Race",
+                "5": "Tarmac Works",
+                "6": "INNO64",
+                "7": "Trends Hobby"
+            }
+            
+            selected_brands = []
+            valid = True
+            for c in choices:
+                name = brand_map.get(c)
+                if name:
+                    selected_brands.append(name)
+                else:
+                    valid = False
+                    break
+            
+            if not selected_brands or not valid:
+                print("\n[ERROR] Invalid choice(s).")
             else:
-                print("\n[ERROR] Invalid choice.")
+                if "All" in selected_brands:
+                    print(f"\n[INFO] Starting fresh discovery & crawl for All brands...")
+                    try:
+                        crawler = MINI_GTCrawler()
+                        crawler.run_discovery(None)
+                        crawler.run_crawler(None)
+                        print("\n[INFO] Auto-deploying to GitHub Pages...")
+                        from deploy import deploy
+                        deploy()
+                    except KeyboardInterrupt:
+                        print("\n[INFO] Crawl interrupted. State cached.")
+                else:
+                    interrupted = False
+                    for name in selected_brands:
+                        print(f"\n[INFO] Starting fresh discovery & crawl for {name}...")
+                        try:
+                            crawler = MINI_GTCrawler()
+                            crawler.run_discovery(name)
+                            crawler.run_crawler(name)
+                        except KeyboardInterrupt:
+                            print(f"\n[INFO] Crawl for {name} interrupted. State cached.")
+                            interrupted = True
+                            break
+                    
+                    if not interrupted:
+                        print("\n[INFO] Auto-deploying to GitHub Pages...")
+                        from deploy import deploy
+                        deploy()
 
         elif choice == "2":
             print("\n[INFO] Resuming crawl from saved state...")
@@ -117,31 +154,53 @@ def main_menu():
 
         elif choice == "5":
             print("\nSelect brand to clear:")
-            print("  1. MINI GT")
-            print("  2. Hot Wheels")
-            print("  3. Pop Race")
-            print("  4. Tarmac Works")
-            print("  5. INNO64")
-            print("  6. Trends Hobby")
-            print("  7. All (Complete Reset)")
-            brand_choice = input("Enter choice (1-7): ").strip()
-            brand_map = {"1": "MINI GT", "2": "Hot Wheels", "3": "Pop Race", "4": "Tarmac Works", "5": "INNO64", "6": "Trends Hobby", "7": "All"}
-            brand_name = brand_map.get(brand_choice)
-            if brand_name:
-                if brand_name == "All":
+            print("  1. All (Complete Reset)")
+            print("  2. MINI GT")
+            print("  3. Hot Wheels")
+            print("  4. Pop Race")
+            print("  5. Tarmac Works")
+            print("  6. INNO64")
+            print("  7. Trends Hobby")
+            brand_choice = input("Enter choice(s) (e.g. 1 or 2,3,6): ").strip()
+            
+            choices = [c.strip() for c in brand_choice.split(",") if c.strip()]
+            brand_map = {
+                "1": "All",
+                "2": "MINI GT",
+                "3": "Hot Wheels",
+                "4": "Pop Race",
+                "5": "Tarmac Works",
+                "6": "INNO64",
+                "7": "Trends Hobby"
+            }
+            
+            selected_brands = []
+            valid = True
+            for c in choices:
+                name = brand_map.get(c)
+                if name:
+                    selected_brands.append(name)
+                else:
+                    valid = False
+                    break
+                    
+            if not selected_brands or not valid:
+                print("\n[ERROR] Invalid choice(s).")
+            else:
+                if "All" in selected_brands:
                     confirm = input(
                         "\n[WARNING] This deletes all database records, caches, and logs. Type 'yes' to proceed: "
                     ).strip().lower()
                     if confirm == "yes":
                         clear_all_data()
                 else:
+                    brand_list_str = ", ".join(selected_brands)
                     confirm = input(
-                        f"\n[WARNING] This deletes all database and JSON records for {brand_name}. Type 'yes' to proceed: "
+                        f"\n[WARNING] This deletes all database and JSON records for {brand_list_str}. Type 'yes' to proceed: "
                     ).strip().lower()
                     if confirm == "yes":
-                        clear_brand_data(brand_name)
-            else:
-                print("\n[ERROR] Invalid choice.")
+                        for name in selected_brands:
+                            clear_brand_data(name)
 
         elif choice == "6":
             stop_preview_server()

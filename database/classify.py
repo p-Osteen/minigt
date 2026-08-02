@@ -210,20 +210,21 @@ def classify_product(d: dict, toy_brand: str) -> dict:
                 d["year"] = None
 
         # Hot Wheels Series Group classification
-        series_group = "Miscellaneous"
-        for group, names in HW_GROUPS.items():
-            found = False
-            for name_item in names:
-                name_lower = name_item.lower()
-                if (name_lower == series_lower or 
-                    name_lower == sub_series_lower or 
-                    name_lower in series_lower or 
-                    name_lower in sub_series_lower):
-                    series_group = group
-                    found = True
+        series_group = d.get("series_group") or "Miscellaneous"
+        if series_group == "Miscellaneous":
+            for group, names in HW_GROUPS.items():
+                found = False
+                for name_item in names:
+                    name_lower = name_item.lower()
+                    if (name_lower == series_lower or 
+                        name_lower == sub_series_lower or 
+                        name_lower in series_lower or 
+                        name_lower in sub_series_lower):
+                        series_group = group
+                        found = True
+                        break
+                if found:
                     break
-            if found:
-                break
         d["series_group"] = series_group
             
     elif toy_brand == "Pop Race":

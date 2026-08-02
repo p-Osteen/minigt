@@ -751,7 +751,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640439",
     "product_name": "Mazda RX-8 RE-Amemiya - Gun Metal",
-    "brand": "Pop Race",
+    "brand": "RE Amemiya",
     "scale": "1:64",
     "series": "Regular Collection",
     "sub_series": "Regular",
@@ -767,7 +767,7 @@
     "year": null,
     "finish": "Standard",
     "collection": "Regular Collection",
-    "make": "Japanese"
+    "make": "Japanese Tuners"
   },
   {
     "toy_brand": "Pop Race",
@@ -1105,7 +1105,7 @@
     "product_name": "Datsun C210 - Chrome",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Event Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/c0/PRB000.jpg/revision/latest?cb=20260411000404"
@@ -1118,7 +1118,7 @@
     "manufacturer": "Nissan",
     "year": "2026",
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Event Exclusives",
     "make": "Japanese"
   },
   {
@@ -1127,7 +1127,7 @@
     "product_name": "RWB 930 Las Vegas Supercon 2026",
     "brand": "RWB",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Event Exclusives",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/e/e7/PRB001.jpg/revision/latest?cb=20260410213603"
@@ -1140,7 +1140,7 @@
     "manufacturer": null,
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Event Exclusives",
     "make": "Japanese Tuners"
   },
   {
@@ -1149,7 +1149,7 @@
     "product_name": "Honda Civic EG6",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Event Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/5/53/PRB002.jpg/revision/latest?cb=20260411000414"
@@ -1162,7 +1162,7 @@
     "manufacturer": "Honda",
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Event Exclusives",
     "make": "Japanese"
   },
   {
@@ -1171,7 +1171,7 @@
     "product_name": "RWB 930 Vancouver Meet 2026",
     "brand": "RWB",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Event Exclusives",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/fe/PRB003.jpg/revision/latest?cb=20260410213615"
@@ -1184,7 +1184,7 @@
     "manufacturer": null,
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Event Exclusives",
     "make": "Japanese Tuners"
   },
   {
@@ -1193,7 +1193,7 @@
     "product_name": "Honda Civic EG6 - Yellow",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Event Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/1/11/PRB004.jpg/revision/latest?cb=20260410213626"
@@ -1206,7 +1206,7 @@
     "manufacturer": "Honda",
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Event Exclusives",
     "make": "Japanese"
   },
   {
@@ -1215,7 +1215,7 @@
     "product_name": "Pandem Toyota GR Yaris - Auto Finesse",
     "brand": "ToyotaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/2/28/PRE012.jpg/revision/latest?cb=20260411003931",
@@ -1229,7 +1229,7 @@
     "manufacturer": "Toyota",
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -1238,7 +1238,7 @@
     "product_name": "Toyota Supra Darwin PRO 66G NWB SUPRA (A90) Midnight Black",
     "brand": "ToyotaDarwinPRO",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/a/ab/PRE013.jpg/revision/latest?cb=20260411010732",
@@ -1252,7 +1252,7 @@
     "manufacturer": "Toyota",
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -1261,7 +1261,7 @@
     "product_name": "RWB 997 - Purple",
     "brand": "RWB",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/9/99/PRE015.jpg/revision/latest?cb=20260411155514",
@@ -1275,7 +1275,7 @@
     "manufacturer": null,
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -1284,7 +1284,7 @@
     "product_name": "Pandem Civic EG6",
     "brand": "HondaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/0/04/PRE018.jpg/revision/latest?cb=20260411005933",
@@ -1298,7 +1298,7 @@
     "manufacturer": "Honda",
     "year": "2026",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -1349,7 +1349,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640096",
     "product_name": "Aston Martin Valkyrie Satin Metallic Blue",
-    "brand": "Aston Martin",
+    "brand": "Pop Race",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Regular",
@@ -1459,7 +1459,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640114",
     "product_name": "Skyline GT-R V8 Drift (Hakosuka) Calsonic",
-    "brand": "Nissan",
+    "brand": "Pop Race",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Regular",
@@ -1679,7 +1679,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640178",
     "product_name": "Aston Martin Vantage GT3 Carbon Edition",
-    "brand": "Pop Race",
+    "brand": "Aston Martin",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Regular",
@@ -2910,7 +2910,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640281",
     "product_name": "Mazda RX-8 RE-Amemiya - Chrome Orange",
-    "brand": "Pop Race",
+    "brand": "RE Amemiya",
     "scale": "1:64",
     "series": "Regular Collection",
     "sub_series": "Regular",
@@ -2926,7 +2926,7 @@
     "year": null,
     "finish": "Chrome",
     "collection": "Regular Collection",
-    "make": "Japanese"
+    "make": "Japanese Tuners"
   },
   {
     "toy_brand": "Pop Race",
@@ -3898,7 +3898,7 @@
     "product_name": "Skyline GT-R V8 Drift (Hakosuka) Chrome",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/9/9e/PRE005.jpg/revision/latest?cb=20241124003945",
@@ -3912,7 +3912,7 @@
     "manufacturer": "Nissan",
     "year": "2025",
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -3921,7 +3921,7 @@
     "product_name": "Skyline GT-R V8 Drift (Kenmeri) Raw Metal",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/f4/PRE006.jpg/revision/latest?cb=20241124004006",
@@ -3935,7 +3935,7 @@
     "manufacturer": "Nissan",
     "year": "2025",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -3944,7 +3944,7 @@
     "product_name": "Pandem GR Yaris Goodride Motorsports",
     "brand": "ToyotaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/6/64/PRE007.jpg/revision/latest?cb=20241124004027",
@@ -3958,7 +3958,7 @@
     "manufacturer": "Toyota",
     "year": "2025",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -3967,7 +3967,7 @@
     "product_name": "Pandem Civic EG6 Pink",
     "brand": "HondaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/e/e0/PRE008.jpg/revision/latest?cb=20241124004048",
@@ -3981,7 +3981,7 @@
     "manufacturer": "Honda",
     "year": "2025",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -3990,7 +3990,7 @@
     "product_name": "Nissan GT-R BNR32 Blue",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/2/2a/PRE009.jpg/revision/latest?cb=20241209121137",
@@ -4004,7 +4004,7 @@
     "manufacturer": "Nissan",
     "year": "2025",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -4013,7 +4013,7 @@
     "product_name": "Pandem Civic EG6 v1.5 MOONEYES",
     "brand": "HondaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/3/38/PRE010.jpg/revision/latest?cb=20250220162247",
@@ -4027,7 +4027,7 @@
     "manufacturer": "Honda",
     "year": "2025",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -4036,7 +4036,7 @@
     "product_name": "Pandem GR86 Crystal White Pearl",
     "brand": "ToyotaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/fa/PRE014.jpg/revision/latest?cb=20260411010332",
@@ -4050,7 +4050,7 @@
     "manufacturer": "Toyota",
     "year": "2025",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -4431,7 +4431,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640054",
     "product_name": "Aston Martin Valkyrie Viridian Green",
-    "brand": "Aston Martin",
+    "brand": "Pop Race",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Regular",
@@ -5997,7 +5997,7 @@
     "product_name": "DarwinPRO 66G NWB Supra A90",
     "brand": "ToyotaDarwinPRO",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/2/20/PRE002.jpg/revision/latest?cb=20241124002456",
@@ -6011,7 +6011,7 @@
     "manufacturer": "Toyota",
     "year": "2024",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -6020,7 +6020,7 @@
     "product_name": "Mazda RX7 Widebody Metallic Red",
     "brand": "Mazda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/3/31/PRE003.jpg/revision/latest?cb=20241124003509",
@@ -6034,7 +6034,7 @@
     "manufacturer": "Mazda",
     "year": "2024",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -6043,7 +6043,7 @@
     "product_name": "Pandem GR Yaris Metallic Blue",
     "brand": "ToyotaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/fe/PRE004.jpg/revision/latest?cb=20241124003924",
@@ -6057,7 +6057,7 @@
     "manufacturer": "Toyota",
     "year": "2024",
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -9533,7 +9533,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640136",
     "product_name": "Pandem GR Yaris Melvyn Evans Motorsports",
-    "brand": "Pop Race",
+    "brand": "ToyotaPandem",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Evangelion Racing",
@@ -9545,7 +9545,7 @@
     "release_year_confidence": null,
     "status": null,
     "is_cancelled": false,
-    "manufacturer": "Pop Race",
+    "manufacturer": "Toyota",
     "year": null,
     "finish": "Standard",
     "collection": "Xcartoys China",
@@ -9599,7 +9599,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640158",
     "product_name": "Mercedes-Benz AMG CLK GTR Silver",
-    "brand": "Mercedes-Benz",
+    "brand": "Pop Race",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Regular",
@@ -9665,7 +9665,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR640188",
     "product_name": "Singer Silver and Blue",
-    "brand": "Singer",
+    "brand": "Pop Race",
     "scale": "1:64",
     "series": "Xcartoys China",
     "sub_series": "Singer",
@@ -9677,7 +9677,7 @@
     "release_year_confidence": null,
     "status": null,
     "is_cancelled": false,
-    "manufacturer": null,
+    "manufacturer": "Pop Race",
     "year": null,
     "finish": "Standard",
     "collection": "Xcartoys China",
@@ -11489,7 +11489,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR64R8UL12BA01",
     "product_name": "Audi R8 LMS Ultra 2021 Bathurst 12 Hours #1",
-    "brand": "Pop Race",
+    "brand": "Audi",
     "scale": "1:64",
     "series": "Regular Collection",
     "sub_series": "Regular",
@@ -11511,7 +11511,7 @@
     "toy_brand": "Pop Race",
     "item_number": "PR64RS50089MGR15",
     "product_name": "Ford Sierra Macau Guia Race 1989 Eddie Lee #15",
-    "brand": "Pop Race",
+    "brand": "Ford",
     "scale": "1:64",
     "series": "Regular Collection",
     "sub_series": "Regular",
@@ -11579,7 +11579,7 @@
     "product_name": "Singer Targa Dark Chrome",
     "brand": "Singer",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Singer",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/b/b8/PRDC-001.jpg/revision/latest?cb=20260410221911"
@@ -11592,7 +11592,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "American"
   },
   {
@@ -11601,7 +11601,7 @@
     "product_name": "Skyline GT-R R32 Dark Chrome",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/d/d2/PRDC-002.jpg/revision/latest?cb=20260410221922"
@@ -11614,7 +11614,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese"
   },
   {
@@ -11623,7 +11623,7 @@
     "product_name": "Skyline GT-R R33 Dark Chrome",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/cf/PRDC-003.jpg/revision/latest?cb=20260410221933"
@@ -11636,7 +11636,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese"
   },
   {
@@ -11645,7 +11645,7 @@
     "product_name": "Shelby Mustang GT500 Dark Chrome",
     "brand": "Shelby",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/f8/PRDC-004.jpg/revision/latest?cb=20260410221942"
@@ -11658,7 +11658,7 @@
     "manufacturer": "Shelby",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "American"
   },
   {
@@ -11667,7 +11667,7 @@
     "product_name": "992 Stinger GTR Dark Chrome",
     "brand": "TopCar Design",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/fc/PRDC-005.jpg/revision/latest?cb=20260410220730"
@@ -11680,7 +11680,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "American"
   },
   {
@@ -11689,7 +11689,7 @@
     "product_name": "Golf GTI Mk2 Dark Chrome",
     "brand": "Volkswagen",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/5/5c/PRDC-006.jpg/revision/latest?cb=20260410220741"
@@ -11702,7 +11702,7 @@
     "manufacturer": "Volkswagen",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "European"
   },
   {
@@ -11711,7 +11711,7 @@
     "product_name": "Pandem Civic EG6 Dark Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/ca/PRDC-007.jpg/revision/latest?cb=20260410220752"
@@ -11724,7 +11724,7 @@
     "manufacturer": "Honda",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese Tuners"
   },
   {
@@ -11733,7 +11733,7 @@
     "product_name": "Mazda RX-7 FC3S RE-Amemiya Dark Chrome",
     "brand": "RE Amemiya",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/8/8e/PRDC-008.jpg/revision/latest?cb=20260410220803"
@@ -11746,7 +11746,7 @@
     "manufacturer": "Mazda",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese Tuners"
   },
   {
@@ -11755,7 +11755,7 @@
     "product_name": "Pandem GR Yaris - Dark Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/5/53/PRDC-009.jpg/revision/latest?cb=20260415095540"
@@ -11768,7 +11768,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese Tuners"
   },
   {
@@ -11777,7 +11777,7 @@
     "product_name": "Pandem S13 Dark Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/a/af/PRDC-010.jpg/revision/latest?cb=20260415095550"
@@ -11790,7 +11790,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese Tuners"
   },
   {
@@ -11799,7 +11799,7 @@
     "product_name": "RWB 997 Dark Chrome",
     "brand": "RWB",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/8/8b/PRDC-011.jpg/revision/latest?cb=20260415095600"
@@ -11812,7 +11812,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese Tuners"
   },
   {
@@ -11821,7 +11821,7 @@
     "product_name": "Honda Civic Type-R (FL5) TCR Dark Chrome",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/7/7a/PRDC-012.jpg/revision/latest?cb=20260415095610"
@@ -11834,7 +11834,7 @@
     "manufacturer": "Honda",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese"
   },
   {
@@ -11843,7 +11843,7 @@
     "product_name": "Lancer Evolution IV Dark Chrome",
     "brand": "Mitsubishi",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/c5/PRDC-013.jpg/revision/latest?cb=20260714133507"
@@ -11856,7 +11856,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese"
   },
   {
@@ -11865,7 +11865,7 @@
     "product_name": "Pandem GR86 Dark Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Dark Chrome Series",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/c7/PRDC-014.jpg/revision/latest?cb=20260714133517"
@@ -11878,7 +11878,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Dark Chrome Series",
     "make": "Japanese Tuners"
   },
   {
@@ -11931,7 +11931,7 @@
     "product_name": "Pandem Civic EG6 Metallic Blue",
     "brand": "HondaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/1/18/PRE001.jpg/revision/latest?cb=20241124002807",
@@ -11945,7 +11945,7 @@
     "manufacturer": "Honda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -11954,7 +11954,7 @@
     "product_name": "Honda NSX GT3 EVO22 ADVAN",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/b/b0/PRE011.jpg/revision/latest?cb=20250220162319",
@@ -11968,7 +11968,7 @@
     "manufacturer": "Honda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -11977,7 +11977,7 @@
     "product_name": "Mazda RX-8 RE-Amemiya Red",
     "brand": "Mazda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/e/e1/PRE016.jpg/revision/latest?cb=20260411160134",
@@ -11991,7 +11991,7 @@
     "manufacturer": "Mazda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12000,7 +12000,7 @@
     "product_name": "Pandem Yaris Mooneyes",
     "brand": "ToyotaPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/f6/PRE017.jpg/revision/latest?cb=20260411004825",
@@ -12014,7 +12014,7 @@
     "manufacturer": "Toyota",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12023,7 +12023,7 @@
     "product_name": "Nissan Skyline GT-R R33 Nismo 400R Championship Blue",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/cf/PRE019.jpg/revision/latest?cb=20260411005532",
@@ -12037,7 +12037,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12046,7 +12046,7 @@
     "product_name": "Mazda RX7 (FC3S) RE Amemiya Pink",
     "brand": "MazdaRE Amemiya",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/3/34/PRE020.jpg/revision/latest?cb=20260411005337",
@@ -12060,7 +12060,7 @@
     "manufacturer": "Mazda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12069,7 +12069,7 @@
     "product_name": "Mazda RX7 (FD3S) Blue/White",
     "brand": "Mazda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/d/d2/PRE021.jpg/revision/latest?cb=20260411005120"
@@ -12082,7 +12082,7 @@
     "manufacturer": "Mazda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12091,7 +12091,7 @@
     "product_name": "Mitsubishi Lancer Evolution IV Green",
     "brand": "Mitsubishi",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/9/9d/PRE022.jpg/revision/latest?cb=20260411003505",
@@ -12105,7 +12105,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12114,7 +12114,7 @@
     "product_name": "Pandem S13 Brown Chrome",
     "brand": "NissanPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/0/07/PRE023.jpg/revision/latest?cb=20260411002939"
@@ -12127,7 +12127,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12136,7 +12136,7 @@
     "product_name": "Pandem 280ZX Violet Purple",
     "brand": "NissanPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/0/06/PRE024.jpg/revision/latest?cb=20260411002648"
@@ -12149,7 +12149,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12158,7 +12158,7 @@
     "product_name": "Pandem Hakosuka Purple",
     "brand": "NissanPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/9/94/PRE025.jpg/revision/latest?cb=20260411000936",
@@ -12172,7 +12172,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12181,7 +12181,7 @@
     "product_name": "Pandem Laurel C130 Purple",
     "brand": "NissanPandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/8/87/PRE026.jpg/revision/latest?cb=20260411001002",
@@ -12195,7 +12195,7 @@
     "manufacturer": "Nissan",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12204,7 +12204,7 @@
     "product_name": "Honda Civic EG6 Pink",
     "brand": "Honda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/2/27/PRE027.jpg/revision/latest?cb=20260412003203",
@@ -12218,7 +12218,7 @@
     "manufacturer": "Honda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12227,7 +12227,7 @@
     "product_name": "Toyota Supra GT300 - Blue",
     "brand": "ToyotaTop Secret",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/b/bb/PRE028.jpg/revision/latest?cb=20260412003101",
@@ -12241,7 +12241,7 @@
     "manufacturer": "Toyota",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12250,7 +12250,7 @@
     "product_name": "Pandem 620",
     "brand": "Pop Race",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/a/a3/PRE029.jpg/revision/latest?cb=20260427193706",
@@ -12264,7 +12264,7 @@
     "manufacturer": "Pop Race",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12273,7 +12273,7 @@
     "product_name": "RWB AE86 - Grey",
     "brand": "RWB",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/6/6f/PRE030.jpg/revision/latest?cb=20260427193732",
@@ -12287,16 +12287,16 @@
     "manufacturer": "Toyota",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
     "toy_brand": "Pop Race",
     "item_number": "PRE031",
-    "product_name": "Lamborghini Huracan STO",
+    "product_name": "Lamborghini Huracán STO",
     "brand": "Lamborghini",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/1/15/PRE031.jpg/revision/latest?cb=20260427193752",
@@ -12310,7 +12310,7 @@
     "manufacturer": "Lamborghini",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "European"
   },
   {
@@ -12319,7 +12319,7 @@
     "product_name": "Singer 1969",
     "brand": "Singer",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Singer",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/f/fe/PRE032.jpg/revision/latest?cb=20260522143908",
@@ -12333,7 +12333,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "American"
   },
   {
@@ -12342,7 +12342,7 @@
     "product_name": "DarwinPRO 66G WBK Supra A90",
     "brand": "DarwinPRO",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/5/5e/PRE033.jpg/revision/latest?cb=20260522143919",
@@ -12356,7 +12356,7 @@
     "manufacturer": "Toyota",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12365,7 +12365,7 @@
     "product_name": "Corolla KE25",
     "brand": "Toyota",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/e/e1/PRE034.jpg/revision/latest?cb=20260522143930",
@@ -12379,7 +12379,7 @@
     "manufacturer": "Toyota",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12388,7 +12388,7 @@
     "product_name": "RWB 930 - Red",
     "brand": "RWB",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/c6/PRE035.jpg/revision/latest?cb=20260630073553"
@@ -12401,7 +12401,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese Tuners"
   },
   {
@@ -12410,7 +12410,7 @@
     "product_name": "Mazda 787B - Blue / Yellow",
     "brand": "Mazda",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/e/e5/PRE036.jpg/revision/latest?cb=20260630073603"
@@ -12423,7 +12423,7 @@
     "manufacturer": "Mazda",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "Japanese"
   },
   {
@@ -12432,7 +12432,7 @@
     "product_name": "Singer - Light Blue / Orange",
     "brand": "Singer",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "Enigma",
     "sub_series": "Singer",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/8/84/PRE037.jpg/revision/latest?cb=20260630073613"
@@ -12445,7 +12445,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "Enigma",
     "make": "American"
   },
   {
@@ -12498,7 +12498,7 @@
     "product_name": "Pandem 620 Pickup - Orange Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "TS Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/ca/PRT001.jpg/revision/latest?cb=20260430190232"
@@ -12511,7 +12511,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "TS Exclusives",
     "make": "Japanese Tuners"
   },
   {
@@ -12520,7 +12520,7 @@
     "product_name": "Shelby Mustang GT500 - Blue with White Stripes",
     "brand": "Shelby",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "TS Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/cb/PRT002.jpg/revision/latest?cb=20260430190244"
@@ -12533,7 +12533,7 @@
     "manufacturer": "Shelby",
     "year": null,
     "finish": "Standard",
-    "collection": "Regular Collection",
+    "collection": "TS Exclusives",
     "make": "American"
   },
   {
@@ -12542,7 +12542,7 @@
     "product_name": "Top Secret A80 Supra GT300 - Orange Chrome",
     "brand": "Top Secret",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "TS Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/e/eb/PRT003Poster.jpg/revision/latest?cb=20260528194235"
@@ -12555,7 +12555,7 @@
     "manufacturer": "Toyota",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "TS Exclusives",
     "make": "Japanese Tuners"
   },
   {
@@ -12564,7 +12564,7 @@
     "product_name": "RWB 930 - Teal Chrome",
     "brand": "Pop Race",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "TS Exclusives",
     "sub_series": "RWB",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/2/29/PRT004Poster.jpg/revision/latest?cb=20260528194308"
@@ -12577,7 +12577,7 @@
     "manufacturer": "Pop Race",
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "TS Exclusives",
     "make": "Japanese Tuners"
   },
   {
@@ -12586,7 +12586,7 @@
     "product_name": "Pandem Fuso 300 Flatbed Transporter - Silver Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "TS Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/c/ca/PRT005.jpg/revision/latest?cb=20260630070254",
@@ -12600,7 +12600,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "TS Exclusives",
     "make": "Japanese Tuners"
   },
   {
@@ -12609,7 +12609,7 @@
     "product_name": "Pandem EG6 - Silver Chrome",
     "brand": "Pandem",
     "scale": "1:64",
-    "series": "Regular Collection",
+    "series": "TS Exclusives",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/1/11/PRT006.jpg/revision/latest?cb=20260630070319",
@@ -12623,7 +12623,7 @@
     "manufacturer": null,
     "year": null,
     "finish": "Chrome",
-    "collection": "Regular Collection",
+    "collection": "TS Exclusives",
     "make": "Japanese Tuners"
   },
   {
