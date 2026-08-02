@@ -243,7 +243,7 @@ def classify_product(d: dict, toy_brand: str) -> dict:
         else:
             d["finish"] = "Standard"
 
-        # Pop Race Collections
+        # Pop Race Collections (strictly the 7 Wiki categories)
         series_str = (d.get("series") or "").strip()
         series_lower = series_str.lower()
         
@@ -260,39 +260,129 @@ def classify_product(d: dict, toy_brand: str) -> dict:
         elif "blind box" in series_lower:
             collection = "Blind Box Series"
         elif "xcartoys" in series_lower:
-            collection = "Xcartoys (china and all)"
+            collection = "Xcartoys China"
         else:
-            collection = series_str or "Regular Collection"
+            collection = "Regular Collection"
         d["collection"] = collection
 
-        # Pop Race Regions & Inner Categories
-        brand_val = (d.get("brand") or "").strip()
-        manufacturer_val = (d.get("manufacturer") or "").strip()
-        m_name = (manufacturer_val or brand_val).lower()
+        # Make Categories classification (Japanese, Japanese Tuners, European, American)
+        brand_val = (d.get("brand") or "").strip().lower()
+        manufacturer_val = (d.get("manufacturer") or "").strip().lower()
+        make_haystack = f"{brand_val} {manufacturer_val} {name}".lower()
         
-        japanese_brands = ["acura", "datsun", "honda", "isuzu", "mazda", "nissan", "subaru", "toyota"]
-        european_brands = [
-            "alfa romeo", "aston martin", "audi", "bmw", "bentley", "bugatti", "citroën", "citroen", 
-            "ferrari", "jaguar", "lamborghini", "lancia", "land rover", "lotus", "maserati", "mclaren", 
-            "mercedes-benz", "mercedes", "porsche", "ruf", "sauber", "volkswagen", "vw", "williams", "alpine"
-        ]
-        american_brands = ["cadillac", "chevrolet", "dodge", "ford", "haas", "lincoln", "shelby", "western star"]
+        make = "Other"
+        japanese_makes = ["hino", "honda", "datsun", "mazda", "mitsubishi", "nissan", "subaru", "suzuki", "toyota"]
+        japanese_tuners_makes = ["re amemiya", "eva racing", "evangelion", "pandem", "rwb", "top secret"]
+        european_makes = ["aston martin", "audi", "bentley", "lamborghini", "mclaren", "mercedes-benz", "mercedes", "volkswagen", "vw", "volvo"]
+        american_makes = ["chevrolet", "darwinpro", "ford", "shelby", "singer", "topcar design"]
         
-        region = "Other"
-        prod_name_lower = (d.get("product_name") or "").lower()
-        tuner_keywords = ["rwb", "pandem", "spoon", "hks", "greddy", "liberty walk", "lb works", "tuner", "tuning"]
-        
-        if any(tk in prod_name_lower or tk in series_lower for tk in tuner_keywords):
-            region = "Japanese Tuners"
-        elif any(jb in m_name for jb in japanese_brands):
-            region = "Japanese"
-        elif any(eb in m_name for eb in european_brands):
-            region = "European"
-        elif any(ab in m_name for ab in american_brands):
-            region = "American"
-        d["region"] = region
-            
-    return d
+        if any(x in make_haystack for x in japanese_tuners_makes):
+            make = "Japanese Tuners"
+        elif any(x in make_haystack for x in japanese_makes):
+            make = "Japanese"
+        elif any(x in make_haystack for x in european_makes):
+            make = "European"
+        elif any(x in make_haystack for x in american_makes):
+            make = "American"
+        d["make"] = make
 
+        # Remove status entirely
+        d["status"] = None
+        d["is_cancelled"] = False
+
+        # Enforce Year filter 2019-2026
+        year_str = d.get("year")
+        if year_str:
+            try:
+                y = int(year_str)
+                if not (2019 <= y <= 2026):
+                    d["year"] = None
+            except ValueError:
+                d["year"] = None
+            
+    elif toy_brand == "Tarmac Works":
+        series_val = (d.get("series") or "").lower()
+        name_lower = name.lower()
+        
+        # Strictly classify into 8 collections
+        if "pit garage" in series_val or "diorama" in series_val or "pit garage" in name_lower:
+            d["series"] = "Pit Garage Diorama"
+        elif "collab64" in series_val or "collab" in series_val:
+            d["series"] = "COLLAB64"
+        elif "global64" in series_val or "global" in series_val:
+            d["series"] = "GLOBAL64"
+        elif "hobby64+" in series_val or "hobby64 +" in series_val:
+            d["series"] = "HOBBY64+"
+        elif "hobby64" in series_val or "hobby" in series_val:
+            d["series"] = "HOBBY64"
+        elif "parts64" in series_val or "parts" in series_val:
+            d["series"] = "PARTS64"
+        elif "road64" in series_val or "road" in series_val:
+            d["series"] = "ROAD64"
+        elif "truck64" in series_val or "trucks64" in series_val or "truck" in series_val:
+            d["series"] = "TRUCKS64"
+        else:
+            d["series"] = "Regular"
+
+        if "chrome" in name:
+            d["finish"] = "Chrome"
+        else:
+            d["finish"] = "Standard"
+
+        # Restrict year to 2016-2022
+        year_str = d.get("year")
+        if year_str:
+            try:
+                y = int(year_str)
+                if not (2016 <= y <= 2022):
+                    d["year"] = None
+            except ValueError:
+                d["year"] = None
+
+    elif toy_brand == "INNO64":
+        # Classify sub_series from product name
+        if "top secret" in name:
+            d["sub_series"] = "Top Secret"
+        elif "liberty walk" in name or "lb works" in name or "lbwk" in name:
+            d["sub_series"] = "Liberty Walk"
+        elif "macau" in name or "guia" in name:
+            d["sub_series"] = "Macau Guia"
+        elif "mad mike" in name:
+            d["sub_series"] = "Mad Mike"
+        elif "j's racing" in name:
+            d["sub_series"] = "J's Racing"
+        elif "spoon" in name:
+            d["sub_series"] = "Spoon"
+        elif "darwinpro" in name:
+            d["sub_series"] = "DarwinPRO"
+        else:
+            d["sub_series"] = d.get("sub_series") or "Regular"
+
+        # Classify type from parsed metadata
+        item_num = (d.get("item_number") or "").upper()
+        if "resin" in name or "resin" in series:
+            d["model_type"] = "Resin"
+        elif "box set" in name or "boxset" in series:
+            d["model_type"] = "Box Set"
+        else:
+            d["model_type"] = "Diecast"
+            
+    elif toy_brand == "Trends Hobby":
+        # Keep parsed category, brand, and series tags from Tiny HK
+        # Classify vehicle type from tags/name
+        if "bus" in name or "bus" in series:
+            d["vehicle_type"] = "Bus"
+        elif "taxi" in name:
+            d["vehicle_type"] = "Taxi"
+        elif "truck" in name or "lorry" in name:
+            d["vehicle_type"] = "Truck"
+        elif "ambulance" in name or "fire" in name:
+            d["vehicle_type"] = "Emergency"
+        elif "tram" in name:
+            d["vehicle_type"] = "Tram"
+        else:
+            d["vehicle_type"] = "Car"
+
+    return d
 
 

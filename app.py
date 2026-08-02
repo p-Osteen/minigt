@@ -74,9 +74,12 @@ def main_menu():
             print("  1. MINI GT")
             print("  2. Hot Wheels")
             print("  3. Pop Race")
-            print("  4. All")
-            brand_choice = input("Enter choice (1-4): ").strip()
-            brand_map = {"1": "MINI GT", "2": "Hot Wheels", "3": "Pop Race", "4": "All"}
+            print("  4. Tarmac Works")
+            print("  5. INNO64")
+            print("  6. Trends Hobby")
+            print("  7. All")
+            brand_choice = input("Enter choice (1-7): ").strip()
+            brand_map = {"1": "MINI GT", "2": "Hot Wheels", "3": "Pop Race", "4": "Tarmac Works", "5": "INNO64", "6": "Trends Hobby", "7": "All"}
             brand_name = brand_map.get(brand_choice)
             if brand_name:
                 target_brand = None if brand_name == "All" else brand_name
@@ -117,9 +120,12 @@ def main_menu():
             print("  1. MINI GT")
             print("  2. Hot Wheels")
             print("  3. Pop Race")
-            print("  4. All (Complete Reset)")
-            brand_choice = input("Enter choice (1-4): ").strip()
-            brand_map = {"1": "MINI GT", "2": "Hot Wheels", "3": "Pop Race", "4": "All"}
+            print("  4. Tarmac Works")
+            print("  5. INNO64")
+            print("  6. Trends Hobby")
+            print("  7. All (Complete Reset)")
+            brand_choice = input("Enter choice (1-7): ").strip()
+            brand_map = {"1": "MINI GT", "2": "Hot Wheels", "3": "Pop Race", "4": "Tarmac Works", "5": "INNO64", "6": "Trends Hobby", "7": "All"}
             brand_name = brand_map.get(brand_choice)
             if brand_name:
                 if brand_name == "All":
