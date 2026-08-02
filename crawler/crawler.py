@@ -480,6 +480,25 @@ class MINI_GTCrawler:
     def run_discovery(self, brand_limit: Optional[str] = None) -> None:
         """Discovers product listing URLs from the specified brand(s)."""
         logger.info("Starting Crawl Discovery Phase...")
+        
+        # Clear crawled URLs cache for the target brand(s) during fresh discovery
+        if brand_limit:
+            patterns = {
+                "MINI GT": ["minigt.tsm-models.com", "myminigt.com", "minigt.fandom.com"],
+                "Hot Wheels": ["hotwheels.fandom.com"],
+                "Pop Race": ["pop-race.fandom.com", "diecastsociety.com", "my64.com.my/usr/product.aspx?pgid=4&grpid=28"],
+                "Tarmac Works": ["tarmacworks.fandom.com", "tarmacworks.com"],
+                "INNO64": ["my64.com.my/usr/product.aspx?pgid=4&grpid=26"],
+                "Trends Hobby": ["treasuredmodels.com"]
+            }
+            brand_pats = patterns.get(brand_limit, [])
+            crawled = self.crawler_state.get("crawled_urls", [])
+            self.crawler_state["crawled_urls"] = [
+                u for u in crawled if not any(p in u for p in brand_pats)
+            ]
+        else:
+            self.crawler_state["crawled_urls"] = []
+
         pending = []
         brands_to_run = [brand_limit] if brand_limit else list(self.handlers.keys())
         for brand in brands_to_run:

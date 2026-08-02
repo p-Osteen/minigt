@@ -551,8 +551,8 @@ def clear_all_data() -> None:
 
 def clear_brand_data(toy_brand: str) -> None:
     """
-    Clears all records for a specific toy brand from its SQLite table
-    and regenerates the corresponding JSON export.
+    Clears all records for a specific toy brand from its SQLite table,
+    resets its crawler state, and regenerates the corresponding JSON export.
     """
     model_cls = get_product_model(toy_brand)
     print(f"\n--- Clearing Local Catalog Data for {toy_brand} ---")
@@ -562,6 +562,36 @@ def clear_brand_data(toy_brand: str) -> None:
             deleted_count = session.query(model_cls).delete()
             logger.info(f"Cleared {deleted_count} records from {model_cls.__tablename__} table.")
             print(f"[x] Removed {deleted_count} records from database.")
+        
+        # Also clean crawler state crawled_urls for this brand
+        workspace_root = os.path.dirname(DB_DIR)
+        state_path = os.path.join(workspace_root, "cache", "crawler_state.json")
+        if os.path.exists(state_path):
+            try:
+                with open(state_path, "r", encoding="utf-8") as f:
+                    state = json.load(f)
+                patterns = {
+                    "MINI GT": ["minigt.tsm-models.com", "myminigt.com", "minigt.fandom.com"],
+                    "Hot Wheels": ["hotwheels.fandom.com"],
+                    "Pop Race": ["pop-race.fandom.com", "diecastsociety.com", "my64.com.my/usr/product.aspx?pgid=4&grpid=28"],
+                    "Tarmac Works": ["tarmacworks.fandom.com", "tarmacworks.com"],
+                    "INNO64": ["my64.com.my/usr/product.aspx?pgid=4&grpid=26"],
+                    "Trends Hobby": ["treasuredmodels.com"]
+                }
+                brand_pats = patterns.get(toy_brand, [])
+                crawled = state.get("crawled_urls", [])
+                state["crawled_urls"] = [
+                    u for u in crawled if not any(p in u for p in brand_pats)
+                ]
+                pending = state.get("pending_urls", [])
+                state["pending_urls"] = [
+                    t for t in pending if t.get("brand") != toy_brand
+                ]
+                with open(state_path, "w", encoding="utf-8") as f:
+                    json.dump(state, f, indent=2)
+                logger.info(f"Cleared crawler state cached URLs for {toy_brand}.")
+            except Exception as e:
+                logger.error(f"Failed to clear crawler state for {toy_brand}: {e}")
         
         # Regenerate JSON files
         sync_to_json()
