@@ -182,8 +182,9 @@ def deduplicate_database() -> None:
                 # Update winner is_cancelled flag if anyone in the group was cancelled
                 if has_cancelled:
                     winner.is_cancelled = True
-                    if not winner.status or winner.status.lower() == "released":
-                        winner.status = "Cancelled"
+                    if winner.toy_brand != "MINI GT" and winner.toy_brand != "Pop Race":
+                        if not winner.status or winner.status.lower() == "released":
+                            winner.status = "Cancelled"
 
                 # Apply special cancelled model image rules
                 if winner.is_cancelled:

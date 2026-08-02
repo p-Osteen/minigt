@@ -575,6 +575,9 @@ class MINI_GTCrawler:
 
         brand = brand.strip() or "MINI GT"
         product_name = product_name.strip()
+        if toy_brand == "MINI GT" or toy_brand == "Pop Race":
+            status = None
+            
         if toy_brand == "MINI GT":
             # --- Brand normalization ---
             b_upper = brand.upper().strip()
@@ -757,13 +760,9 @@ class MINI_GTCrawler:
         if brand_page_name in special_brands and brand_page_name != marque:
             series = brand_page_name
 
-        # Parse inferred year from product name
+        # Release year should be based on release date / Fandom models list, not the name
         release_year = None
         release_year_confidence = None
-        ym = re.search(r"\b(20\d{2})\b", product_name)
-        if ym:
-            release_year = int(ym.group(1))
-            release_year_confidence = "inferred"
 
         # Image URLs — collect all product image src attributes
         # Real URL patterns observed on live site:
@@ -1332,7 +1331,7 @@ class HotWheelsBrandHandler:
             with open(json_path, "r", encoding="utf-8") as f:
                 hw_filters = json.load(f)
         except Exception as e:
-            logger.warning(f"Failed to load hot_wheels_filters.json: {e}. Fetching links directly from the website.")
+            logger.warning(f"Failed to load hot_wheels_filters.json: {e}")
 
         # Extract all links
         urls = set()
@@ -1346,8 +1345,41 @@ class HotWheelsBrandHandler:
                     for v in obj: extract_links(v)
                     
             extract_links(hw_filters.get("filters", {}))
-        else:
-            # Fetch directly from the website to avoid old outdated data
+        
+        # Merge with local reference HTML (Hot_Wheels.htm) to guarantee complete filter discovery
+        ref_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "reference_htmls",
+            "Hot_Wheels.htm"
+        )
+        if os.path.exists(ref_path):
+            logger.info("Discovering Hot Wheels links from local reference HTML (Hot_Wheels.htm)...")
+            try:
+                with open(ref_path, "r", encoding="utf-8") as f:
+                    ref_html = f.read()
+                soup = BeautifulSoup(ref_html, "lxml")
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    if href.startswith("/wiki/"):
+                        href = "https://hotwheels.fandom.com" + href
+                    elif href.startswith("//hotwheels.fandom.com/wiki/"):
+                        href = "https:" + href
+                        
+                    if "hotwheels.fandom.com/wiki/" in href:
+                        page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
+                        page_name = page_name.split("#")[0]
+                        if not page_name:
+                            continue
+                        namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
+                        if namespace_prefix in ("File:", "Special:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
+                            continue
+                        urls.add("https://hotwheels.fandom.com/wiki/" + page_name)
+            except Exception as e:
+                logger.error(f"Failed to parse local reference Hot_Wheels.htm: {e}")
+
+        # Fallback to live API parse if urls are still empty
+        if not urls:
+            logger.info("Fetching links directly from live Hot Wheels wiki hub page.")
             hub_url = "https://hotwheels.fandom.com/api.php?action=parse&page=Hot_Wheels&format=json&prop=text"
             res_json = self.crawler.fetch_url(hub_url, use_cache=True)
             if res_json:
@@ -1361,7 +1393,7 @@ class HotWheelsBrandHandler:
                             page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
                             namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
                             if namespace_prefix in ("File:", "Special:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
-                                continue  # Category: is allowed through — handled separately below
+                                continue
                             urls.add("https://hotwheels.fandom.com" + href)
                 except Exception as e:
                     logger.error(f"Failed to parse Hot Wheels main hub page: {e}")

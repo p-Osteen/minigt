@@ -622,7 +622,7 @@ function buildCard(p) {
   if (p.sub_series && p.sub_series !== 'Regular') {
     badgeHTML += `<span class="card-badge sub-badge">${escHtml(p.sub_series)}</span>`;
   }
-  if (p.status === 'Pre-Order') {
+  if (CURRENT_BRAND !== 'MINI GT' && CURRENT_BRAND !== 'Pop Race' && p.status === 'Pre-Order') {
     badgeHTML += `<span class="card-badge pre-order">Pre-Order</span>`;
   }
   const badgesHTML = `<div class="card-badges-container">${badgeHTML}</div>`;
