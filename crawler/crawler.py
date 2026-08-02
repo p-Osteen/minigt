@@ -386,10 +386,46 @@ class MINI_GTCrawler:
     # ------------------------------------------------------------------ #
 
     def fetch_url(self, url: str, use_cache: bool = True) -> Optional[str]:
-        """Fetches page content, reading from local HTML cache when available."""
-        url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
-        # Ensure cache path is absolute to the project directory to avoid Cwd shifting issues
+        """Fetches page content, reading from local reference HTML or cache when available."""
         root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # Intercept Fandom wiki or API requests and try to serve from local reference HTML files
+        if "fandom.com" in url:
+            page_name = None
+            if "/wiki/" in url:
+                page_name = urllib.parse.unquote(url.split("/wiki/")[-1]).split("?")[0].split("#")[0]
+            elif "api.php" in url and "action=parse" in url:
+                parsed_query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+                pages_list = parsed_query.get("page", [])
+                if pages_list:
+                    page_name = pages_list[0]
+                    
+            if page_name:
+                ref_dir = os.path.join(root_dir, "reference_htmls")
+                if os.path.exists(ref_dir):
+                    for ext in [".html", ".htm"]:
+                        ref_file_name = f"{page_name}{ext}"
+                        ref_file_path = os.path.join(ref_dir, ref_file_name)
+                        if os.path.exists(ref_file_path):
+                            try:
+                                logger.info(f"Serving {url} from local reference HTML: {ref_file_name}")
+                                with open(ref_file_path, "r", encoding="utf-8") as f:
+                                    ref_html = f.read()
+                                if "api.php" in url:
+                                    mock_response = {
+                                        "parse": {
+                                            "text": {
+                                                "*": ref_html
+                                            },
+                                            "categories": []
+                                        }
+                                    }
+                                    return json.dumps(mock_response, ensure_ascii=False)
+                                return ref_html
+                            except Exception as e:
+                                logger.error(f"Failed to read local reference HTML {ref_file_name}: {e}")
+
+        url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
         cache_file = os.path.join(root_dir, "cache", "html", f"{url_hash}.html")
 
         # Serve from cache — NO rate-limit delay needed
@@ -1346,36 +1382,158 @@ class HotWheelsBrandHandler:
                     
             extract_links(hw_filters.get("filters", {}))
         
-        # Merge with local reference HTML (Hot_Wheels.htm) to guarantee complete filter discovery
+        # Merge with local reference HTML (Hot_Wheels.html) to guarantee complete filter discovery
         ref_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "reference_htmls",
-            "Hot_Wheels.htm"
+            "Hot_Wheels.html"
         )
         if os.path.exists(ref_path):
-            logger.info("Discovering Hot Wheels links from local reference HTML (Hot_Wheels.htm)...")
+            logger.info("Discovering Hot Wheels links from local reference HTML (Hot_Wheels.html)...")
             try:
                 with open(ref_path, "r", encoding="utf-8") as f:
                     ref_html = f.read()
                 soup = BeautifulSoup(ref_html, "lxml")
-                for a in soup.find_all("a", href=True):
-                    href = a["href"]
-                    if href.startswith("/wiki/"):
-                        href = "https://hotwheels.fandom.com" + href
-                    elif href.startswith("//hotwheels.fandom.com/wiki/"):
-                        href = "https:" + href
+                
+                categories = [
+                    "By Year", "Early Collections", "Early Special Series", "Other Early Series",
+                    "Modern Special Series", "Notable Modern Themed Assortments", "Other Modern Series",
+                    "Exclusives", "Larger Scale", "Miscellaneous"
+                ]
+                
+                for i_tag in soup.find_all("i"):
+                    txt = i_tag.get_text(strip=True).replace(":", "").strip()
+                    matched = None
+                    for cat in categories:
+                        if cat.lower() == txt.lower():
+                            matched = cat
+                            break
+                    if not matched:
+                        continue
                         
-                    if "hotwheels.fandom.com/wiki/" in href:
-                        page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
-                        page_name = page_name.split("#")[0]
+                    links = []
+                    # 1. Parent descendants
+                    parent = i_tag.parent
+                    for a in parent.find_all("a", href=True):
+                        href = a["href"]
+                        text = a.get_text(strip=True)
+                        if "/wiki/" in href:
+                            links.append((text, href))
+                            
+                    # 2. Sibling elements until next category heading
+                    sibling = parent.next_sibling
+                    while sibling:
+                        if sibling.name in ["h1", "h2", "h3", "h4", "h5", "h6"]:
+                            break
+                        if sibling.name and sibling.find("i"):
+                            sib_i_text = sibling.find("i").get_text(strip=True).replace(":", "").strip()
+                            if any(cat.lower() == sib_i_text.lower() for cat in categories):
+                                break
+                        if sibling.name in ["p", "ul", "table"]:
+                            for a in sibling.find_all("a", href=True):
+                                href = a["href"]
+                                text = a.get_text(strip=True)
+                                if "/wiki/" in href:
+                                    links.append((text, href))
+                        sibling = sibling.next_sibling
+                        
+                    seen = set()
+                    for t, h in links:
+                        if h in seen:
+                            continue
+                        seen.add(h)
+                        page_name = urllib.parse.unquote(h.split("/wiki/")[-1]).split("#")[0]
                         if not page_name:
                             continue
                         namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
                         if namespace_prefix in ("File:", "Special:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
                             continue
+                            
+                        # Infer year
+                        year = None
+                        ym = re.search(r"\b(20\d{2})\b", page_name)
+                        if not ym:
+                            ym = re.search(r"\b(19\d{2})\b", page_name)
+                        if ym:
+                            parsed_yr = int(ym.group(1))
+                            if parsed_yr >= 1968:
+                                year = parsed_yr
+                                
                         urls.add("https://hotwheels.fandom.com/wiki/" + page_name)
+                        # Build and add task directly to pending!
+                        page_api = f"https://hotwheels.fandom.com/api.php?action=parse&page={urllib.parse.quote(page_name)}&format=json&prop=text"
+                        pending.append({
+                            "source": "fandom_list",
+                            "url": page_api,
+                            "meta": {
+                                "page_name": page_name,
+                                "year": year,
+                                "series_group": matched,
+                                "sub_series": "Regular",
+                                "series_name": t
+                            }
+                        })
+                
+                # Also discover links from <b> tags (Series/Categories and Designer Pages)
+                for b_tag in soup.find_all("b"):
+                    txt = b_tag.get_text(strip=True).replace(":", "").strip()
+                    if txt in ["Series/Categories", "Designer Pages"]:
+                        ul_parent = b_tag.find_parent("ul")
+                        if not ul_parent:
+                            continue
+                        
+                        # Walk next siblings to find the table
+                        b_links = []
+                        curr = ul_parent.next_sibling
+                        while curr:
+                            if curr.name == "table":
+                                for a in curr.find_all("a", href=True):
+                                    href = a["href"]
+                                    text = a.get_text(strip=True)
+                                    if "/wiki/" in href:
+                                        b_links.append((text, href))
+                                break
+                            if curr.name and curr.name != "br":
+                                break
+                            curr = curr.next_sibling
+                            
+                        seen_b = set()
+                        for t, h in b_links:
+                            if h in seen_b:
+                                continue
+                            seen_b.add(h)
+                            page_name = urllib.parse.unquote(h.split("/wiki/")[-1]).split("#")[0]
+                            if not page_name:
+                                continue
+                            namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
+                            if namespace_prefix in ("File:", "Special:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:"):
+                                continue
+                                
+                            # Infer year
+                            year = None
+                            ym = re.search(r"\b(20\d{2})\b", page_name)
+                            if not ym:
+                                ym = re.search(r"\b(19\d{2})\b", page_name)
+                            if ym:
+                                parsed_yr = int(ym.group(1))
+                                if parsed_yr >= 1968:
+                                    year = parsed_yr
+                                    
+                            urls.add("https://hotwheels.fandom.com/wiki/" + page_name)
+                            page_api = f"https://hotwheels.fandom.com/api.php?action=parse&page={urllib.parse.quote(page_name)}&format=json&prop=text"
+                            pending.append({
+                                "source": "fandom_list",
+                                "url": page_api,
+                                "meta": {
+                                    "page_name": page_name,
+                                    "year": year,
+                                    "series_group": txt,
+                                    "sub_series": "Regular",
+                                    "series_name": t
+                                }
+                            })
             except Exception as e:
-                logger.error(f"Failed to parse local reference Hot_Wheels.htm: {e}")
+                logger.error(f"Failed to parse local reference Hot_Wheels.html: {e}")
 
         # Fallback to live API parse if urls are still empty
         if not urls:
@@ -1441,7 +1599,9 @@ class HotWheelsBrandHandler:
                             if not ym:
                                 ym = re.search(r"\b(19\d{2})\b", member_page)
                             if ym:
-                                year = int(ym.group(1))
+                                parsed_yr = int(ym.group(1))
+                                if parsed_yr >= 1968:
+                                    year = parsed_yr
                                 
                             pending.append({
                                 "source": "fandom_list",
@@ -1475,7 +1635,9 @@ class HotWheelsBrandHandler:
                 if not ym:
                     ym = re.search(r"\b(19\d{2})\b", page_decoded)
                 if ym:
-                    year = int(ym.group(1))
+                    parsed_yr = int(ym.group(1))
+                    if parsed_yr >= 1968:
+                        year = parsed_yr
                     
                 pending.append({
                     "source": "fandom_list",
@@ -1534,7 +1696,9 @@ class HotWheelsBrandHandler:
                     if not ym:
                         ym = re.search(r"\b(19\d{2})\b", page_name)
                     if ym:
-                        year = int(ym.group(1))
+                        parsed_yr = int(ym.group(1))
+                        if parsed_yr >= 1968:
+                            year = parsed_yr
 
                     pending.append({
                         "source": "fandom_casting",
@@ -1609,6 +1773,29 @@ class HotWheelsBrandHandler:
         series_group = meta.get("series_group", "By Year")
         default_sub_series = meta.get("sub_series", "Regular")
 
+        def get_preceding_heading(tbl):
+            curr = tbl
+            while curr:
+                prev = curr.previous_sibling
+                while prev:
+                    if prev.name in ["h2", "h3", "h4"]:
+                        text = prev.get_text(" ", strip=True)
+                        text = re.sub(r"\[.*?\]", "", text).strip()
+                        if text.lower() not in ["contents", "gallery", "trivia", "references", "external links", "see also", "navigation", "variations", "releases", "casting", "history"]:
+                            return text
+                    if prev.name:
+                        headings = prev.find_all(["h2", "h3", "h4"])
+                        if headings:
+                            text = headings[-1].get_text(" ", strip=True)
+                            text = re.sub(r"\[.*?\]", "", text).strip()
+                            if text.lower() not in ["contents", "gallery", "trivia", "references", "external links", "see also", "navigation", "variations", "releases", "casting", "history"]:
+                                return text
+                    prev = prev.previous_sibling
+                curr = curr.parent
+                if curr and curr.name == "body":
+                    break
+            return None
+
         # Determine casting name if we are on a casting page
         casting_name = page_name.replace("_", " ")
 
@@ -1619,6 +1806,7 @@ class HotWheelsBrandHandler:
             if table.find_parent("table") is not None:
                 continue  # skip nested tables; they'll be walked as part of their own find_all("table") hit
 
+            table_heading = get_preceding_heading(table)
             thead = table.find("thead", recursive=False)
             tbody = table.find("tbody", recursive=False)
             tfoot = table.find("tfoot", recursive=False)
@@ -1659,7 +1847,7 @@ class HotWheelsBrandHandler:
                     name_idx = idx
                 elif "color" in h:
                     color_idx = idx
-                elif "series" in h:
+                elif h == "series" or ("series" in h and "series #" not in h and "series no" not in h and "series number" not in h):
                     series_idx = idx
                 elif "year" in h:
                     year_idx = idx
@@ -1706,15 +1894,23 @@ class HotWheelsBrandHandler:
                     year_str = cells[year_idx].get_text(strip=True)
                     ym = re.search(r"\b((?:19|20)\d{2})\b", year_str)
                     if ym:
-                        row_year = int(ym.group(1))
+                        parsed_yr = int(ym.group(1))
+                        if parsed_yr >= 1968:
+                            row_year = parsed_yr
 
-                series = series_group
-                sub_series = default_sub_series
-                if series_idx != -1:
+                # Level 1 Category (series_group)
+                series_group_val = series_group
+                
+                # Level 2 Category (series)
+                series_val = meta.get("series_name") or page_name.replace("_", " ")
+                
+                # Level 3 Category (sub_series)
+                sub_series_val = table_heading or default_sub_series
+                if (not table_heading or len(table_heading) < 3) and series_idx != -1:
                     cell_series = cells[series_idx].get_text(" ", strip=True)
                     series_cleaned = cell_series.split("\n")[0].split("New for")[0].strip()
                     if series_cleaned:
-                        sub_series = series_cleaned
+                        sub_series_val = series_cleaned
 
                 img_urls = get_row_product_images(row)
                 if not img_urls and photo_idx != -1 and photo_idx < len(cells):
@@ -1753,7 +1949,8 @@ class HotWheelsBrandHandler:
                                                 "meta": {
                                                     "page_name": casting_page,
                                                     "year": row_year,
-                                                    "series_group": "Casting Variation"
+                                                    "series_group": series_group_val,
+                                                    "series_name": series_val
                                                 }
                                             })
 
@@ -1762,10 +1959,12 @@ class HotWheelsBrandHandler:
                     attributes["color"] = row_color
                 if row_name:
                     attributes["vehicle_model"] = row_name
+                if series_group_val:
+                    attributes["series_group"] = series_group_val
                 
                 # Determine scale dynamically
                 hw_scale = "1:64"
-                scale_haystack = f"{product_name} {series} {sub_series}".lower()
+                scale_haystack = f"{product_name} {series_val} {sub_series_val}".lower()
                 for sc in ["1:18", "1/18", "1:43", "1/43", "1:50", "1/50", "1:24", "1/24"]:
                     if sc in scale_haystack:
                         hw_scale = sc.replace("/", ":")
@@ -1776,19 +1975,557 @@ class HotWheelsBrandHandler:
                     product_name=product_name,
                     brand="Hot Wheels",
                     scale=hw_scale,
-                    series=series,
+                    series=series_val,
                     img_urls=img_urls,
                     source="fandom",
                     release_year=row_year,
                     release_year_confidence="confirmed" if row_year else None,
                     status="Released",
                     toy_brand="Hot Wheels",
-                    sub_series=sub_series,
+                    sub_series=sub_series_val,
                     attributes=attributes
                 )
         return new_tasks
 
 class PopRaceBrandHandler:
+    """
+    3-level classification for Pop Race products:
+      Level 1 (series_group) : "Collection" | "By Make" | "By Year"
+      Level 2 (series)       : collection name e.g. "Regular Collection"
+                               make group e.g. "Japanese" / "European"
+                               year string e.g. "2022"
+      Level 3 (sub_series)   : make name e.g. "Honda" (only for "By Make")
+                               otherwise None / default
+    """
+
+    SKIP_NS = {"File:", "Special:", "Template:", "Help:", "Talk:", "User:",
+               "User_talk:", "Forum:", "Board:", "Thread:", "Category:"}
+
+    def __init__(self, crawler: "MINI_GTCrawler"):
+        self.crawler = crawler
+        # page_name -> {"series_group", "series", "sub_series"}
+        self._page_meta_map: Dict[str, Dict] = {}
+
+    # ------------------------------------------------------------------
+    # Navigation parsing helpers
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _clean_page(href: str) -> Optional[str]:
+        if "/wiki/" not in href:
+            return None
+        page = urllib.parse.unquote(href.split("/wiki/")[-1]).split("#")[0]
+        ns = page.split(":", 1)[0] + ":" if ":" in page else ""
+        if ns in PopRaceBrandHandler.SKIP_NS or not page:
+            return None
+        return page
+
+    def _register(self, page: str, series_group: str, series: str, sub_series: Optional[str] = None):
+        key = page.replace(" ", "_")
+        if key not in self._page_meta_map:
+            self._page_meta_map[key] = {
+                "series_group": series_group,
+                "series": series,
+                "sub_series": sub_series,
+            }
+
+    def _load_nav_from_html(self, html: str) -> bool:
+        """Parse navigation from POP_RACE_Wiki.html and populate _page_meta_map.
+        Returns True if anything was loaded."""
+        try:
+            soup = BeautifulSoup(html, "lxml")
+
+            # Top-level dropdowns only (not inside .wds-dropdown__content)
+            all_dds = soup.find_all(class_="wds-dropdown")
+            top_dds = [d for d in all_dds
+                       if not d.find_parent(class_="wds-dropdown__content")]
+
+            for dd in top_dds:
+                ph = dd.find(class_="wds-dropdown__placeholder")
+                if not ph:
+                    continue
+                top_label = ph.get_text(strip=True)  # "Collection", "By Make", "By Year"
+                content = dd.find(class_="wds-dropdown__content")
+                if not content:
+                    continue
+
+                # ---- COLLECTION ----
+                if top_label == "Collection":
+                    for a in content.find_all("a", href=True):
+                        page = self._clean_page(a["href"])
+                        if page:
+                            col_name = a.get_text(" ", strip=True)
+                            self._register(page, "Collection", col_name)
+
+                # ---- BY MAKE ----
+                elif top_label == "By Make":
+                    # L2 items: <li class="wds-dropdown-level-nested"> with
+                    #           <div class="wds-dropdown__placeholder"> giving make-group name
+                    # L3 items: nested <li class="wds-dropdown-level-nested"> with
+                    #           <a class="wds-dropdown-level-nested__toggle"> = make page
+                    # L4 items: <a data-tracking="custom-level-4"> = model sub-pages
+
+                    for l2_li in content.find_all("li", class_="wds-dropdown-level-nested", recursive=False) or \
+                                 content.find("ul").find_all("li", class_="wds-dropdown-level-nested", recursive=False) \
+                                 if content.find("ul") else []:
+                        # L2 label (make group)
+                        l2_ph = l2_li.find(class_="wds-dropdown__placeholder")
+                        if not l2_ph:
+                            continue
+                        make_group = l2_ph.get_text(strip=True)  # "Japanese", "European", …
+
+                        l2_content = l2_li.find(class_="wds-dropdown-level-nested__content")
+                        if not l2_content:
+                            continue
+
+                        # L3: make-level items
+                        for l3_li in l2_content.find_all("li", class_="wds-dropdown-level-nested"):
+                            # The toggle <a> is the make page
+                            make_a = l3_li.find("a", class_="wds-dropdown-level-nested__toggle")
+                            if make_a:
+                                make_page = self._clean_page(make_a.get("href", ""))
+                                make_name = make_a.get_text(" ", strip=True)
+                                if make_page:
+                                    self._register(make_page, "By Make", make_group, make_name)
+
+                            # L4: model sub-pages inside this make
+                            l3_content = l3_li.find(class_="wds-dropdown-level-nested__content")
+                            if l3_content:
+                                for l4_a in l3_content.find_all("a", href=True):
+                                    model_page = self._clean_page(l4_a["href"])
+                                    if model_page:
+                                        # sub_series = make name
+                                        mk_name = make_name if make_a else None
+                                        self._register(model_page, "By Make", make_group, mk_name)
+
+                        # Also handle plain (non-nested) links directly under l2 content
+                        for plain_a in l2_content.find_all("a", href=True):
+                            if "wds-dropdown-level-nested__toggle" not in plain_a.get("class", []):
+                                pg = self._clean_page(plain_a["href"])
+                                if pg and pg not in self._page_meta_map:
+                                    self._register(pg, "By Make", make_group, None)
+
+                # ---- BY YEAR ----
+                elif top_label == "By Year":
+                    for a in content.find_all("a", href=True):
+                        page = self._clean_page(a["href"])
+                        if page:
+                            yr_label = a.get_text(" ", strip=True)
+                            self._register(page, "By Year", yr_label)
+
+            count = len(self._page_meta_map)
+            logger.info(f"Pop Race: loaded {count} page→meta mappings from nav HTML.")
+            return count > 0
+        except Exception as e:
+            logger.error(f"Pop Race nav parse error: {e}")
+            return False
+
+    def _load_series_map(self):
+        """Load page metadata from POP_RACE_Wiki.html (or live wiki fallback)."""
+        self._page_meta_map = {}
+
+        ref_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "reference_htmls",
+            "POP_RACE_Wiki.html"
+        )
+        if os.path.exists(ref_path):
+            logger.info("Loading Pop Race nav from local reference HTML (POP_RACE_Wiki.html)...")
+            with open(ref_path, "r", encoding="utf-8") as f:
+                html = f.read()
+            if self._load_nav_from_html(html):
+                return
+
+        # Fallback: live wiki
+        logger.info("Fetching Pop Race nav from live Fandom wiki...")
+        html = self.crawler.fetch_url("https://pop-race.fandom.com/wiki/POP_RACE_Wiki", use_cache=True)
+        if html:
+            self._load_nav_from_html(html)
+
+    def _get_meta_for_page(self, page_name: str) -> Dict:
+        """Return series_group/series/sub_series dict for a page, with sensible defaults."""
+        key = page_name.replace(" ", "_")
+        if key in self._page_meta_map:
+            return self._page_meta_map[key]
+        # Try plain name
+        if page_name in self._page_meta_map:
+            return self._page_meta_map[page_name]
+        # Year page fallback
+        if page_name.isdigit():
+            return {"series_group": "By Year", "series": page_name, "sub_series": None}
+        return {"series_group": "Collection", "series": "Regular Collection", "sub_series": None}
+
+    # ------------------------------------------------------------------
+    # Discovery
+    # ------------------------------------------------------------------
+    def discover_sources(self) -> List[Dict]:
+        pending = []
+        seen_urls: set = set()
+
+        self._load_series_map()
+
+        # 1. Enqueue all pages from nav reference HTML
+        ref_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "reference_htmls",
+            "POP_RACE_Wiki.html"
+        )
+        if os.path.exists(ref_path):
+            logger.info("Discovering Pop Race links from local reference HTML (POP_RACE_Wiki.html)...")
+            try:
+                with open(ref_path, "r", encoding="utf-8") as f:
+                    ref_html = f.read()
+                soup = BeautifulSoup(ref_html, "lxml")
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    if href.startswith("/wiki/"):
+                        href = "https://pop-race.fandom.com" + href
+                    elif href.startswith("//pop-race.fandom.com"):
+                        href = "https:" + href
+
+                    if "pop-race.fandom.com/wiki/" not in href:
+                        continue
+
+                    page_name = urllib.parse.unquote(href.split("/wiki/")[-1]).split("#")[0]
+                    if not page_name:
+                        continue
+                    ns = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
+                    if ns in self.SKIP_NS:
+                        continue
+
+                    page_api = (f"https://pop-race.fandom.com/api.php?action=parse"
+                                f"&page={urllib.parse.quote(page_name)}&format=json&prop=text|categories")
+                    if page_api not in seen_urls:
+                        seen_urls.add(page_api)
+                        meta_info = self._get_meta_for_page(page_name)
+                        pending.append({
+                            "source": "fandom_list",
+                            "url": page_api,
+                            "meta": {
+                                "page_name": page_name,
+                                **meta_info,
+                            }
+                        })
+            except Exception as e:
+                logger.error(f"Failed to parse local Pop Race reference links: {e}")
+
+        # 2. Exhaustive allpages crawl
+        apcontinue = ""
+        while True:
+            api_url = (f"https://pop-race.fandom.com/api.php?action=query&list=allpages"
+                       f"&apnamespace=0&aplimit=500&format=json")
+            if apcontinue:
+                api_url += f"&apcontinue={urllib.parse.quote(apcontinue)}"
+            res_json = self.crawler.fetch_url(api_url, use_cache=False)
+            if not res_json:
+                break
+            try:
+                data = json.loads(res_json)
+                pages = data.get("query", {}).get("allpages", [])
+                for p in pages:
+                    page_name = p["title"]
+                    if any(x in page_name for x in [":", "Main_Page"]):
+                        continue
+                    page_api = (f"https://pop-race.fandom.com/api.php?action=parse"
+                                f"&page={urllib.parse.quote(page_name)}&format=json&prop=text|categories")
+                    if page_api not in seen_urls:
+                        seen_urls.add(page_api)
+                        meta_info = self._get_meta_for_page(page_name)
+                        pending.append({
+                            "source": "fandom_list",
+                            "url": page_api,
+                            "meta": {
+                                "page_name": page_name,
+                                **meta_info,
+                            }
+                        })
+                apcontinue = data.get("continue", {}).get("apcontinue", "")
+                if not apcontinue:
+                    break
+            except Exception as e:
+                logger.error(f"Error fetching Pop Race allpages: {e}")
+                break
+
+        # 3. DiecastSociety
+        pending.append({"source": "diecastsociety_search",
+                        "url": "https://diecastsociety.com/page/1/?s=Pop+Race",
+                        "meta": {"page": 1}})
+
+        # 4. Local my64 reference HTML
+        local_path = os.path.join(os.path.dirname(__file__), "..",
+                                  "reference_htmls", "4.Model Cars Online Malaysia __ POP RACE.html")
+        if os.path.exists(local_path):
+            try:
+                with open(local_path, "r", encoding="utf-8") as f:
+                    local_html = f.read()
+                pending.extend(parse_my64_list(self.crawler, local_html, "28", "Pop Race"))
+            except Exception as e:
+                logger.error(f"Failed to parse local Pop Race my64 HTML: {e}")
+
+        # 5. Live my64
+        pending.append({
+            "source": "my64_list",
+            "url": "https://www.my64.com.my/usr/product.aspx?pgid=4&grpid=28&lang=en&pg=1",
+            "meta": {"toy_brand": "Pop Race", "grp_id": "28", "page": 1}
+        })
+
+        return pending
+
+    # ------------------------------------------------------------------
+    # Parsing
+    # ------------------------------------------------------------------
+    def parse_task(self, html_or_json: str, task: Dict) -> Optional[List[Dict]]:
+        source = task["source"]
+        meta = task["meta"]
+        if source == "fandom_list":
+            return self._parse_fandom_list(html_or_json, meta)
+        elif source == "diecastsociety_search":
+            return self._parse_diecastsociety_search(html_or_json, meta)
+        elif source == "diecastsociety_post":
+            self._parse_diecastsociety_post(html_or_json, task["url"])
+        elif source == "my64_list":
+            return parse_my64_list(self.crawler, html_or_json, meta["grp_id"], meta["toy_brand"])
+        elif source == "my64_detail":
+            parse_my64_detail(self.crawler, html_or_json, task["url"], meta["toy_brand"], meta["grp_id"])
+        return None
+
+    def _parse_fandom_list(self, html_or_json: str, meta: Dict) -> Optional[List[Dict]]:
+        try:
+            res_data = json.loads(html_or_json)
+            if "parse" not in res_data or "text" not in res_data["parse"]:
+                return None
+            html_content = res_data["parse"]["text"]["*"]
+            soup = BeautifulSoup(html_content, "lxml")
+            categories_list = res_data.get("parse", {}).get("categories", [])
+        except Exception as e:
+            logger.error(f"Pop Race JSON parse error for {meta.get('page_name','?')}: {e}")
+            return None
+
+        page_name = meta.get("page_name", "")
+
+        # Category pages → discover member pages
+        if page_name.startswith("Category:"):
+            new_tasks = []
+            seen_links: set = set()
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                href_decoded = urllib.parse.unquote(href)
+                if "/wiki/" not in href_decoded:
+                    continue
+                member_page = href_decoded.split("/wiki/")[-1]
+                if any(x in member_page for x in [":", "Main_Page", "Special:", "File:", "Category:",
+                                                    "Help:", "Template:"]):
+                    continue
+                skip_brands = ["bm creations", "inno64", "mini gt", "para64",
+                               "tarmac works", "unique model"]
+                if any(b in member_page.replace("_", " ").lower() for b in skip_brands):
+                    continue
+                if member_page not in seen_links:
+                    seen_links.add(member_page)
+                    api_url = (f"https://pop-race.fandom.com/api.php?action=parse"
+                               f"&page={urllib.parse.quote(member_page)}&format=json&prop=text|categories")
+                    meta_info = self._get_meta_for_page(member_page)
+                    new_tasks.append({
+                        "source": "fandom_list",
+                        "url": api_url,
+                        "meta": {"page_name": member_page, **meta_info}
+                    })
+            return new_tasks
+
+        # ---- Product table parsing ----
+        # Inherit classification metadata from the task; override from nav map if known
+        page_meta = self._get_meta_for_page(page_name)
+        series_group = meta.get("series_group") or page_meta["series_group"]
+        series       = meta.get("series")       or page_meta["series"]
+        sub_series   = meta.get("sub_series")   or page_meta.get("sub_series")
+
+        for table in soup.find_all("table"):
+            # Identify header row
+            all_rows = table.find_all("tr")
+            if not all_rows:
+                continue
+            header_row = all_rows[0]
+            data_rows  = all_rows[1:]
+
+            header_cells = header_row.find_all(["th", "td"], recursive=False)
+            headers = [c.get_text(strip=True).lower() for c in header_cells]
+
+            code_idx = name_idx = make_idx = release_idx = photo_idx = -1
+            for idx, h in enumerate(headers):
+                if "model #" in h or h in ("model#", "#"):
+                    code_idx = idx
+                elif any(k in h for k in ("code", "item", "number", "toy", "sku")) and code_idx == -1:
+                    code_idx = idx
+                elif h == "model":
+                    name_idx = idx
+                elif any(k in h for k in ("name", "model")) and name_idx == -1:
+                    name_idx = idx
+                elif h == "make":
+                    make_idx = idx
+                elif "release" in h:
+                    release_idx = idx
+                elif any(k in h for k in ("photo", "image", "pic")):
+                    photo_idx = idx
+
+            if code_idx == -1 or name_idx == -1:
+                continue
+
+            for row in data_rows:
+                cells = row.find_all(["td", "th"])
+                if len(cells) <= max(code_idx, name_idx):
+                    continue
+
+                item_number  = cells[code_idx].get_text(strip=True)
+                product_name = cells[name_idx].get_text(strip=True)
+
+                if not item_number or not product_name or item_number.strip() in ("-", ""):
+                    continue
+
+                # Make column → overrides sub_series for "By Make" rows
+                row_make = None
+                if make_idx != -1 and make_idx < len(cells):
+                    row_make = cells[make_idx].get_text(strip=True) or None
+
+                # Effective sub_series: prefer nav-derived, then row Make column
+                eff_sub_series = sub_series or row_make
+
+                # Release year
+                release_year = None
+                release_year_confidence = None
+                if release_idx != -1 and release_idx < len(cells):
+                    release_val = cells[release_idx].get_text(strip=True)
+                    ym = re.search(r"\b(20\d{2})\b", release_val)
+                    if ym:
+                        y = int(ym.group(1))
+                        if 2019 <= y <= 2030:
+                            release_year = y
+                            release_year_confidence = "confirmed"
+
+                # Fallback year from page name
+                if release_year is None and page_name.isdigit():
+                    y = int(page_name)
+                    if 2019 <= y <= 2030:
+                        release_year = y
+                        release_year_confidence = "confirmed"
+
+                # Images
+                img_urls = get_row_product_images(row)
+                if not img_urls and photo_idx != -1 and photo_idx < len(cells):
+                    img_tag = cells[photo_idx].find("img")
+                    if img_tag:
+                        img_url = img_tag.get("data-src") or img_tag.get("src", "")
+                        if img_url and "data:image" not in img_url:
+                            img_urls = [clean_fandom_image_url(img_url)]
+
+                attributes: Dict = {}
+                if series_group:
+                    attributes["series_group"] = series_group
+                if row_make:
+                    attributes["make"] = row_make
+
+                self.crawler._save_or_merge_product(
+                    item_number=item_number,
+                    product_name=product_name,
+                    brand=row_make or "Pop Race",
+                    scale="1:64",
+                    series=series,
+                    img_urls=img_urls,
+                    source="fandom",
+                    release_year=release_year,
+                    release_year_confidence=release_year_confidence,
+                    status=None,
+                    toy_brand="Pop Race",
+                    sub_series=eff_sub_series,
+                    attributes=attributes,
+                )
+        return None
+
+    def _parse_diecastsociety_search(self, html: str, meta: Dict) -> List[Dict]:
+        soup = BeautifulSoup(html, "lxml")
+        new_tasks = []
+        found_articles = False
+        for article in soup.find_all("article"):
+            title_node = article.find("h2")
+            if title_node:
+                found_articles = True
+                link_node = title_node.find("a", href=True)
+                if link_node:
+                    url = link_node["href"]
+                    title_text = link_node.get_text(strip=True)
+                    if "pop race" in title_text.lower() or "pop-race" in title_text.lower():
+                        new_tasks.append({"source": "diecastsociety_post",
+                                          "url": url, "meta": {"title": title_text}})
+        if found_articles:
+            next_page = meta.get("page", 1) + 1
+            new_tasks.append({"source": "diecastsociety_search",
+                               "url": f"https://diecastsociety.com/page/{next_page}/?s=Pop+Race",
+                               "meta": {"page": next_page}})
+        return new_tasks
+
+    def _parse_diecastsociety_post(self, html: str, post_url: str) -> None:
+        soup = BeautifulSoup(html, "lxml")
+        entry_content = soup.find(class_=re.compile(r"(post-content|entry-content|post-holder)", re.I))
+        if not entry_content:
+            entry_content = soup
+
+        full_text = entry_content.get_text("\n")
+
+        all_imgs = entry_content.find_all("img")
+        img_dict: Dict = {}
+        for img in all_imgs:
+            src = img.get("src") or img.get("data-src", "")
+            if src and "data:image" not in src:
+                src_cleaned = clean_diecastsociety_image_url(src)
+                filename = os.path.basename(src_cleaned).lower().split(".")[0]
+                filename = re.sub(r"-\d+x\d+$", "", filename)
+                img_dict[filename] = src_cleaned
+
+        code_pattern = re.compile(r"\b(PR64\d{3,4}|PRDC\d{2,3}|PR64-[A-Z0-9-]+)\b", re.I)
+
+        lines = [line.strip() for line in full_text.split("\n") if line.strip()]
+        for line in lines:
+            codes = code_pattern.findall(line)
+            if not codes:
+                continue
+            code = codes[0].upper()
+
+            name_candidate = re.sub(r"\b" + re.escape(code) + r"\b", "", line, flags=re.I).strip(" :-–—")
+            name_candidate = re.sub(r"\s{2,}", " ", name_candidate).strip()
+            if not name_candidate or len(name_candidate) < 3:
+                continue
+
+            img_urls = []
+            slug = re.sub(r"[^a-z0-9]", "-", name_candidate.lower())
+            slug = re.sub(r"-+", "-", slug).strip("-")
+            for key, src in img_dict.items():
+                if slug[:10] in key or code.lower() in key:
+                    img_urls.append(src)
+                    break
+
+            release_year = None
+            release_year_confidence = None
+            title_text = post_url
+            ym = re.search(r"\b(20\d{2})\b", title_text)
+            if ym:
+                y = int(ym.group(1))
+                if 2019 <= y <= 2030:
+                    release_year = y
+                    release_year_confidence = "inferred"
+
+            self.crawler._save_or_merge_product(
+                item_number=code,
+                product_name=name_candidate,
+                brand="Pop Race",
+                scale="1:64",
+                series="Regular Collection",
+                img_urls=img_urls,
+                source="diecastsociety",
+                release_year=release_year,
+                release_year_confidence=release_year_confidence,
+                status=None,
+                toy_brand="Pop Race"
+            )
+
+
     def __init__(self, crawler: "MINI_GTCrawler"):
         self.crawler = crawler
         self._page_series_map = {}  # page_name -> series

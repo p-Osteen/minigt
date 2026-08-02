@@ -341,6 +341,7 @@ function populateFilterFacets() {
 
   if (CURRENT_BRAND === 'Hot Wheels') {
     excludeKeys.add('brand');
+    excludeKeys.delete('series_group');
   }
   if (CURRENT_BRAND === 'Pop Race' || CURRENT_BRAND === 'MINI GT') {
     excludeKeys.add('status');
@@ -351,7 +352,8 @@ function populateFilterFacets() {
     'make': 'Make',
     'release_year': 'Year',
     'brand': 'Car brand',
-    'series': 'Categories',
+    'series_group': 'Category Group',
+    'series': CURRENT_BRAND === 'Hot Wheels' ? 'Series/Collection' : 'Categories',
     'sub_series': 'Sub-Series',
     'scale': 'Scale',
   };
@@ -376,7 +378,7 @@ function populateFilterFacets() {
 
   // 2. Build select dropdowns for keys that have > 1 unique value
   // We sort keys to put important ones first
-  const priority = ['make', 'brand', 'series', 'sub_series', 'release_year', 'scale', 'status'];
+  const priority = ['make', 'brand', 'series_group', 'series', 'sub_series', 'release_year', 'scale', 'status'];
   const sortedKeys = Object.keys(keyValues).sort((a, b) => {
     let ia = priority.indexOf(a);
     let ib = priority.indexOf(b);
