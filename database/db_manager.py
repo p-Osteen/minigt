@@ -247,6 +247,9 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
+                # Normalize N/A or missing scale to 1:64
+                if not d.get("scale") or d["scale"] in ("N/A", "n/a", ""):
+                    d["scale"] = "1:64"
                 d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
                 d = classify_product(d, p.toy_brand)
                 minigt_data.append(d)

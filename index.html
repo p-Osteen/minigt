@@ -291,7 +291,26 @@ function populateFilterFacets() {
   if (!ALL_PRODUCTS || ALL_PRODUCTS.length === 0) return;
 
   // 1. Discover all unique keys across the dataset
-  const excludeKeys = new Set(['item_number', 'product_name', 'images', 'source', 'toy_brand', 'is_cancelled', 'release_year_confidence']);
+  const excludeKeys = new Set([
+    'item_number', 'product_name', 'images', 'source', 'toy_brand', 'is_cancelled', 'release_year_confidence',
+    // Redundant with 'brand':
+    'manufacturer', 'set_manufacturers',
+    // Redundant with 'release_year':
+    'year',
+    // Noisy auto-generated filters (useful as card metadata, not as dropdown filters):
+    'series_line', 'series_group', 'finish', 'color', 'vehicle_model',
+    'model_type', 'vehicle_type', 'description', 'collection', 'region',
+    'tags', 'product_type'
+  ]);
+  // Human-friendly labels for filter keys
+  const filterLabels = {
+    'release_year': 'Year',
+    'brand': 'Brand',
+    'series': 'Series',
+    'sub_series': 'Sub-Series',
+    'scale': 'Scale',
+    'status': 'Status'
+  };
   const keyValues = {};
 
   ALL_PRODUCTS.forEach(p => {
@@ -332,7 +351,7 @@ function populateFilterFacets() {
     group.className = 'filter-group';
     
     const label = document.createElement('label');
-    label.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    label.textContent = filterLabels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
     const select = document.createElement('select');
     select.id = `filter-${key}`;
