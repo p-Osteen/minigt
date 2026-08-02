@@ -1794,16 +1794,21 @@ class PopRaceBrandHandler:
         self._page_series_map = {}  # page_name -> series
 
     def _load_series_map(self):
-        """Load series map from live POP_RACE_Wiki navigation or fall back to pop_race_filters.json."""
+        """Load series map from POP RACE Wiki _ Fandom.html navigation, live wiki, or fall back to pop_race_filters.json."""
         self._page_series_map = {}
         
-        # Try fetching directly from the website first to ensure we have fresh up-to-date filters
-        logger.info("Fetching Pop Race filters directly from Pop Race Fandom Wiki...")
-        html = self.crawler.fetch_url("https://pop-race.fandom.com/wiki/POP_RACE_Wiki", use_cache=True)
-        if html:
+        # 1. Try reading from local reference HTML first
+        ref_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "reference_htmls",
+            "POP RACE Wiki _ Fandom.html"
+        )
+        if os.path.exists(ref_path):
+            logger.info("Loading Pop Race series map from local reference HTML (POP RACE Wiki _ Fandom.html)...")
             try:
-                soup = BeautifulSoup(html, "lxml")
-                # Parse wds-dropdown menu items (dropdowns for Collections and Makes)
+                with open(ref_path, "r", encoding="utf-8") as f:
+                    ref_html = f.read()
+                soup = BeautifulSoup(ref_html, "lxml")
                 dropdowns = soup.find_all(class_="wds-dropdown")
                 for dropdown in dropdowns:
                     placeholder = dropdown.find(class_="wds-dropdown__placeholder")
@@ -1828,9 +1833,43 @@ class PopRaceBrandHandler:
                                             if sub_page not in self._page_series_map:
                                                 self._page_series_map[sub_page] = series_name
                                                 self._page_series_map[sub_page.replace(" ", "_")] = series_name
-                logger.info(f"Populated {len(self._page_series_map)} series mappings from live Fandom navigation menu.")
+                logger.info(f"Populated {len(self._page_series_map)} series mappings from local Fandom reference HTML.")
             except Exception as e:
-                logger.error(f"Failed to parse live Pop Race navigation: {e}")
+                logger.error(f"Failed to parse local Pop Race series map: {e}")
+
+        # 2. Try fetching directly from the website if local ref was missing or empty
+        if not self._page_series_map:
+            logger.info("Fetching Pop Race filters directly from Pop Race Fandom Wiki...")
+            html = self.crawler.fetch_url("https://pop-race.fandom.com/wiki/POP_RACE_Wiki", use_cache=True)
+            if html:
+                try:
+                    soup = BeautifulSoup(html, "lxml")
+                    dropdowns = soup.find_all(class_="wds-dropdown")
+                    for dropdown in dropdowns:
+                        placeholder = dropdown.find(class_="wds-dropdown__placeholder")
+                        if not placeholder:
+                            continue
+                        header_text = placeholder.get_text(strip=True).lower()
+                        
+                        if "collection" in header_text:
+                            for a in dropdown.find_all("a", href=True):
+                                href = a["href"]
+                                series_name = a.get_text(strip=True)
+                                if "/wiki/" in href:
+                                    page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
+                                    self._page_series_map[page_name] = series_name
+                                    self._page_series_map[page_name.replace(" ", "_")] = series_name
+                                    for sibling in a.find_parents("li"):
+                                        for sub_a in sibling.find_all("a", href=True):
+                                            sub_href = sub_a["href"]
+                                            if "/wiki/" in sub_href:
+                                                sub_page = urllib.parse.unquote(sub_href.split("/wiki/")[-1])
+                                                if sub_page not in self._page_series_map:
+                                                    self._page_series_map[sub_page] = series_name
+                                                    self._page_series_map[sub_page.replace(" ", "_")] = series_name
+                    logger.info(f"Populated {len(self._page_series_map)} series mappings from live Fandom navigation menu.")
+                except Exception as e:
+                    logger.error(f"Failed to parse live Pop Race navigation: {e}")
 
         # If live fetch was unsuccessful or empty, fall back to local pop_race_filters.json
         if not self._page_series_map:
@@ -1920,7 +1959,50 @@ class PopRaceBrandHandler:
         # Load the series map
         self._load_series_map()
 
-        # 1. Exhaustively crawl all pages from Pop Race Fandom
+        # 1. Discover casting pages from local reference HTML (POP RACE Wiki _ Fandom.html)
+        ref_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "reference_htmls",
+            "POP RACE Wiki _ Fandom.html"
+        )
+        if os.path.exists(ref_path):
+            logger.info("Discovering Pop Race links from local reference HTML (POP RACE Wiki _ Fandom.html)...")
+            try:
+                with open(ref_path, "r", encoding="utf-8") as f:
+                    ref_html = f.read()
+                soup = BeautifulSoup(ref_html, "lxml")
+                for a in soup.find_all("a", href=True):
+                    href = a["href"]
+                    if href.startswith("/wiki/"):
+                        href = "https://pop-race.fandom.com" + href
+                    elif href.startswith("//pop-race.fandom.com/wiki/"):
+                        href = "https:" + href
+                        
+                    if "pop-race.fandom.com/wiki/" in href:
+                        page_name = urllib.parse.unquote(href.split("/wiki/")[-1])
+                        page_name = page_name.split("#")[0]
+                        if not page_name:
+                            continue
+                        namespace_prefix = page_name.split(":", 1)[0] + ":" if ":" in page_name else ""
+                        if namespace_prefix in ("File:", "Special:", "Template:", "Help:", "Talk:", "User:", "User_talk:", "Forum:", "Board:", "Thread:", "Category:"):
+                            continue
+                        
+                        page_api = f"https://pop-race.fandom.com/api.php?action=parse&page={urllib.parse.quote(page_name)}&format=json&prop=text|categories"
+                        if page_api not in seen_urls:
+                            seen_urls.add(page_api)
+                            series = self._get_series_for_page(page_name)
+                            pending.append({
+                                "source": "fandom_list",
+                                "url": page_api,
+                                "meta": {
+                                    "page_name": page_name,
+                                    "series": series
+                                }
+                            })
+            except Exception as e:
+                logger.error(f"Failed to parse local Pop Race reference links: {e}")
+
+        # 2. Exhaustively crawl all pages from Pop Race Fandom (API discovery)
         apcontinue = ""
         while True:
             api_url = (
