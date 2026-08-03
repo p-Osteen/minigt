@@ -106,7 +106,7 @@ class HotWheelsBrandHandler:
         # ---- 1. Parse the hub page (local reference HTML, else live) ----
         hub_html = None
         ref_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
             "reference_htmls", "Hot_Wheels.html"
         )
         if os.path.exists(ref_path):

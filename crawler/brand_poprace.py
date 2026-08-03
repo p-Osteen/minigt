@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 from crawler.utils import (
     clean_fandom_image_url,
+    clean_diecastsociety_image_url,
     get_row_product_images,
     parse_my64_list,
     parse_my64_detail
@@ -147,7 +148,7 @@ class PopRaceBrandHandler:
         self._page_meta_map = {}
 
         ref_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
             "reference_htmls", "POP_RACE_Wiki.html"
         )
         if os.path.exists(ref_path):
@@ -186,7 +187,7 @@ class PopRaceBrandHandler:
 
         # 1. Enqueue all pages from nav reference HTML
         ref_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
             "reference_htmls", "POP_RACE_Wiki.html"
         )
         if os.path.exists(ref_path):
@@ -274,7 +275,7 @@ class PopRaceBrandHandler:
 
         # 4. Local my64 reference HTML
         local_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
             "reference_htmls", "4.Model Cars Online Malaysia __ POP RACE.html"
         )
         if os.path.exists(local_path):
@@ -353,10 +354,13 @@ class PopRaceBrandHandler:
                     })
             return new_tasks
 
+        # Nav map is the source of truth for classification; task meta (inherited
+        # from a parent page during discovery) is only a fallback for pages the
+        # nav parser never registered.
         page_meta = self._get_meta_for_page(page_name)
-        series_group = meta.get("series_group") or page_meta["series_group"]
-        series       = meta.get("series")       or page_meta["series"]
-        sub_series   = meta.get("sub_series")   or page_meta.get("sub_series")
+        series_group = page_meta.get("series_group") or meta.get("series_group")
+        series       = page_meta.get("series")       or meta.get("series")
+        sub_series   = page_meta.get("sub_series")   or meta.get("sub_series")
 
         for table in soup.find_all("table"):
             all_rows = table.find_all("tr")
@@ -439,7 +443,7 @@ class PopRaceBrandHandler:
                 self.crawler._save_or_merge_product(
                     item_number=item_number,
                     product_name=product_name,
-                    brand=row_make or "Pop Race",
+                    brand="Pop Race",
                     scale="1:64",
                     series=series,
                     img_urls=img_urls,
@@ -493,7 +497,7 @@ class PopRaceBrandHandler:
                 filename = re.sub(r"-\d+x\d+$", "", filename)
                 img_dict[filename] = src_cleaned
 
-        code_pattern = re.compile(r"\b(PR64\d{3,4}|PRDC\d{2,3}|PR64-[A-Z0-9-]+)\b", re.I)
+        code_pattern = re.compile(r"\b(PR64[A-Z0-9-]{2,}|PRDC\d{2,3}|BM64[A-Z0-9-]{2,})\b", re.I)
 
         lines = [line.strip() for line in full_text.split("\n") if line.strip()]
         for line in lines:
