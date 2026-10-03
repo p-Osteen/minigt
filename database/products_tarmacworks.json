@@ -2521,26 +2521,6 @@
   },
   {
     "toy_brand": "Tarmac Works",
-    "item_number": "4WHITE",
-    "product_name": "Mercedes-AMG GT3",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/tarmacworks/images/d/d2/T64-008-4A3W_pkg.jpg/revision/latest?cb=20220531180422"
-    ],
-    "source": "fandom",
-    "release_year": 2018,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Mercedes-Benz",
-    "year": "2018",
-    "finish": "Standard"
-  },
-  {
-    "toy_brand": "Tarmac Works",
     "item_number": "BLANCPAINGTSERIESASIA20175AAPE",
     "product_name": "Audi R8 LMS (New Tooling)",
     "brand": "Audi",
@@ -11275,26 +11255,6 @@
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Porsche",
-    "year": "2021",
-    "finish": "Standard"
-  },
-  {
-    "toy_brand": "Tarmac Works",
-    "item_number": "T64017MIJO",
-    "product_name": "MiJo Exclusives - RWB 993Gulf",
-    "brand": "RWB",
-    "scale": "1:64",
-    "series": "HOBBY64",
-    "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/tarmacworks/images/a/a5/T64-017-MIJO_pkg.jpg/revision/latest?cb=20220501203757"
-    ],
-    "source": "fandom",
-    "release_year": 2021,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": null,
     "year": "2021",
     "finish": "Standard"
   },

@@ -38712,15 +38712,16 @@
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626201249_308309.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626201255_308373.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626201261_308672.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626201267_308157.JPG"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1626201267_308157.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/6a1b458f-9b58-4fe6-8789-84da12aded28"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2022,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Ford",
-    "year": null
+    "year": "2022"
   },
   {
     "toy_brand": "MINI GT",
@@ -38744,15 +38745,16 @@
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1683117784_631593.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1683117803_631436.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1683117809_631920.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1683117815_631215.JPG"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1683117815_631215.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/5414ec18-e442-43f9-bb53-8b101f4bfe03"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2023,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Lancia",
-    "year": null
+    "year": "2023"
   },
   {
     "toy_brand": "MINI GT",
@@ -38776,15 +38778,16 @@
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1669626277_549750.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1669626291_549738.JPG",
       "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1669626303_549317.JPG",
-      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1669626317_549665.JPG"
+      "https://minigt.tsm-models.com/upload/mini_gt/products_gif/product_pic_big/1669626317_549665.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e28fdbd2-6a4c-4d4f-9a65-6c614650a3c6"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2023,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Mercedes-Benz",
-    "year": null
+    "year": "2023"
   },
   {
     "toy_brand": "MINI GT",
@@ -38854,15 +38857,16 @@
     "series": "REGULAR",
     "sub_series": "Regular",
     "images": [
-      "https://minigt.tsm-models.com/upload/picfile_list/cb7691e5975dfb45bdef64e139d5545220240928210616334.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/cb7691e5975dfb45bdef64e139d5545220240928210616334.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/a6067a93-a9c1-4b2a-b338-21b248efb2db"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2023,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Land Rover",
-    "year": null
+    "year": "2023"
   },
   {
     "toy_brand": "MINI GT",
@@ -38876,15 +38880,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/e976a3299f29a7a282fd2e783e04c07d20230907195648019.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/b7138d77eda1d3815e4ded2978635d7d20230907195648443.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/1b98d981a8749429e498d25ffbce055520230907195648970.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/3e98d32161388f8d2bd2f8ed7fb15d2c20230907195649478.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/3e98d32161388f8d2bd2f8ed7fb15d2c20230907195649478.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/cedd50fe-6df0-4eae-b2d2-ff69215eb2d8"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2023,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Red Bull Racing",
-    "year": null
+    "year": "2023"
   },
   {
     "toy_brand": "MINI GT",
@@ -38898,15 +38903,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/82c68d1693bd514e9ee3d22e9990e44e20230907195949524.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/e2ea9f0db2439590295b21582387617920230907195949949.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/5f0503be25eadedf3b22f275381b530920230907195950449.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/74a7a7003ccd949fe061962fae241dc920230907195950964.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/74a7a7003ccd949fe061962fae241dc920230907195950964.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/0e649089-5d43-4bb8-9449-3262052e3f67"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2023,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Red Bull Racing",
-    "year": null
+    "year": "2023"
   },
   {
     "toy_brand": "MINI GT",
@@ -38960,15 +38966,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/932aadeda0719f207b1861cac6da4bcc20231016065119780.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/9a541a3eb0fb3d89341cadfe9ecac46820231016065119780.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/f5730ebc5bf4900b4ee37ee4519d01f220231016065119781.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/04d14b481eaff48f8dce0ac87b60d29820231016065119800.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/04d14b481eaff48f8dce0ac87b60d29820231016065119800.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/b001cb59-eefe-4448-9547-e12cb5b5209a"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2024,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Ford",
-    "year": null
+    "year": "2024"
   },
   {
     "toy_brand": "MINI GT",
@@ -38989,15 +38996,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/557499341679f6e12d55a003da8c855320240306212903496.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/46042047a7d9e918f53fb923f657bbdd20240306212903599.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/a3d75e09adffe34a82fcde2c1e6fb63b20240306212903600.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/e72a13e80176a37c408bb682caa5fe3a20240306212903601.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/e72a13e80176a37c408bb682caa5fe3a20240306212903601.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e4539663-47bd-4e3b-a7aa-e8bdc1dc8e59"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2025,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Porsche",
-    "year": null
+    "year": "2025"
   },
   {
     "toy_brand": "MINI GT",
@@ -39013,15 +39021,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/bd7c4052a7483247f0ac47fab6ffc59720250510063812412.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/b27e2aff1a05ba292ebf486ef4e4569e20250510063812413.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/4f1f363964dbde6e43d2afe9df1403c620250510063812415.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/e6cc5de0b502f5bf62454955ec10f9b520250510063812416.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/e6cc5de0b502f5bf62454955ec10f9b520250510063812416.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/6db98415-ea7e-472b-b1ee-6d3c11df93fd"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2024,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Nissan",
-    "year": null
+    "year": "2024"
   },
   {
     "toy_brand": "MINI GT",
@@ -39066,15 +39075,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/ba578610e73ac598f773c21a70af418320241030184944356.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/c5f380d0d36785f23ce8631e8bd0295720241030184944357.jpg",
       "https://minigt.tsm-models.com/upload/picfile_list/c71ce14c7685e2da1d568544fdbbac2620241030184944359.jpg",
-      "https://minigt.tsm-models.com/upload/picfile_list/e477939ee1f899dd483d7d0b593bc87a20241030184944362.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/e477939ee1f899dd483d7d0b593bc87a20241030184944362.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/fd3aac28-26d5-4d9d-add5-ad5fbc331a30"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2025,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Red Bull Racing",
-    "year": null
+    "year": "2025"
   },
   {
     "toy_brand": "MINI GT",
@@ -39108,15 +39118,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/266aba2ec1b8a8003802283574a6fce320250513004854887.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/7575ea33dceba8d7c79810b865503d3020250513004854888.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/f6bb9d49fe4523e62cdb6632b181d0b620250513004854890.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/cb2ca74b10c779b5576846c10edff75920250513004854891.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/cb2ca74b10c779b5576846c10edff75920250513004854891.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/d577cbcf-498b-4ecc-8265-fd721e82b4c2"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2026,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Mercedes-Benz",
-    "year": null
+    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",
@@ -39204,15 +39215,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/a6af670b64714c10b41e59f2ba28684a20260211212056418.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/373aaea6b4d6a4fc152dd7d168e4569d20260211212056435.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/6d02b21429944fbf3c7d4d8eb3335ea320260211212056498.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/4fff426662e96a9d14ef7bb43ec5190720260211212056561.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/4fff426662e96a9d14ef7bb43ec5190720260211212056561.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7a1ee832-833f-4f6e-ada1-d9eccabda1b6"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2026,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Porsche",
-    "year": null
+    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",
@@ -39226,15 +39238,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/5d19e21ca5e55ca96e4d0040a0ada09f20260123220530064.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/8b003823ac9af7e744eabcbe54e1a4f120260123220618099.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/237aab9055493fe25247b58b5e7614d020260123220618103.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/d0e17ceabb5dd16154277b234da80cee20260123220618106.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/d0e17ceabb5dd16154277b234da80cee20260123220618106.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/8c5ea12b-5749-428f-87d9-8753c29d7b21"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2026,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Nissan",
-    "year": null
+    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",
@@ -39269,15 +39282,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/0603d2cb9bef944e6ab2bf5397dc36e920260420180758366.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/7b78d6ca34413029e70ee12fe45c311d20260420180758369.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/6ff0f66e140a26ba1afb8f66df6b98a220260420180758371.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/c579da00f098b3adcd34027a7e222ef420260420180758373.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/c579da00f098b3adcd34027a7e222ef420260420180758373.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/ed9e8a60-aa8c-4ac3-82c8-441a2364c6c3"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2026,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Porsche",
-    "year": null
+    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",
@@ -39300,15 +39314,16 @@
       "https://minigt.tsm-models.com/upload/picfile_list/0005a711987567c9a8666607a88cc24920260414175034489.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/d3c5a38711bc7459ae0d597744ed2d1920260414175034491.JPG",
       "https://minigt.tsm-models.com/upload/picfile_list/bfe7d3156dd3435b1629e2f493e9b4f120260414175034493.JPG",
-      "https://minigt.tsm-models.com/upload/picfile_list/3028b2a76ebe3836a6121d7b84a7dcb120260414175034496.JPG"
+      "https://minigt.tsm-models.com/upload/picfile_list/3028b2a76ebe3836a6121d7b84a7dcb120260414175034496.JPG",
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/982198ee-051e-4900-88d0-91dcdb3303e1"
     ],
     "source": "official",
-    "release_year": null,
-    "release_year_confidence": null,
+    "release_year": 2026,
+    "release_year_confidence": "confirmed",
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Lamborghini",
-    "year": null
+    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",
@@ -39483,63 +39498,6 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "S0001",
-    "product_name": "Ford GT",
-    "brand": "Ford",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/6a1b458f-9b58-4fe6-8789-84da12aded28"
-    ],
-    "source": "myminigt",
-    "release_year": 2022,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Ford",
-    "year": "2022"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0002",
-    "product_name": "Lancia Delta HF Integrale Evoluzione",
-    "brand": "Lancia",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/5414ec18-e442-43f9-bb53-8b101f4bfe03"
-    ],
-    "source": "myminigt",
-    "release_year": 2023,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Lancia",
-    "year": "2023"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0003",
-    "product_name": "Mercedes-Benz 190E 2.5-16 Evolution II",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e28fdbd2-6a4c-4d4f-9a65-6c614650a3c6"
-    ],
-    "source": "myminigt",
-    "release_year": 2023,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Mercedes-Benz",
-    "year": "2023"
-  },
-  {
-    "toy_brand": "MINI GT",
     "item_number": "S0004",
     "product_name": "Mercedes-Benz Actros\r\n& LB-Super Silhouette Nissan S15 SILVIA",
     "brand": "Mercedes-Benz & Nissan",
@@ -39578,63 +39536,6 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "S0006",
-    "product_name": "Range Rover \r\n1982 Camel Trophy Papua New Guinea",
-    "brand": "Range Rover",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/a6067a93-a9c1-4b2a-b338-21b248efb2db"
-    ],
-    "source": "myminigt",
-    "release_year": 2023,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Land Rover",
-    "year": "2023"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0007",
-    "product_name": "Oracle Red Bull Racing RB18 \r\n#1 Max Verstappen \r\n2022 Abu Dhabi GP Pit Crew Set",
-    "brand": "Red Bull Racing",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/cedd50fe-6df0-4eae-b2d2-ff69215eb2d8"
-    ],
-    "source": "myminigt",
-    "release_year": 2023,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Red Bull Racing",
-    "year": "2023"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0008",
-    "product_name": "Oracle Red Bull Racing RB18 \r\n#11 Sergio Pérez\r\n2022 Abu Dhabi GP Pit Crew Set",
-    "brand": "Red Bull Racing",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/0e649089-5d43-4bb8-9449-3262052e3f67"
-    ],
-    "source": "myminigt",
-    "release_year": 2023,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Red Bull Racing",
-    "year": "2023"
-  },
-  {
-    "toy_brand": "MINI GT",
     "item_number": "S0009",
     "product_name": "Chevrolet Corvette C8.R\r\n& Western Star 49X",
     "brand": "Chevrolet & Western Star 49X",
@@ -39650,63 +39551,6 @@
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "Chevrolet",
-    "year": "2024"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0010",
-    "product_name": "Ford GT",
-    "brand": "Ford",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/b001cb59-eefe-4448-9547-e12cb5b5209a"
-    ],
-    "source": "myminigt",
-    "release_year": 2024,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Ford",
-    "year": "2024"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0011",
-    "product_name": "Porsche 963",
-    "brand": "Porsche",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/e4539663-47bd-4e3b-a7aa-e8bdc1dc8e59"
-    ],
-    "source": "myminigt",
-    "release_year": 2025,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Porsche",
-    "year": "2025"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0012",
-    "product_name": "Nissan",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/6db98415-ea7e-472b-b1ee-6d3c11df93fd"
-    ],
-    "source": "myminigt",
-    "release_year": 2024,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Nissan",
     "year": "2024"
   },
   {
@@ -39730,25 +39574,6 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "S0014",
-    "product_name": "Oracle Red Bull Racing RB19 \r\n#1 Max Verstappen \r\nF1 2023 Japanese Grand Prix",
-    "brand": "Red Bull Racing",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/fd3aac28-26d5-4d9d-add5-ad5fbc331a30"
-    ],
-    "source": "myminigt",
-    "release_year": 2025,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Red Bull Racing",
-    "year": "2025"
-  },
-  {
-    "toy_brand": "MINI GT",
     "item_number": "S0015",
     "product_name": "CANCELLED \r\nSET",
     "brand": "MINI GT",
@@ -39765,25 +39590,6 @@
     "is_cancelled": true,
     "manufacturer": null,
     "year": null
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0016",
-    "product_name": "Mercedes-Benz 190 E 2.3-16\r\n1984 Nürburgring \r\nRace of Champions Set",
-    "brand": "Mercedes-Benz",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/d577cbcf-498b-4ecc-8265-fd721e82b4c2"
-    ],
-    "source": "myminigt",
-    "release_year": 2026,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Mercedes-Benz",
-    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",
@@ -39863,44 +39669,6 @@
   },
   {
     "toy_brand": "MINI GT",
-    "item_number": "S0021",
-    "product_name": "Porsche 911",
-    "brand": "Porsche",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7a1ee832-833f-4f6e-ada1-d9eccabda1b6"
-    ],
-    "source": "myminigt",
-    "release_year": 2026,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Porsche",
-    "year": "2026"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0022",
-    "product_name": "Nissan",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/8c5ea12b-5749-428f-87d9-8753c29d7b21"
-    ],
-    "source": "myminigt",
-    "release_year": 2026,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Nissan",
-    "year": "2026"
-  },
-  {
-    "toy_brand": "MINI GT",
     "item_number": "S0023",
     "product_name": "BMW M4 GT3 EVO \r\nFIST Team AAI",
     "brand": "BMW",
@@ -39916,25 +39684,6 @@
     "status": "Released",
     "is_cancelled": false,
     "manufacturer": "BMW",
-    "year": "2026"
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0024",
-    "product_name": "Porsche 911 GT3 R \r\n#77 GTD PRO AO Racing\r\n2024 IMSA Roxy & Rexy Show Car w/ Trophy",
-    "brand": "Porsche",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/ed9e8a60-aa8c-4ac3-82c8-441a2364c6c3"
-    ],
-    "source": "myminigt",
-    "release_year": 2026,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Porsche",
     "year": "2026"
   },
   {
@@ -39955,25 +39704,6 @@
     "is_cancelled": false,
     "manufacturer": null,
     "year": null
-  },
-  {
-    "toy_brand": "MINI GT",
-    "item_number": "S0026",
-    "product_name": "Lamborghini Huracán Sterrato All Terrarin",
-    "brand": "Lamborghini",
-    "scale": "1:64",
-    "series": "REGULAR",
-    "sub_series": "Regular",
-    "images": [
-      "https://backend-static-ms.zmoif7.easypanel.host/api/images/982198ee-051e-4900-88d0-91dcdb3303e1"
-    ],
-    "source": "myminigt",
-    "release_year": 2026,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "manufacturer": "Lamborghini",
-    "year": "2026"
   },
   {
     "toy_brand": "MINI GT",

@@ -5457,28 +5457,6 @@
   },
   {
     "toy_brand": "INNO64",
-    "item_number": "IN64LBWKRX708",
-    "product_name": "MAZDA RX7 (FD3S) LB-SUPER SILHOUETTE “DRIFT GAMES 2025” （Chase Ver-Invert Color)",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "Diecast",
-    "sub_series": "Regular",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/IN64-RX7LB-PINK-1-1920x1080.jpg"
-    ],
-    "source": "official",
-    "release_year": 2025,
-    "release_year_confidence": "confirmed",
-    "status": "Released",
-    "is_cancelled": false,
-    "vehicle_type": "Diecast",
-    "description": "",
-    "manufacturer": "Mazda",
-    "year": "2025",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
     "item_number": "IN64MADLAB01MADBUL",
     "product_name": "Mazda RX-7 (FD3S) “Pandem Rocket Bunny” MADBUL MADLAB COLLECTION 001",
     "brand": "Mazda",
@@ -6073,28 +6051,6 @@
   },
   {
     "toy_brand": "INNO64",
-    "item_number": "IN64R30RESL",
-    "product_name": "NISSAN SKYLINE 2000 RS-X TURBO (DR30) Red/Silver",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "Diecast",
-    "sub_series": "Regular",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2025/07/IN64-R30-RESL-1-1920x1080.png"
-    ],
-    "source": "official",
-    "release_year": 2025,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "vehicle_type": "Diecast",
-    "description": "NISSAN SKYLINE 2000 RS-X TURBO (DR30) Red/Silver",
-    "manufacturer": "Nissan",
-    "year": "2025",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
     "item_number": "IN64R30SLBL",
     "product_name": "NISSAN SKYLINE 2000 RS-X TURBO (DR30) Silver/Black",
     "brand": "Nissan",
@@ -6432,7 +6388,8 @@
     "series": "Diecast",
     "sub_series": "Regular",
     "images": [
-      "https://www.inno-models.com/wp-content/uploads/2025/05/R32-CASET93-1-1920x1080.jpg"
+      "https://www.inno-models.com/wp-content/uploads/2025/05/R32-CASET93-1-1920x1080.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/01/IN64-R32-CASET93-2-1920x1080.jpg"
     ],
     "source": "official",
     "release_year": 2025,
@@ -10696,110 +10653,6 @@
   },
   {
     "toy_brand": "INNO64",
-    "item_number": "A90MG",
-    "product_name": "Toyota Supra A90 “DarwinPRO” Matt Grey",
-    "brand": "Toyota",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "DarwinPRO",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-5-1920x1080.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-5-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-Supra-MG-7-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-4-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-1-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-9-600x337.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "description": "Scale1/64",
-    "manufacturer": "Toyota",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
-    "item_number": "DSC1358600X337",
-    "product_name": "Mazda MX-5 (ND) Miata “Pandem Rocket Bunny” V1.0",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Rocket Bunny / Pandem",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/04/1-1-1920x1080.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/1-1-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/DSC_1358-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/6-1-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/DSC_1333-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/04/DSC_1365-600x337.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "description": "Scale1/64",
-    "manufacturer": "Mazda",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
-    "item_number": "DSC01471920X1080",
-    "product_name": "MAZDA 787B No.18 59th 24 Hours Le Mans 1991",
-    "brand": "Mazda",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Regular",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0147-1920x1080.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0147-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0149-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/gvigvi-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/d-acs-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/IN64-787B-02-600x337.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "description": "Scale1/64",
-    "manufacturer": "Mazda",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
-    "item_number": "F40LBWHITE02",
-    "product_name": "LBWK F40 Collect White (Chase ver Red)",
-    "brand": "Ferrari",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "Liberty Walk",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-5-1920x1080.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-5-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-1-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/12dd-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-4-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-3-600x337.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "description": "Scale1/64",
-    "manufacturer": "Ferrari",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
     "item_number": "GR86-PANDEM-DPLS",
     "product_name": "INNO DPLS X QUADRANT X UNDEFEATED Pandem Rocket Bunny GR86",
     "brand": "Toyota",
@@ -10844,28 +10697,6 @@
   },
   {
     "toy_brand": "INNO64",
-    "item_number": "IN64-R32-CASET93",
-    "product_name": "Nissan Skyline GT-R (R32) #12 “Calsonic Racing Team” JTC 1993",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "Diecast",
-    "sub_series": "Regular",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/01/IN64-R32-CASET93-2-1920x1080.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "vehicle_type": "Diecast",
-    "description": "",
-    "manufacturer": "Nissan",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
     "item_number": "IN64A80TSV1201",
     "product_name": "Top Secret V12 Toyota Supra",
     "brand": "Toyota",
@@ -10895,7 +10726,12 @@
     "series": "Diecast",
     "sub_series": "DarwinPRO",
     "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-5-1920x1080.jpg"
+      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-5-1920x1080.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-5-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-Supra-MG-7-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-4-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-1-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/A90-MG-9-600x337.jpg"
     ],
     "source": "official",
     "release_year": 2026,
@@ -10961,7 +10797,12 @@
     "series": "Diecast",
     "sub_series": "DarwinPRO",
     "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-1-1920x1080.jpg"
+      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-1-1920x1080.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-1-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-2-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-3-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-4-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-5-600x337.jpg"
     ],
     "source": "official",
     "release_year": 2026,
@@ -11555,7 +11396,12 @@
     "series": "Diecast",
     "sub_series": "Liberty Walk",
     "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-5-1920x1080.jpg"
+      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-5-1920x1080.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-5-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-1-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/12dd-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-4-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/F40-LB-White-02-3-600x337.jpg"
     ],
     "source": "official",
     "release_year": 2026,
@@ -11621,7 +11467,12 @@
     "series": "Diecast",
     "sub_series": "Rocket Bunny / Pandem",
     "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/04/1-1-1920x1080.jpg"
+      "https://www.inno-models.com/wp-content/uploads/2026/04/1-1-1920x1080.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/1-1-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/DSC_1358-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/6-1-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/DSC_1333-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/04/DSC_1365-600x337.jpg"
     ],
     "source": "official",
     "release_year": 2026,
@@ -12516,28 +12367,6 @@
   },
   {
     "toy_brand": "INNO64",
-    "item_number": "IN64350ZTSTTSTOS1",
-    "product_name": "Top Secret Thailand 350Z Gold OS",
-    "brand": "Nissan",
-    "scale": "1:64",
-    "series": "Diecast",
-    "sub_series": "Top Secret",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/02/IN64-Z350TS-GOLD-2-1920x1080.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "vehicle_type": "Diecast",
-    "description": "",
-    "manufacturer": "Nissan",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
     "item_number": "IN64720SWHI",
     "product_name": "LB-WORKS 720S",
     "brand": "INNO64",
@@ -12567,7 +12396,12 @@
     "series": "Diecast",
     "sub_series": "Regular",
     "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0147-1920x1080.jpg"
+      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0147-1920x1080.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0147-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/DSC_0149-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/gvigvi-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/d-acs-600x337.jpg",
+      "https://www.inno-models.com/wp-content/uploads/2026/03/IN64-787B-02-600x337.jpg"
     ],
     "source": "official",
     "release_year": 2026,
@@ -12731,32 +12565,6 @@
     "vehicle_type": "Uncategorized",
     "description": "",
     "manufacturer": "Mazda",
-    "year": "2026",
-    "model_type": "Diecast"
-  },
-  {
-    "toy_brand": "INNO64",
-    "item_number": "MAGGTDRAWINPRO",
-    "product_name": "DarwinPRO AMG GT",
-    "brand": "INNO64",
-    "scale": "1:64",
-    "series": "Regular",
-    "sub_series": "DarwinPRO",
-    "images": [
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-1-1920x1080.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-1-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-2-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-3-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-4-600x337.jpg",
-      "https://www.inno-models.com/wp-content/uploads/2026/03/MAG-GT-Drawin-Pro-5-600x337.jpg"
-    ],
-    "source": "official",
-    "release_year": 2026,
-    "release_year_confidence": "inferred",
-    "status": "Released",
-    "is_cancelled": false,
-    "description": "Scale1/64",
-    "manufacturer": "Mercedes-Benz",
     "year": "2026",
     "model_type": "Diecast"
   },

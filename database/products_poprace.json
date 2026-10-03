@@ -576,29 +576,6 @@
   },
   {
     "toy_brand": "Pop Race",
-    "item_number": "PRRGTRPUORG",
-    "product_name": "Godzilla Pick Up Truck Orange",
-    "brand": "Pop Race",
-    "scale": "1:64",
-    "series": "Regular Collection",
-    "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/pop-race/images/b/b3/PR64-GOZ-OR.jpg/revision/latest?cb=20241120232111"
-    ],
-    "source": "fandom",
-    "release_year": 2020,
-    "release_year_confidence": "confirmed",
-    "status": null,
-    "is_cancelled": false,
-    "series_group": "Collection",
-    "make": "Other",
-    "manufacturer": "Pop Race",
-    "year": "2020",
-    "finish": "Standard",
-    "collection": "Regular Collection"
-  },
-  {
-    "toy_brand": "Pop Race",
     "item_number": "MGT00173L",
     "product_name": "Nissan GT-R NISMO GT3 EVA RT Test Type-01 Kakusei Edition-NISMO Festival 2019",
     "brand": "Nissan",
@@ -4883,29 +4860,6 @@
     "brand": "Honda",
     "scale": "1:64",
     "series": "Regular Collection",
-    "sub_series": "Regular",
-    "images": [
-      "https://static.wikia.nocookie.net/pop-race/images/2/24/PR640127.jpg/revision/latest?cb=20241117231214"
-    ],
-    "source": "fandom",
-    "release_year": 2024,
-    "release_year_confidence": "confirmed",
-    "status": null,
-    "is_cancelled": false,
-    "series_group": "Collection",
-    "make": "Japanese Tuners",
-    "manufacturer": "Honda",
-    "year": "2024",
-    "finish": "Standard",
-    "collection": "Regular Collection"
-  },
-  {
-    "toy_brand": "Pop Race",
-    "item_number": "PR640127PRE001",
-    "product_name": "Pandem Civic EG6",
-    "brand": "Honda",
-    "scale": "1:64",
-    "series": "2024",
     "sub_series": "Regular",
     "images": [
       "https://static.wikia.nocookie.net/pop-race/images/2/24/PR640127.jpg/revision/latest?cb=20241117231214",

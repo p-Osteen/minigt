@@ -225,6 +225,15 @@ async function loadProducts() {
       populateFilterFacets();
       return;
     }
+    // Defensive deduplication by item_number
+    const seenItemNumbers = new Set();
+    ALL_PRODUCTS = ALL_PRODUCTS.filter(p => {
+      if (!p || !p.item_number) return false;
+      const key = p.item_number.trim().toUpperCase();
+      if (seenItemNumbers.has(key)) return false;
+      seenItemNumbers.add(key);
+      return true;
+    });
   } catch (e) {
     showEmpty('No models available yet', 'Our devs are hard at work!', 'assets/no_data.lottie');
     populateFilterFacets();
