@@ -23,7 +23,6 @@
   </div>
   <div class="brand-tabs" id="brandTabs">
     <button class="brand-tab active" data-brand="MINI GT" onclick="changeBrand('MINI GT')">MINI GT</button>
-    <button class="brand-tab" data-brand="Hot Wheels" onclick="changeBrand('Hot Wheels')">Hot Wheels</button>
     <button class="brand-tab" data-brand="Pop Race" onclick="changeBrand('Pop Race')">Pop Race</button>
     <button class="brand-tab" data-brand="Tarmac Works" onclick="changeBrand('Tarmac Works')">Tarmac Works</button>
     <button class="brand-tab" data-brand="INNO64" onclick="changeBrand('INNO64')">INNO64</button>
@@ -65,6 +64,20 @@
         spellcheck="false"
       >
       <button class="clear-btn" id="clearSearch" onclick="clearSearch()" title="Clear search">×</button>
+    </div>
+    <div class="sort-wrap">
+      <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"></line>
+        <line x1="4" y1="12" x2="14" y2="12"></line>
+        <line x1="4" y1="18" x2="8" y2="18"></line>
+      </svg>
+      <select id="sortSelect" class="sort-select" onchange="handleSortChange(this.value)" aria-label="Sort models" title="Sort models">
+        <option value="default">Default Sort</option>
+        <option value="a-z">A–Z (Name)</option>
+        <option value="z-a">Z–A (Name)</option>
+        <option value="low-high">Low to High (Item # / Year)</option>
+        <option value="high-low">High to Low (Item # / Year)</option>
+      </select>
     </div>
     <span class="filter-result-count" id="resultCount"></span>
   </div>
@@ -196,7 +209,6 @@ async function loadProducts() {
 
   const brandFileMap = {
     'MINI GT': 'products_minigt.json',
-    'Hot Wheels': 'products_hotwheels.json',
     'Pop Race': 'products_poprace.json',
     'Tarmac Works': 'products_tarmacworks.json',
     'INNO64': 'products_inno64.json',
@@ -221,9 +233,7 @@ async function loadProducts() {
 
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
-    if (CURRENT_BRAND === 'Hot Wheels') {
-      searchInput.placeholder = 'Search by name, toy #…';
-    } else if (CURRENT_BRAND === 'Pop Race') {
+    if (CURRENT_BRAND === 'Pop Race') {
       searchInput.placeholder = 'Search by name, model #…';
     } else if (CURRENT_BRAND === 'Trends Hobby') {
       searchInput.placeholder = 'Search by name, SKU…';
@@ -253,8 +263,107 @@ async function changeBrand(brand) {
   await loadProducts();
 }
 
-// ── DYNAMIC FILTERING ─────────────────────────────────────────────
+// ── DYNAMIC FILTERING & SORTING ──────────────────────────────────
 let ACTIVE_FILTER_KEYS = [];
+let CURRENT_SORT = 'default';
+
+function handleSortChange(val) {
+  CURRENT_SORT = val || 'default';
+  const topSel = document.getElementById('sortSelect');
+  const sideSel = document.getElementById('sidebarSortSelect');
+  if (topSel && topSel.value !== CURRENT_SORT) topSel.value = CURRENT_SORT;
+  if (sideSel && sideSel.value !== CURRENT_SORT) sideSel.value = CURRENT_SORT;
+  applyFilters();
+}
+
+function naturalCompare(a, b) {
+  return (a || '').toString().localeCompare((b || '').toString(), undefined, { numeric: true, sensitivity: 'base' });
+}
+
+function getProductYear(p) {
+  const y = p.release_year || p.year;
+  const num = parseInt(y, 10);
+  return isNaN(num) || num < 1900 ? null : num;
+}
+
+function minigtKey(p) {
+  const item = (p.item_number || '').trim().toUpperCase();
+  if (!item || (!item.includes('OEM') && !/\d/.test(item))) return [5, item, 0];
+  if (item.includes('OEM')) {
+    const m = item.match(/^(\d+)?OEM([A-Z0-9]+)?$/);
+    if (m) {
+      const yy = m[1] ? parseInt(m[1], 10) : 0;
+      const nn = m[2] ? parseInt(m[2], 10) : 999999;
+      return [3, yy, isNaN(nn) ? 999999 : nn];
+    }
+    return [3, 0, 999999];
+  }
+  const m = item.match(/^([A-Z]+)(\d+)/);
+  if (!m) return [4, item, 0];
+  const pfx = m[1];
+  const num = parseInt(m[2], 10);
+  if (pfx === 'MGT') return [1, num, 0];
+  if (pfx === 'KHMG') return [2, num, 0];
+  return [4, pfx, num];
+}
+
+function compareMinigt(a, b, desc = false) {
+  const ka = minigtKey(a);
+  const kb = minigtKey(b);
+  if (ka[0] !== kb[0]) {
+    return ka[0] - kb[0]; // MGT < KHMG < OEM < Others < Abnormal
+  }
+  const mul = desc ? -1 : 1;
+  for (let i = 1; i < Math.max(ka.length, kb.length); i++) {
+    const va = ka[i] !== undefined ? ka[i] : 0;
+    const vb = kb[i] !== undefined ? kb[i] : 0;
+    if (va !== vb) {
+      if (typeof va === 'number' && typeof vb === 'number') {
+        return (va - vb) * mul;
+      }
+      return String(va).localeCompare(String(vb)) * mul;
+    }
+  }
+  return 0;
+}
+
+function compareProducts(a, b, sortType, brand) {
+  if (sortType === 'a-z') {
+    const na = (a.product_name || '').trim();
+    const nb = (b.product_name || '').trim();
+    const c = na.localeCompare(nb, undefined, { sensitivity: 'base', numeric: true });
+    return c !== 0 ? c : naturalCompare(a.item_number, b.item_number);
+  }
+  if (sortType === 'z-a') {
+    const na = (a.product_name || '').trim();
+    const nb = (b.product_name || '').trim();
+    const c = nb.localeCompare(na, undefined, { sensitivity: 'base', numeric: true });
+    return c !== 0 ? c : naturalCompare(b.item_number, a.item_number);
+  }
+  if (sortType === 'low-high') {
+    if (brand === 'MINI GT') {
+      return compareMinigt(a, b, false);
+    }
+    const ya = getProductYear(a);
+    const yb = getProductYear(b);
+    if (ya !== null && yb !== null && ya !== yb) return ya - yb;
+    if (ya !== null && yb === null) return -1;
+    if (ya === null && yb !== null) return 1;
+    return naturalCompare(a.item_number, b.item_number);
+  }
+  if (sortType === 'high-low') {
+    if (brand === 'MINI GT') {
+      return compareMinigt(a, b, true);
+    }
+    const ya = getProductYear(a);
+    const yb = getProductYear(b);
+    if (ya !== null && yb !== null && ya !== yb) return yb - ya;
+    if (ya !== null && yb === null) return -1;
+    if (ya === null && yb !== null) return 1;
+    return naturalCompare(b.item_number, a.item_number);
+  }
+  return 0;
+}
 
 function toggleSidebar() {
   document.getElementById('filterSidebar').classList.toggle('open');
@@ -264,6 +373,11 @@ function toggleSidebar() {
 function resetFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('clearSearch').style.display = 'none';
+  CURRENT_SORT = 'default';
+  const topSel = document.getElementById('sortSelect');
+  const sideSel = document.getElementById('sidebarSortSelect');
+  if (topSel) topSel.value = 'default';
+  if (sideSel) sideSel.value = 'default';
   
   ACTIVE_FILTER_KEYS.forEach(key => {
     const el = document.getElementById(`filter-${key}`);
@@ -324,7 +438,31 @@ function populateFilterFacets() {
   container.innerHTML = '';
   ACTIVE_FILTER_KEYS = [];
 
+  const topSel = document.getElementById('sortSelect');
+  if (topSel) topSel.value = CURRENT_SORT;
+
   if (!ALL_PRODUCTS || ALL_PRODUCTS.length === 0) return;
+
+  // Add Sort By dropdown at the top of the sidebar
+  const sortGroup = document.createElement('div');
+  sortGroup.className = 'filter-group';
+  const sortLabel = document.createElement('label');
+  sortLabel.textContent = 'Sort by';
+  const sortSelect = document.createElement('select');
+  sortSelect.id = 'sidebarSortSelect';
+  sortSelect.className = 'filter-select-full';
+  sortSelect.innerHTML = `
+    <option value="default">Default Sort</option>
+    <option value="a-z">A–Z (Name)</option>
+    <option value="z-a">Z–A (Name)</option>
+    <option value="low-high">Low to High (Item # / Year)</option>
+    <option value="high-low">High to Low (Item # / Year)</option>
+  `;
+  sortSelect.value = CURRENT_SORT;
+  sortSelect.onchange = (e) => handleSortChange(e.target.value);
+  sortGroup.appendChild(sortLabel);
+  sortGroup.appendChild(sortSelect);
+  container.appendChild(sortGroup);
 
   // 1. Discover all unique keys across the dataset
   const excludeKeys = new Set([
@@ -339,10 +477,6 @@ function populateFilterFacets() {
     'tags', 'product_type'
   ]);
 
-  if (CURRENT_BRAND === 'Hot Wheels') {
-    excludeKeys.add('brand');
-    excludeKeys.delete('series_group');
-  }
   if (CURRENT_BRAND === 'Pop Race' || CURRENT_BRAND === 'MINI GT') {
     excludeKeys.add('status');
   }
@@ -353,7 +487,7 @@ function populateFilterFacets() {
     'release_year': 'Year',
     'brand': 'Car brand',
     'series_group': 'Category Group',
-    'series': CURRENT_BRAND === 'Hot Wheels' ? 'Series/Collection' : 'Categories',
+    'series': 'Categories',
     'sub_series': 'Sub-Series',
     'scale': 'Scale',
   };
@@ -537,6 +671,11 @@ function applyFilters() {
     return true;
   });
 
+  // Sort FILTERED based on CURRENT_SORT
+  if (CURRENT_SORT !== 'default') {
+    FILTERED.sort((a, b) => compareProducts(a, b, CURRENT_SORT, CURRENT_BRAND));
+  }
+
   // Update counts
   const total = ALL_PRODUCTS.length;
   const shown = FILTERED.length;
@@ -606,9 +745,7 @@ function buildCard(p) {
     : '';
 
   let labelPrefix = 'Item #: ';
-  if (CURRENT_BRAND === 'Hot Wheels') {
-    labelPrefix = 'Toy #: ';
-  } else if (CURRENT_BRAND === 'Pop Race') {
+  if (CURRENT_BRAND === 'Pop Race') {
     labelPrefix = 'Model #: ';
   } else if (CURRENT_BRAND === 'INNO64' || CURRENT_BRAND === 'Trends Hobby' || CURRENT_BRAND === 'Tarmac Works') {
     labelPrefix = 'SKU: ';

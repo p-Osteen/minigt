@@ -71,15 +71,7 @@ class MiniGTProduct(Base, ProductMixin):
             Index(f"idx_{cls.__tablename__}_brand_scale", "brand", "scale"),
         )
 
-class HotWheelsProduct(Base, ProductMixin):
-    __tablename__ = "hotwheels_products"
 
-    @declared_attr
-    def __table_args__(cls):
-        return (
-            Index(f"idx_{cls.__tablename__}_brand_series", "brand", "series"),
-            Index(f"idx_{cls.__tablename__}_brand_scale", "brand", "scale"),
-        )
 
 class PopRaceProduct(Base, ProductMixin):
     __tablename__ = "poprace_products"
@@ -123,7 +115,6 @@ class TrendsHobbyProduct(Base, ProductMixin):
 
 BRAND_MODELS = {
     "MINI GT": MiniGTProduct,
-    "Hot Wheels": HotWheelsProduct,
     "Pop Race": PopRaceProduct,
     "Tarmac Works": TarmacWorksProduct,
     "INNO64": Inno64Product,

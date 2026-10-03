@@ -25,7 +25,6 @@ from database.models import get_product_model
 
 # Import brand handlers
 from crawler.brand_minigt import MiniGTBrandHandler
-from crawler.brand_hotwheels import HotWheelsBrandHandler
 from crawler.brand_poprace import PopRaceBrandHandler
 from crawler.brand_tarmacworks import TarmacWorksBrandHandler
 from crawler.brand_inno64 import Inno64BrandHandler
@@ -76,7 +75,6 @@ class MINI_GTCrawler:
         self._completed_tasks = 0
         self.handlers = {
             "MINI GT": MiniGTBrandHandler(self),
-            "Hot Wheels": HotWheelsBrandHandler(self),
             "Pop Race": PopRaceBrandHandler(self),
             "Tarmac Works": TarmacWorksBrandHandler(self),
             "INNO64": Inno64BrandHandler(self),
@@ -288,7 +286,6 @@ class MINI_GTCrawler:
         if brand_limit:
             patterns = {
                 "MINI GT": ["minigt.tsm-models.com", "myminigt.com", "minigt.fandom.com"],
-                "Hot Wheels": ["hotwheels.fandom.com"],
                 "Pop Race": ["pop-race.fandom.com", "diecastsociety.com", "my64.com.my/usr/product.aspx?pgid=4&grpid=28"],
                 "Tarmac Works": ["tarmacworks.fandom.com", "tarmacworks.com"],
                 "INNO64": ["my64.com.my/usr/product.aspx?pgid=4&grpid=26"],
@@ -347,7 +344,7 @@ class MINI_GTCrawler:
         # Bypassed for Kaido House items (always 1:64)
         is_kaido = "kaido" in series.lower() or "kaido" in brand.lower() or "kaido" in product_name.lower()
         # Skip scale filter for brands that may have mixed scales (INNO64, Tarmac Works, Trends Hobby)
-        scale_exempt_brands = {"MINI GT", "Hot Wheels", "INNO64", "Tarmac Works", "Trends Hobby"}
+        scale_exempt_brands = {"MINI GT", "INNO64", "Tarmac Works", "Trends Hobby"}
         if not is_kaido and toy_brand not in scale_exempt_brands:
             if not scale or "1:64" not in scale:
                 return
@@ -423,8 +420,14 @@ class MINI_GTCrawler:
                     # Determine source priorities (lower is higher priority)
                     if toy_brand == "MINI GT":
                         prio_map = {"official": 1, "myminigt": 2, "fandom": 3}
-                    else:
-                        prio_map = {"fandom": 1, "diecastsociety": 2}
+                    elif toy_brand == "Tarmac Works":
+                        prio_map = {"shopify": 1, "shopify_json": 1, "fandom": 2}
+                    elif toy_brand == "INNO64":
+                        prio_map = {"official": 1, "woocommerce_detail": 1, "my64": 2}
+                    elif toy_brand == "Trends Hobby":
+                        prio_map = {"shopify": 1, "shopify_json": 1, "shopify_detail": 2}
+                    else:  # Pop Race and fallback
+                        prio_map = {"fandom": 1, "fandom_list": 1, "diecastsociety": 2, "my64": 3}
                     incoming_prio = prio_map.get(source.lower(), 9)
                     existing_prio = prio_map.get((existing.source or "").lower(), 9)
 

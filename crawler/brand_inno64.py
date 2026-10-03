@@ -3,6 +3,7 @@ import re
 import json
 import logging
 import urllib.parse
+import unicodedata
 from typing import List, Dict, Set, Optional
 from bs4 import BeautifulSoup
 
@@ -14,6 +15,45 @@ from crawler.utils import (
 )
 
 logger = logging.getLogger("crawler")
+
+
+# Common mojibake replacements (UTF-8 bytes misread as Latin-1/Windows-1252)
+_MOJIBAKE_MAP = {
+    "\u00e3\u0080\u008c": "\u300c",  # Left corner bracket「
+    "\u00e3\u0080\u008d": "\u300d",  # Right corner bracket」
+    "\u00e2\u0080\u009c": "\u201c",  # Left double quotation "
+    "\u00e2\u0080\u009d": "\u201d",  # Right double quotation "
+    "\u00e2\u0080\u0093": "\u2013",  # En dash –
+    "\u00e2\u0080\u0094": "\u2014",  # Em dash —
+    "\u00e2\u0080\u0099": "\u2019",  # Right single quote '
+    "\u00e2\u0080\u0098": "\u2018",  # Left single quote '
+    "\u00c3\u00a9": "\u00e9",        # é
+    "\u00c3\u00ab": "\u00eb",        # ë
+    "\u00c3\u00bc": "\u00fc",        # ü
+    "\u00c3\u00b6": "\u00f6",        # ö
+    "\u00c3\u00a1": "\u00e1",        # á
+}
+
+def _fix_mojibake(text: str) -> str:
+    """Repair common mojibake encoding issues in product names."""
+    if not text:
+        return text
+    # Try standard re-encode fix
+    try:
+        fixed = text.encode("latin-1").decode("utf-8")
+        if fixed != text:
+            return fixed
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        pass
+    # Fallback: replace known mojibake sequences
+    for bad, good in _MOJIBAKE_MAP.items():
+        text = text.replace(bad, good)
+    # Strip any remaining replacement characters
+    text = text.replace("\ufffd", "")
+    # Normalize unicode
+    text = unicodedata.normalize("NFC", text)
+    return text
+
 
 class Inno64BrandHandler:
     """Crawls INNO64 models from local HTML files, official WooCommerce site, and my64.com.my."""
@@ -144,32 +184,27 @@ class Inno64BrandHandler:
             sku_match = re.search(r"\b(IN64-[A-Z0-9-]+|IN18-R-[A-Z0-9-]+)\b", product_name, re.I)
             if sku_match:
                 sku = sku_match.group(1).upper()
-            else:
-                sku_match = re.search(r"\b(IN64-[A-Z0-9-]+|IN18-R-[A-Z0-9-]+)\b", url, re.I)
+        if not sku:
+            # Try broader SKU patterns: IN64-xxx, IN18-R-xxx, COKE-xxx, numeric codes
+            sku_patterns = [
+                r"\b(IN64-[A-Z0-9-]+)\b",
+                r"\b(IN18-?R?-[A-Z0-9-]+)\b",
+                r"\b(COKE-?\d+)\b",
+                r"\b(IN64R?-[A-Z0-9-]+)\b",
+            ]
+            for pat in sku_patterns:
+                sku_match = re.search(pat, product_name, re.I)
                 if sku_match:
                     sku = sku_match.group(1).upper()
+                    break
+            if not sku:
+                for pat in sku_patterns:
+                    sku_match = re.search(pat, url, re.I)
+                    if sku_match:
+                        sku = sku_match.group(1).upper()
+                        break
 
-        if not sku:
-            return
-
-        brand = "INNO64"
-        brand_match = re.search(r"^[A-Z0-9\s.-]+(?=\s-\s|\s//)", product_name, re.I)
-        if brand_match:
-            brand = brand_match.group(0).strip()
-
-        # Parse category tags
-        series = "Regular"
-        sub_series = "Regular"
-        tags = []
-        meta_tags = soup.find(class_="tagged_as")
-        if meta_tags:
-            for a in meta_tags.find_all("a"):
-                tags.append(a.get_text(strip=True))
-
-        attributes = {}
-        if tags:
-            attributes["tags"] = tags
-
+        # Images discovery first so we can use image codes for SKU and year
         img_urls = []
         gallery = soup.find(class_=re.compile(r"(images|gallery|slider)", re.I))
         if gallery:
@@ -184,8 +219,49 @@ class Inno64BrandHandler:
                 if src and "wp-content/uploads" in src and not src.endswith(".gif") and "logo" not in src.lower():
                     img_urls.append(src.split("?")[0])
 
+        # If SKU is still missing or a long slug (>20 chars), extract from image URL code
+        if not sku or len(sku) > 20:
+            for img_u in img_urls:
+                m_code = re.search(r"/([^/]+)-\d+-\d+x\d+\.(?:png|jpg)", img_u)
+                if not m_code:
+                    m_code = re.search(r"/([^/]+)\.(?:png|jpg)", img_u)
+                if m_code:
+                    code_cand = m_code.group(1).upper()
+                    if 4 <= len(code_cand) <= 22 and not code_cand.isdigit():
+                        sku = code_cand
+                        break
+
+        if not sku:
+            # Last resort: derive from URL slug
+            slug_match = re.search(r"/product/([^/]+)/?", url)
+            if slug_match:
+                slug = slug_match.group(1).replace("-", " ").strip()
+                if len(slug) <= 40:
+                    sku = re.sub(r"[^A-Z0-9]", "", slug.upper())
+            if not sku:
+                return
+
+        # Fix mojibake and clean product name
+        product_name = self._clean_inno_name(product_name)
+
+        # Detect automotive brand
+        brand = self._detect_car_brand(product_name)
+        if brand == "INNO64":
+            brand_match = re.search(r"^[A-Z0-9\s.-]+(?=\s-\s|\s//)", product_name, re.I)
+            if brand_match:
+                brand = brand_match.group(0).strip()
+
+        # Parse category tags
+        series = "Regular"
+        sub_series = "Regular"
+        tags = []
+        meta_tags = soup.find(class_="tagged_as")
+        if meta_tags:
+            for a in meta_tags.find_all("a"):
+                tags.append(a.get_text(strip=True))
+
         scale = "1:64"
-        if "1:18" in product_name or "1/18" in product_name or "IN18-R" in sku:
+        if "1:18" in product_name or "1/18" in product_name or "IN18-R" in sku or "IN18R" in sku:
             scale = "1:18"
         elif "1:43" in product_name or "1/43" in product_name:
             scale = "1:43"
@@ -195,6 +271,38 @@ class Inno64BrandHandler:
         if stock_html:
             status = "Pre-Order"
 
+        # Extract clean description text
+        desc_tag = soup.find(class_=re.compile(r"(product-description|woocommerce-product-details__short-description|description)", re.I))
+        description = ""
+        if desc_tag:
+            description = self._clean_inno_name(desc_tag.get_text(strip=True))
+
+        # Extract release year
+        release_year = None
+        release_year_confidence = None
+        ym = re.search(r"\b(20[12]\d)\b", product_name)
+        if ym:
+            release_year = int(ym.group(1))
+            release_year_confidence = "confirmed"
+        if not release_year and description:
+            ym = re.search(r"\b(20[12]\d)\b", description)
+            if ym:
+                release_year = int(ym.group(1))
+                release_year_confidence = "confirmed"
+        if not release_year:
+            for img_u in img_urls:
+                ym = re.search(r"/wp-content/uploads/(20[12]\d)/", img_u)
+                if ym:
+                    release_year = int(ym.group(1))
+                    release_year_confidence = "inferred"
+                    break
+
+        attributes = {}
+        if tags:
+            attributes["tags"] = tags
+        if description:
+            attributes["description"] = description
+
         self.crawler._save_or_merge_product(
             item_number=sku,
             product_name=product_name,
@@ -203,10 +311,48 @@ class Inno64BrandHandler:
             series=series,
             img_urls=img_urls,
             source="official",
-            release_year=None,
-            release_year_confidence=None,
+            release_year=release_year,
+            release_year_confidence=release_year_confidence,
             status=status,
             toy_brand="INNO64",
             sub_series=sub_series,
             attributes=attributes
         )
+
+    @staticmethod
+    def _clean_inno_name(name: str) -> str:
+        """Fix mojibake and clean up product name."""
+        if not name:
+            return ""
+        name = _fix_mojibake(name)
+        # Replace word or 「word」 with "word"
+        name = re.sub(r"[\ufffd\u300c]+([^\ufffd\u300d]+)[\ufffd\u300d]+", r'"\1"', name)
+        name = name.replace("\ufffd", "").replace("", "")
+        name = re.sub(r"\s+", " ", name).strip()
+        return name
+
+    @staticmethod
+    def _detect_car_brand(text: str) -> str:
+        """Detect real automotive manufacturer brand from text."""
+        car_brands = [
+            "Nissan", "Toyota", "Honda", "Mitsubishi", "Mazda", "Subaru", "Ford",
+            "Ferrari", "Porsche", "BMW", "Mercedes-Benz", "Mercedes", "Audi", "Lamborghini",
+            "Suzuki", "Peugeot", "Chevrolet", "Dodge", "Jaguar", "Alfa Romeo", "Volvo"
+        ]
+        for cb in car_brands:
+            if re.search(r"\b" + re.escape(cb) + r"\b", text, re.I):
+                return "Mercedes-Benz" if cb == "Mercedes" else cb
+        tl = text.lower()
+        if any(k in tl for k in ["skyline", "silvia", "gt-r", "180sx", "fairlady", "patrol", "gtr"]):
+            return "Nissan"
+        if any(k in tl for k in ["supra", "celica", "ae86", "corolla", "yaris", "chaser", "mr2", "altezza"]):
+            return "Toyota"
+        if any(k in tl for k in ["civic", "nsx", "integra", "accord", "s2000", "city turbo"]):
+            return "Honda"
+        if any(k in tl for k in ["lancer", "evolution", "evo", "pajero"]):
+            return "Mitsubishi"
+        if any(k in tl for k in ["rx-7", "rx-8", "miata", "rx7", "rx8"]):
+            return "Mazda"
+        if any(k in tl for k in ["f40", "enzo", "testarossa", "458"]):
+            return "Ferrari"
+        return "INNO64"

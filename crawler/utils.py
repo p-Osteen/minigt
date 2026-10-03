@@ -222,6 +222,15 @@ def parse_my64_detail(crawler, html: str, url: str, toy_brand: str, grp_id: str)
     elif "1:64" in product_name or "1/64" in product_name:
         scale = "1:64"
 
+    year = None
+    year_conf = None
+    ym = re.search(r"\b(20[12]\d)\b", product_name)
+    if ym:
+        y = int(ym.group(1))
+        if 2018 <= y <= 2030:
+            year = y
+            year_conf = "inferred"
+
     crawler._save_or_merge_product(
         item_number=item_number,
         product_name=product_name,
@@ -230,8 +239,8 @@ def parse_my64_detail(crawler, html: str, url: str, toy_brand: str, grp_id: str)
         series="Regular Collection" if toy_brand == "Pop Race" else "Regular",
         img_urls=img_urls,
         source="my64",
-        release_year=None,
-        release_year_confidence=None,
+        release_year=year,
+        release_year_confidence=year_conf,
         status=None if toy_brand == "Pop Race" else "Released",
         toy_brand=toy_brand
     )

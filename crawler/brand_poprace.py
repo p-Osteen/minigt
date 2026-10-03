@@ -407,24 +407,41 @@ class PopRaceBrandHandler:
                 if make_idx != -1 and make_idx < len(cells):
                     row_make = cells[make_idx].get_text(strip=True) or None
 
-                eff_sub_series = sub_series or row_make
+                # Detect real car brand
+                car_brand = row_make or self._detect_car_brand(product_name)
+
+                # Fix geographic series
+                clean_series = series
+                if clean_series in ("Japanese", "American", "European", "German", "British", "Italian", "Special Edition"):
+                    clean_series = "Regular Collection"
+
+                eff_sub_series = sub_series or row_make or car_brand
 
                 release_year = None
                 release_year_confidence = None
                 if release_idx != -1 and release_idx < len(cells):
                     release_val = cells[release_idx].get_text(strip=True)
-                    ym = re.search(r"\b(20\d{2})\b", release_val)
+                    # Notice (20\d{2}) without \b handles e.g. "September2025"
+                    ym = re.search(r"(20\d{2})", release_val)
                     if ym:
                         y = int(ym.group(1))
-                        if 2019 <= y <= 2030:
+                        if 2018 <= y <= 2030:
                             release_year = y
                             release_year_confidence = "confirmed"
 
                 if release_year is None and page_name.isdigit():
                     y = int(page_name)
-                    if 2019 <= y <= 2030:
+                    if 2018 <= y <= 2030:
                         release_year = y
                         release_year_confidence = "confirmed"
+
+                if release_year is None:
+                    ym = re.search(r"\b(20[12]\d)\b", product_name)
+                    if ym:
+                        y = int(ym.group(1))
+                        if 2018 <= y <= 2030:
+                            release_year = y
+                            release_year_confidence = "inferred"
 
                 img_urls = get_row_product_images(row)
                 if not img_urls and photo_idx != -1 and photo_idx < len(cells):
@@ -443,9 +460,9 @@ class PopRaceBrandHandler:
                 self.crawler._save_or_merge_product(
                     item_number=item_number,
                     product_name=product_name,
-                    brand="Pop Race",
+                    brand=car_brand,
                     scale="1:64",
-                    series=series,
+                    series=clean_series,
                     img_urls=img_urls,
                     source="fandom",
                     release_year=release_year,
@@ -456,6 +473,31 @@ class PopRaceBrandHandler:
                     attributes=attributes,
                 )
         return None
+
+    @staticmethod
+    def _detect_car_brand(text: str) -> str:
+        """Detect real automotive manufacturer brand from text."""
+        car_brands = [
+            "Nissan", "Toyota", "Honda", "Mitsubishi", "Mazda", "Subaru", "Ford",
+            "Ferrari", "Porsche", "BMW", "Mercedes-Benz", "Mercedes", "Audi", "Lamborghini",
+            "Suzuki", "Peugeot", "Chevrolet", "Dodge", "Aston Martin", "Singer", "Volkswagen",
+            "Pagani", "McLaren", "Alfa Romeo"
+        ]
+        for cb in car_brands:
+            if re.search(r"\b" + re.escape(cb) + r"\b", text, re.I):
+                return "Mercedes-Benz" if cb == "Mercedes" else cb
+        tl = text.lower()
+        if any(k in tl for k in ["skyline", "silvia", "gt-r", "180sx", "stagea", "gtr", "hakosuka"]):
+            return "Nissan"
+        if any(k in tl for k in ["supra", "celica", "ae86", "gr86", "gt86", "yaris", "corolla", "altezza"]):
+            return "Toyota"
+        if any(k in tl for k in ["civic", "nsx", "integra", "accord"]):
+            return "Honda"
+        if any(k in tl for k in ["rx-7", "rx7", "miata"]):
+            return "Mazda"
+        if any(k in tl for k in ["jimny"]):
+            return "Suzuki"
+        return "Pop Race"
 
     def _parse_diecastsociety_search(self, html: str, meta: Dict) -> List[Dict]:
         soup = BeautifulSoup(html, "lxml")

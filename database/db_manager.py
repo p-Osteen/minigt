@@ -9,7 +9,7 @@ from typing import Generator
 from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker, Session
 from database.models import (
-    Base, MiniGTProduct, HotWheelsProduct, PopRaceProduct,
+    Base, MiniGTProduct, PopRaceProduct,
     TarmacWorksProduct, Inno64Product, TrendsHobbyProduct,
     get_product_model
 )
@@ -227,7 +227,6 @@ def sync_to_json() -> None:
         deduplicate_database()
         
         minigt_data = []
-        hotwheels_data = []
         poprace_data = []
         tarmacworks_data = []
         inno64_data = []
@@ -235,7 +234,6 @@ def sync_to_json() -> None:
         
         with get_db_session() as session:
             minigt_prods = session.query(MiniGTProduct).all()
-            hotwheels_prods = session.query(HotWheelsProduct).all()
             poprace_prods = session.query(PopRaceProduct).all()
             tarmacworks_prods = session.query(TarmacWorksProduct).all()
             inno64_prods = session.query(Inno64Product).all()
@@ -251,23 +249,38 @@ def sync_to_json() -> None:
                 # Normalize N/A or missing scale to 1:64
                 if not d.get("scale") or d["scale"] in ("N/A", "n/a", ""):
                     d["scale"] = "1:64"
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d["year"] = str(p.release_year) if p.release_year else None
                 d = classify_product(d, p.toy_brand)
                 minigt_data.append(d)
-                
-            for p in hotwheels_prods:
-                d = p.to_dict()
-                m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
-                d["manufacturer"] = m_primary
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
-                d = classify_product(d, p.toy_brand)
-                hotwheels_data.append(d)
                 
             for p in poprace_prods:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                year_val = p.release_year
+                if not year_val:
+                    for img in (p.images or []):
+                        m_img = re.search(r'/uploads/(\d{4})/', img)
+                        if m_img:
+                            year_val = int(m_img.group(1))
+                            break
+                    if not year_val and p.item_number:
+                        m_pr = re.match(r'^PR640*(\d+)$', p.item_number)
+                        if m_pr:
+                            num = int(m_pr.group(1))
+                            if num <= 79:
+                                year_val = 2023
+                            elif num <= 220:
+                                year_val = 2024
+                            elif num <= 380:
+                                year_val = 2025
+                            elif num <= 520:
+                                year_val = 2026
+                            else:
+                                year_val = 2027
+                if year_val:
+                    d["release_year"] = year_val
+                d["year"] = str(year_val) if year_val else None
                 d = classify_product(d, p.toy_brand)
                 poprace_data.append(d)
 
@@ -275,7 +288,7 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d["year"] = str(p.release_year) if p.release_year else None
                 d = classify_product(d, p.toy_brand)
                 tarmacworks_data.append(d)
 
@@ -283,7 +296,7 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d["year"] = str(p.release_year) if p.release_year else None
                 d = classify_product(d, p.toy_brand)
                 inno64_data.append(d)
 
@@ -291,7 +304,7 @@ def sync_to_json() -> None:
                 d = p.to_dict()
                 m_primary, m_list = get_manufacturers(p.product_name, p.brand, p.series or "Regular")
                 d["manufacturer"] = m_primary
-                d["year"] = str(p.release_year) if p.release_year and p.release_year_confidence == "confirmed" else None
+                d["year"] = str(p.release_year) if p.release_year else None
                 d = classify_product(d, p.toy_brand)
                 trendshobby_data.append(d)
             
@@ -336,45 +349,28 @@ def sync_to_json() -> None:
 
             minigt_data.sort(key=minigt_sort_key)
             
-            # Hot Wheels sorting: release_year desc (nulls last), then series, then item_number
-            def hotwheels_sort_key(p_dict):
-                year_val = p_dict.get("release_year")
-                # Python doesn't support comparing None to int. We map None to 0 for desc sort.
-                year_num = year_val if year_val is not None else 0
-                return (-year_num, p_dict.get("series", "") or "", p_dict.get("item_number", "") or "")
+            # Helper for natural alphanumeric sorting (PR640002 before PR640010, T64-001 before T64-010)
+            def natural_sort_key(s: str):
+                return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s or "")]
+
+            # All non-MINI GT brands: oldest release date / model number / SKU first
+            def brand_oldest_first_sort_key(p_dict):
+                year_val = p_dict.get("release_year") or p_dict.get("year")
+                try:
+                    y = int(year_val) if year_val else 0
+                except (ValueError, TypeError):
+                    y = 0
+                if y > 1900:
+                    return (0, y, natural_sort_key(p_dict.get("item_number", "")))
+                return (1, 9999, natural_sort_key(p_dict.get("item_number", "")))
                 
-            hotwheels_data.sort(key=hotwheels_sort_key)
-            
-            # Pop Race sorting: release_year desc (nulls last), then item_number
-            def poprace_sort_key(p_dict):
-                year_val = p_dict.get("release_year")
-                year_num = year_val if year_val is not None else 0
-                return (-year_num, p_dict.get("item_number", "") or "")
-                
-            poprace_data.sort(key=poprace_sort_key)
-
-            # Tarmac Works sorting: release_year desc (nulls last), then item_number
-            def tarmacworks_sort_key(p_dict):
-                year_val = p_dict.get("release_year")
-                year_num = year_val if year_val is not None else 0
-                return (-year_num, p_dict.get("item_number", "") or "")
-
-            tarmacworks_data.sort(key=tarmacworks_sort_key)
-
-            # INNO64 sorting: release_year desc (nulls last), then item_number
-            def inno64_sort_key(p_dict):
-                year_val = p_dict.get("release_year")
-                year_num = year_val if year_val is not None else 0
-                return (-year_num, p_dict.get("item_number", "") or "")
-
-            inno64_data.sort(key=inno64_sort_key)
-
-            # Trends Hobby sorting: item_number
-            trendshobby_data.sort(key=lambda p_dict: p_dict.get("item_number", "") or "")
+            poprace_data.sort(key=brand_oldest_first_sort_key)
+            tarmacworks_data.sort(key=brand_oldest_first_sort_key)
+            inno64_data.sort(key=brand_oldest_first_sort_key)
+            trendshobby_data.sort(key=brand_oldest_first_sort_key)
             
         # Write files
         minigt_path = os.path.join(DB_DIR, "products_minigt.json")
-        hotwheels_path = os.path.join(DB_DIR, "products_hotwheels.json")
         poprace_path = os.path.join(DB_DIR, "products_poprace.json")
         tarmacworks_path = os.path.join(DB_DIR, "products_tarmacworks.json")
         inno64_path = os.path.join(DB_DIR, "products_inno64.json")
@@ -382,8 +378,6 @@ def sync_to_json() -> None:
         
         with open(minigt_path, "w", encoding="utf-8") as f:
             json.dump(minigt_data, f, indent=2, ensure_ascii=False)
-        with open(hotwheels_path, "w", encoding="utf-8") as f:
-            json.dump(hotwheels_data, f, indent=2, ensure_ascii=False)
         with open(poprace_path, "w", encoding="utf-8") as f:
             json.dump(poprace_data, f, indent=2, ensure_ascii=False)
         with open(tarmacworks_path, "w", encoding="utf-8") as f:
@@ -399,7 +393,7 @@ def sync_to_json() -> None:
             
         logger.info(
             f"Synchronized brand JSONs: MINI GT ({len(minigt_data)}), "
-            f"Hot Wheels ({len(hotwheels_data)}), Pop Race ({len(poprace_data)}), "
+            f"Pop Race ({len(poprace_data)}), "
             f"Tarmac Works ({len(tarmacworks_data)}), INNO64 ({len(inno64_data)}), "
             f"Trends Hobby ({len(trendshobby_data)})"
         )
@@ -492,7 +486,6 @@ def clear_all_data() -> None:
     json_files = [
         JSON_PATH,
         os.path.join(DB_DIR, "products_minigt.json"),
-        os.path.join(DB_DIR, "products_hotwheels.json"),
         os.path.join(DB_DIR, "products_poprace.json"),
         os.path.join(DB_DIR, "products_tarmacworks.json"),
         os.path.join(DB_DIR, "products_inno64.json"),
@@ -573,7 +566,6 @@ def clear_brand_data(toy_brand: str) -> None:
                     state = json.load(f)
                 patterns = {
                     "MINI GT": ["minigt.tsm-models.com", "myminigt.com", "minigt.fandom.com"],
-                    "Hot Wheels": ["hotwheels.fandom.com"],
                     "Pop Race": ["pop-race.fandom.com", "diecastsociety.com", "my64.com.my/usr/product.aspx?pgid=4&grpid=28"],
                     "Tarmac Works": ["tarmacworks.fandom.com", "tarmacworks.com"],
                     "INNO64": ["my64.com.my/usr/product.aspx?pgid=4&grpid=26"],
