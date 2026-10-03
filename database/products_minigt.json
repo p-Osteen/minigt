@@ -19604,7 +19604,7 @@
     "product_name": "Ford Mustang GT3 #64 Ford Multimatic Motorsports 2024 IMSA Daytona 24 Hrs",
     "brand": "Ford",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/d804d5b6416d996101edd1d70695792220260114051836049.JPG",
@@ -22008,7 +22008,7 @@
     "product_name": "Ford Mustang GT3 #65 Ford Multimatic Motorsports 2024 IMSA Daytona 24 Hrs",
     "brand": "Ford",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/50cb17fcc66171549125721f5bbe08a120260114052232586.JPG",
@@ -25318,7 +25318,7 @@
     "product_name": "Acura ARX-06 GTP #93 Acura Meyer Shank Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "Acura",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/36fc062f5e053feb686b157bb091924a20260420175223766.JPG",
@@ -25339,7 +25339,7 @@
     "product_name": "Chevrolet Corvette Z06 GT3.R #13 AWA 2025 IMSA Daytona 24 Hrs",
     "brand": "Chevrolet",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/48971894bde837ba6335e56fd1a533d320260420174716181.JPG",
@@ -25867,7 +25867,7 @@
     "product_name": "Chevrolet Corvette Z06 GT3.R #4 Corvette Racing by Pratt Miller Motorsports 2025 IMSA Daytona 24 Hrs",
     "brand": "Chevrolet",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/bbb441bd9b7cd588b3dac2a1f6e3090120260211200020833.JPG",
@@ -26896,7 +26896,9 @@
     "scale": "1:64",
     "series": "REGULAR",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/5e776293-71b6-47ae-aa8b-37ea3904932f"
+    ],
     "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
@@ -28105,7 +28107,9 @@
     "scale": "1:64",
     "series": "REGULAR EXCLUSIVE PRODUCT",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/2437e3fc-7a6e-46ca-ba8f-df9c3efc06d6"
+    ],
     "source": "official",
     "release_year": 2026,
     "release_year_confidence": "confirmed",
@@ -28627,7 +28631,7 @@
     "product_name": "Aston Martin Vantage GT3 Evo #44 Magnus Racing 2025 IMSA Daytona 24 Hrs",
     "brand": "Aston Martin",
     "scale": "1:64",
-    "series": "REGULAR",
+    "series": "IMSA",
     "sub_series": "Regular",
     "images": [
       "https://minigt.tsm-models.com/upload/picfile_list/4b6893235dc390e993a47f5f27836fa520260703235021304.JPG",
@@ -32030,7 +32034,9 @@
     "scale": "1:64",
     "series": "REGULAR",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/f85bb0fa-1d51-45bb-8b93-9e9db59570b9"
+    ],
     "source": "official",
     "release_year": 2023,
     "release_year_confidence": "confirmed",
@@ -32066,7 +32072,9 @@
     "scale": "1:64",
     "series": "REGULAR",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/c90f3425-75fc-4592-9b9b-b0f1b5cef235"
+    ],
     "source": "official",
     "release_year": 2023,
     "release_year_confidence": "confirmed",
@@ -33276,7 +33284,9 @@
     "scale": "1:64",
     "series": "REGULAR",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/7a928aeb-30c1-421d-a9d7-f88150bd05d1"
+    ],
     "source": "official",
     "release_year": 2025,
     "release_year_confidence": "confirmed",
@@ -33293,7 +33303,9 @@
     "scale": "1:64",
     "series": "REGULAR",
     "sub_series": "Regular",
-    "images": [],
+    "images": [
+      "https://backend-static-ms.zmoif7.easypanel.host/api/images/310bead8-8477-4c51-8d47-b41404bba9bc"
+    ],
     "source": "official",
     "release_year": 2025,
     "release_year_confidence": "confirmed",
@@ -40994,7 +41006,7 @@
     "product_name": "Silhouette Nissan LB-ER34 SKYLINE \r\nLBWK *A BATHING APE CROSSOVER",
     "brand": "Nissan",
     "scale": "1:64",
-    "series": "EXPO 1",
+    "series": "EXPO 2",
     "sub_series": "Regular",
     "images": [
       "https://backend-static-ms.zmoif7.easypanel.host/api/images/e3e9c5a0-11b8-4a09-a950-5f07f699c58e"

@@ -73,22 +73,20 @@ def main_menu():
             print("\nSelect brand to scrape:")
             print("  1. All")
             print("  2. MINI GT")
-            print("  3. Hot Wheels")
-            print("  4. Pop Race")
-            print("  5. Tarmac Works")
-            print("  6. INNO64")
-            print("  7. Trends Hobby")
-            brand_choice = input("Enter choice(s) (e.g. 1 or 2,3,6): ").strip()
+            print("  3. Pop Race")
+            print("  4. Tarmac Works")
+            print("  5. INNO64")
+            print("  6. Trends Hobby")
+            brand_choice = input("Enter choice(s) (e.g. 1 or 2,3,5): ").strip()
             
             choices = [c.strip() for c in brand_choice.split(",") if c.strip()]
             brand_map = {
                 "1": "All",
                 "2": "MINI GT",
-                "3": "Hot Wheels",
-                "4": "Pop Race",
-                "5": "Tarmac Works",
-                "6": "INNO64",
-                "7": "Trends Hobby"
+                "3": "Pop Race",
+                "4": "Tarmac Works",
+                "5": "INNO64",
+                "6": "Trends Hobby"
             }
             
             selected_brands = []
@@ -156,22 +154,20 @@ def main_menu():
             print("\nSelect brand to clear:")
             print("  1. All (Complete Reset)")
             print("  2. MINI GT")
-            print("  3. Hot Wheels")
-            print("  4. Pop Race")
-            print("  5. Tarmac Works")
-            print("  6. INNO64")
-            print("  7. Trends Hobby")
-            brand_choice = input("Enter choice(s) (e.g. 1 or 2,3,6): ").strip()
+            print("  3. Pop Race")
+            print("  4. Tarmac Works")
+            print("  5. INNO64")
+            print("  6. Trends Hobby")
+            brand_choice = input("Enter choice(s) (e.g. 1 or 2,3,5): ").strip()
             
             choices = [c.strip() for c in brand_choice.split(",") if c.strip()]
             brand_map = {
                 "1": "All",
                 "2": "MINI GT",
-                "3": "Hot Wheels",
-                "4": "Pop Race",
-                "5": "Tarmac Works",
-                "6": "INNO64",
-                "7": "Trends Hobby"
+                "3": "Pop Race",
+                "4": "Tarmac Works",
+                "5": "INNO64",
+                "6": "Trends Hobby"
             }
             
             selected_brands = []
